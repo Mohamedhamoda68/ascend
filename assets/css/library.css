@@ -1,0 +1,470 @@
+/* ============================================
+   ASCEND · Library Page (Complete)
+   ============================================ */
+
+/* ============================================
+   PAGE WRAPPER
+   ============================================ */
+.legend-lib-page{
+  background:var(--ld-bg-soft);
+  min-height:100vh;
+  padding:24px 16px 60px;
+  font-family:'IBM Plex Sans Arabic',system-ui,sans-serif;
+}
+
+.legend-lib-container{
+  max-width:1000px;
+  margin:0 auto;
+}
+
+/* ============================================
+   HEADER
+   ============================================ */
+.legend-lib-header{
+  text-align:center;
+  margin-bottom:32px;
+}
+
+.legend-lib-header h1{
+  font-size:26px;
+  font-weight:800;
+  color:var(--ld-text);
+  margin-bottom:8px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:12px;
+}
+
+.legend-lib-header h1 svg{
+  width:28px;
+  height:28px;
+  stroke:var(--ld-blue);
+  stroke-width:2.2;
+  fill:none;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+
+.legend-lib-header p{
+  font-size:14.5px;
+  color:var(--ld-text-2);
+}
+
+/* ============================================
+   SEARCH BAR
+   ============================================ */
+.legend-lib-search-wrap{
+  position:relative;
+  max-width:480px;
+  margin:0 auto 24px;
+}
+
+.legend-lib-search{
+  width:100%;
+  height:46px;
+  padding:0 44px 0 16px;
+  background:var(--ld-bg-card);
+  border:1.5px solid var(--ld-border);
+  border-radius:12px;
+  color:var(--ld-text);
+  font-family:inherit;
+  font-size:14px;
+  outline:none;
+  transition:border-color 180ms,box-shadow 180ms;
+}
+
+.legend-lib-search:focus{
+  border-color:var(--ld-blue);
+  box-shadow:0 0 0 4px rgba(59,130,246,0.1);
+}
+
+.legend-lib-search::placeholder{color:var(--ld-text-3)}
+
+.legend-lib-search-icon{
+  position:absolute;
+  right:16px;
+  top:50%;
+  transform:translateY(-50%);
+  pointer-events:none;
+  color:var(--ld-text-3);
+}
+
+.legend-lib-search-icon svg{
+  width:18px;
+  height:18px;
+  stroke:currentColor;
+  stroke-width:2.2;
+  fill:none;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+
+/* ============================================
+   SUBJECT FILTERS
+   ============================================ */
+.legend-lib-filters{
+  display:flex;
+  gap:8px;
+  margin-bottom:24px;
+  overflow-x:auto;
+  padding-bottom:8px;
+  scrollbar-width:none;
+}
+.legend-lib-filters::-webkit-scrollbar{display:none}
+
+.legend-lib-filter{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:10px 18px;
+  border-radius:999px;
+  background:var(--ld-bg-card);
+  border:1.5px solid var(--ld-border);
+  color:var(--ld-text-2);
+  font-size:13px;
+  font-weight:600;
+  font-family:inherit;
+  cursor:pointer;
+  transition:all 180ms;
+  white-space:nowrap;
+  flex-shrink:0;
+}
+
+.legend-lib-filter:hover{
+  border-color:var(--ld-blue);
+  color:var(--ld-blue);
+}
+
+.legend-lib-filter.active{
+  background:var(--ld-blue);
+  border-color:var(--ld-blue);
+  color:#fff;
+  box-shadow:0 4px 12px -4px rgba(59,130,246,0.5);
+}
+
+.legend-lib-filter .dot{
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:var(--filter-color, var(--ld-blue));
+  flex-shrink:0;
+}
+
+.legend-lib-filter.active .dot{
+  background:rgba(255,255,255,0.9);
+}
+
+/* ============================================
+   GRID
+   ============================================ */
+.legend-lib-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+  gap:14px;
+}
+
+/* ============================================
+   PDF CARD
+   ============================================ */
+.legend-pdf-card{
+  background:var(--ld-bg-card);
+  border:1px solid var(--ld-border);
+  border-radius:14px;
+  padding:22px;
+  position:relative;
+  overflow:hidden;
+  transition:all 220ms cubic-bezier(0.32,0.72,0,1);
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+}
+
+.legend-pdf-card::before{
+  content:'';
+  position:absolute;
+  top:0;
+  right:0;
+  left:0;
+  height:3px;
+  background:var(--pdf-accent, var(--ld-blue));
+  opacity:0.9;
+}
+
+.legend-pdf-card:hover{
+  border-color:var(--pdf-accent, var(--ld-blue));
+  transform:translateY(-3px);
+  box-shadow:0 12px 32px -12px rgba(0,0,0,0.2);
+}
+
+/* Card Top */
+.legend-pdf-top{
+  display:flex;
+  align-items:flex-start;
+  gap:14px;
+}
+
+.legend-pdf-icon{
+  flex-shrink:0;
+  width:52px;
+  height:52px;
+  border-radius:12px;
+  display:grid;
+  place-items:center;
+  background:color-mix(in srgb, var(--pdf-accent, var(--ld-blue)) 15%, transparent);
+  border:1px solid color-mix(in srgb, var(--pdf-accent, var(--ld-blue)) 30%, transparent);
+  color:var(--pdf-accent, var(--ld-blue));
+}
+
+.legend-pdf-icon svg{
+  width:24px;
+  height:24px;
+  stroke:currentColor;
+  stroke-width:2;
+  fill:none;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+
+.legend-pdf-body{flex:1;min-width:0}
+
+.legend-pdf-title{
+  font-size:15px;
+  font-weight:700;
+  color:var(--ld-text);
+  margin-bottom:6px;
+  line-height:1.35;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.legend-pdf-subject{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:3px 10px;
+  border-radius:999px;
+  background:color-mix(in srgb, var(--pdf-accent, var(--ld-blue)) 12%, transparent);
+  color:var(--pdf-accent, var(--ld-blue));
+  font-size:11.5px;
+  font-weight:600;
+}
+
+/* Description */
+.legend-pdf-desc{
+  font-size:13px;
+  color:var(--ld-text-2);
+  line-height:1.6;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+/* Meta */
+.legend-pdf-meta{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  font-size:11.5px;
+  color:var(--ld-text-3);
+  flex-wrap:wrap;
+  padding-top:10px;
+  border-top:1px dashed var(--ld-border);
+}
+
+.legend-pdf-meta-item{
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+}
+
+.legend-pdf-meta-item svg{
+  width:13px;
+  height:13px;
+  stroke:currentColor;
+  stroke-width:2;
+  fill:none;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+
+/* Actions */
+.legend-pdf-actions{
+  display:flex;
+  gap:8px;
+  margin-top:auto;
+}
+
+.legend-pdf-btn{
+  flex:1;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  padding:11px 16px;
+  border-radius:10px;
+  border:none;
+  font-family:inherit;
+  font-size:13px;
+  font-weight:600;
+  cursor:pointer;
+  text-decoration:none;
+  transition:all 180ms;
+  color:#fff;
+  background:var(--pdf-accent, var(--ld-blue));
+}
+
+.legend-pdf-btn:hover{
+  transform:translateY(-1px);
+  box-shadow:0 8px 20px -8px color-mix(in srgb, var(--pdf-accent, var(--ld-blue)) 70%, transparent);
+}
+
+.legend-pdf-btn svg{
+  width:15px;
+  height:15px;
+  stroke:currentColor;
+  stroke-width:2.2;
+  fill:none;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+
+.legend-pdf-btn.secondary{
+  background:transparent;
+  color:var(--ld-text);
+  border:1.5px solid var(--ld-border-2);
+  flex:0 0 auto;
+  padding:11px 14px;
+}
+
+.legend-pdf-btn.secondary:hover{
+  border-color:var(--pdf-accent, var(--ld-blue));
+  color:var(--pdf-accent, var(--ld-blue));
+  box-shadow:none;
+  background:color-mix(in srgb, var(--pdf-accent, var(--ld-blue)) 8%, transparent);
+}
+
+/* ============================================
+   EMPTY STATE
+   ============================================ */
+.legend-lib-empty{
+  text-align:center;
+  padding:80px 24px;
+}
+
+.legend-lib-empty-icon{
+  width:80px;
+  height:80px;
+  margin:0 auto 20px;
+  border-radius:50%;
+  background:rgba(59,130,246,0.1);
+  display:grid;
+  place-items:center;
+  color:var(--ld-blue);
+}
+
+.legend-lib-empty-icon svg{
+  width:40px;
+  height:40px;
+  stroke:currentColor;
+  stroke-width:1.8;
+  fill:none;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+
+.legend-lib-empty h2{
+  font-size:22px;
+  font-weight:700;
+  color:var(--ld-text);
+  margin-bottom:8px;
+}
+
+.legend-lib-empty p{
+  font-size:14.5px;
+  color:var(--ld-text-2);
+  max-width:400px;
+  margin:0 auto 24px;
+}
+
+.legend-lib-empty .btn{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:12px 28px;
+  border-radius:10px;
+  background:var(--ld-green);
+  color:#fff;
+  border:none;
+  font-family:inherit;
+  font-size:14px;
+  font-weight:600;
+  text-decoration:none;
+  cursor:pointer;
+  transition:all 180ms;
+}
+
+.legend-lib-empty .btn:hover{
+  background:var(--ld-green-d);
+  transform:translateY(-1px);
+}
+
+/* ============================================
+   LOADING
+   ============================================ */
+.legend-loading{
+  text-align:center;
+  padding:80px 24px;
+  color:var(--ld-text-3);
+  font-size:14px;
+}
+
+/* ============================================
+   SKELETON
+   ============================================ */
+.legend-pdf-skeleton{
+  background:var(--ld-bg-card);
+  border:1px solid var(--ld-border);
+  border-radius:14px;
+  padding:22px;
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+  animation:pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse{
+  0%,100%{opacity:1}
+  50%{opacity:0.6}
+}
+
+.legend-pdf-skeleton-line{
+  height:14px;
+  background:linear-gradient(90deg, var(--ld-border) 0%, color-mix(in srgb, var(--ld-border) 50%, transparent) 50%, var(--ld-border) 100%);
+  background-size:200% 100%;
+  border-radius:6px;
+  animation:shimmer 1.5s infinite;
+}
+
+@keyframes shimmer{
+  0%{background-position:200% 0}
+  100%{background-position:-200% 0}
+}
+
+.legend-pdf-skeleton-line.w-40{width:40%}
+.legend-pdf-skeleton-line.w-60{width:60%}
+.legend-pdf-skeleton-line.w-80{width:80%}
+.legend-pdf-skeleton-line.w-100{width:100%}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media(max-width:720px){
+  .legend-lib-page{padding:20px 12px 40px}
+  .legend-lib-grid{grid-template-columns:1fr}
+  .legend-pdf-card{padding:18px}
+  .legend-lib-header h1{font-size:22px}
+  .legend-lib-header h1 svg{width:24px;height:24px}
+  .legend-lib-search-wrap{max-width:100%}
+}

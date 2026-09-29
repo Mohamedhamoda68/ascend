@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#050506">
+<meta name="color-scheme" content="dark">
+
+<title>إنشاء حساب — ASCEND</title>
+<meta name="description" content="أنشئ حسابك على منصة ASCEND التعليمية — طالب أو ولي أمر.">
+<meta name="robots" content="index, follow">
+<link rel="icon" type="image/svg+xml" href="/assets/img/favicon.svg">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700;800&display=swap">
+
+<link rel="stylesheet" href="/assets/css/base.css">
+<link rel="stylesheet" href="/assets/css/components.css">
+<link rel="stylesheet" href="/assets/css/layout.css">
+
+<style>
+/* ============ REGISTER PAGE SPECIFIC ============ */
+.role-picker{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin-bottom:24px;
+}
+
+.role-option{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:10px;
+  padding:20px 16px;
+  border-radius:14px;
+  border:2px solid var(--border-2);
+  background:var(--bg-1);
+  cursor:pointer;
+  transition:all 0.25s cubic-bezier(0.32,0.72,0,1);
+  font-family:inherit;
+  color:var(--fg-2);
+  text-align:center;
+}
+
+.role-option:hover{
+  border-color:var(--accent-border);
+  background:var(--bg-2);
+  transform:translateY(-2px);
+}
+
+.role-option.active{
+  border-color:var(--accent);
+  background:linear-gradient(180deg, rgba(139,92,246,0.12), rgba(139,92,246,0.04));
+  color:var(--fg);
+  box-shadow:0 8px 24px -8px rgba(139,92,246,0.4);
+}
+
+.role-option-icon{
+  width:44px;
+  height:44px;
+  border-radius:12px;
+  display:grid;
+  place-items:center;
+  background:var(--bg-3);
+  border:1px solid var(--border-2);
+  color:var(--fg-3);
+  transition:all 0.25s;
+}
+
+.role-option.active .role-option-icon{
+  background:linear-gradient(135deg, #8B5CF6, #6366F1);
+  border-color:transparent;
+  color:#fff;
+  box-shadow:0 8px 20px -6px rgba(139,92,246,0.6);
+}
+
+.role-option-icon svg{
+  width:22px;
+  height:22px;
+  stroke:currentColor;
+  stroke-width:2;
+  fill:none;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+
+.role-option-label{
+  font-size:14px;
+  font-weight:700;
+  letter-spacing:-0.01em;
+}
+
+.role-option-desc{
+  font-size:11.5px;
+  color:var(--fg-4);
+  font-weight:500;
+  line-height:1.4;
+}
+
+.field-hidden{display:none !important}
+
+/* ============ SUCCESS SCREEN ============ */
+.auth-success{
+  display:none;
+  text-align:center;
+  padding:20px 0;
+}
+.auth-success.show{display:block}
+
+.auth-success-icon{
+  width:80px;
+  height:80px;
+  margin:0 auto 24px;
+  border-radius:50%;
+  background:linear-gradient(135deg, rgba(63,185,80,0.15), rgba(63,185,80,0.05));
+  border:2px solid rgba(63,185,80,0.3);
+  display:grid;
+  place-items:center;
+  color:#4ADE80;
+  box-shadow:0 0 60px -10px rgba(63,185,80,0.4);
+  animation:successPop 600ms cubic-bezier(0.34,1.56,0.64,1);
+}
+
+@keyframes successPop{
+  0%{transform:scale(0);opacity:0}
+  100%{transform:scale(1);opacity:1}
+}
+
+.auth-success-icon svg{
+  width:40px;
+  height:40px;
+  stroke:currentColor;
+  stroke-width:3;
+  fill:none;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+
+.auth-success h2{
+  font-size:22px;
+  font-weight:800;
+  margin-bottom:12px;
+  color:var(--fg);
+}
+
+.auth-success p{
+  font-size:14px;
+  color:var(--fg-2);
+  line-height:1.7;
+  margin-bottom:8px;
+}
+
+.auth-success-note{
+  display:inline-block;
+  padding:10px 18px;
+  border-radius:10px;
+  background:rgba(139,92,246,0.1);
+  border:1px solid rgba(139,92,246,0.3);
+  color:#C4B5FD;
+  font-size:13px;
+  font-weight:600;
+  margin:16px 0;
+  line-height:1.6;
+}
+
+.auth-success .btn{
+  margin-top:20px;
+  width:100%;
+  justify-content:center;
+  height:44px;
+}
+
+@media(max-width:640px){
+  .role-picker{gap:8px}
+  .role-option{padding:16px 10px;gap:8px}
+  .role-option-icon{width:38px;height:38px}
+  .role-option-label{font-size:13px}
+  .role-option-desc{font-size:10.5px}
+}
+</style>
+</head>
+<body>
+
+<div class="auth-wrap">
+
+  <div class="auth-card" style="max-width:520px">
+
+    <a href="/" class="brand" style="justify-content:center;margin-bottom:24px;display:flex">
+      <span class="brand-mark">
+        <svg viewBox="0 0 24 24"><path d="M7 17L17 7M17 7H9M17 7v8"/></svg>
+      </span>
+      ASCEND
+    </a>
+
+    <!-- REGISTER FORM -->
+    <div id="registerSection">
+
+      <h1 style="text-align:center">إنشاء حساب جديد</h1>
+      <p class="sub" style="text-align:center;margin-bottom:24px">انضم للمنصة وابدأ رحلتك التعليمية</p>
+
+      <div class="alert alert-error" id="alert" role="alert"></div>
+
+      <!-- Role Picker -->
+      <div class="role-picker">
+        <button type="button" class="role-option active" data-role="student">
+          <div class="role-option-icon">
+            <svg viewBox="0 0 24 24"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+          </div>
+          <div class="role-option-label">طالب</div>
+          <div class="role-option-desc">أذاكر وأحلّ الامتحانات</div>
+        </button>
+
+        <button type="button" class="role-option" data-role="parent">
+          <div class="role-option-icon">
+            <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+          </div>
+          <div class="role-option-label">ولي أمر</div>
+          <div class="role-option-desc">أتابع تقدم ابني</div>
+        </button>
+      </div>
+
+      <form id="registerForm" novalidate>
+
+        <!-- Full Name -->
+        <div class="field" id="nameField">
+          <label for="full_name">الاسم الكامل</label>
+          <input type="text" id="full_name" name="full_name" placeholder="محمد أحمد محمود" autocomplete="name" required>
+          <div class="error-msg">الاسم مطلوب</div>
+        </div>
+
+        <!-- Email -->
+        <div class="field" id="emailField">
+          <label for="email">البريد الإلكتروني</label>
+          <input type="email" id="email" name="email" placeholder="name@example.com" autocomplete="email" required>
+          <div class="error-msg">يرجى إدخال بريد صحيح</div>
+        </div>
+
+        <!-- Phone + Governorate (both roles) -->
+        <div class="field-row" style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div class="field" id="phoneField">
+            <label for="phone">رقم الهاتف</label>
+            <input type="tel" id="phone" name="phone" placeholder="01xxxxxxxxx" autocomplete="tel" inputmode="numeric" required>
+            <div class="error-msg">رقم مصري (11 رقم)</div>
+          </div>
+
+          <div class="field" id="govField">
+            <label for="governorate">المحافظة</label>
+            <select id="governorate" name="governorate" required>
+              <option value="">اختر</option>
+              <option>القاهرة</option>
+              <option>الجيزة</option>
+              <option>الإسكندرية</option>
+              <option>الدقهلية</option>
+              <option>الشرقية</option>
+              <option>الغربية</option>
+              <option>المنوفية</option>
+              <option>القليوبية</option>
+              <option>البحيرة</option>
+              <option>أسيوط</option>
+              <option>سوهاج</option>
+              <option>أسوان</option>
+              <option>الأقصر</option>
+              <option>بورسعيد</option>
+              <option>السويس</option>
+              <option>دمياط</option>
+              <option>كفر الشيخ</option>
+              <option>الفيوم</option>
+              <option>بني سويف</option>
+              <option>المنيا</option>
+              <option>قنا</option>
+              <option>البحر الأحمر</option>
+              <option>مطروح</option>
+              <option>شمال سيناء</option>
+              <option>جنوب سيناء</option>
+              <option>الوادي الجديد</option>
+            </select>
+            <div class="error-msg">اختر محافظتك</div>
+          </div>
+        </div>
+
+        <!-- STUDENT ONLY: School + Parent Phone -->
+        <div id="studentOnlyFields">
+          <div class="field" id="schoolField">
+            <label for="school">المدرسة <span style="color:var(--fg-4);font-weight:400">(اختياري)</span></label>
+            <input type="text" id="school" name="school" placeholder="اسم مدرستك" autocomplete="organization">
+          </div>
+
+          <div class="field" id="parentPhoneField">
+            <label for="parent_phone">
+              رقم هاتف ولي الأمر
+              <span style="color:var(--fg-4);font-weight:400">(اختياري — عشان يتابعك)</span>
+            </label>
+            <input type="tel" id="parent_phone" name="parent_phone" placeholder="01xxxxxxxxx" inputmode="numeric">
+            <div class="hint">لو ولي أمرك عنده حساب هنا، حط نفس الرقم عشان يتربط تلقائي</div>
+            <div class="error-msg">رقم مصري (11 رقم)</div>
+          </div>
+        </div>
+
+        <!-- Password -->
+        <div class="field" id="passwordField">
+          <label for="password">كلمة المرور</label>
+          <input type="password" id="password" name="password" placeholder="8 أحرف على الأقل" autocomplete="new-password" minlength="8" required>
+          <div class="hint">8 أحرف على الأقل</div>
+          <div class="error-msg">كلمة المرور 8 أحرف على الأقل</div>
+        </div>
+
+        <!-- Terms -->
+        <label style="display:flex;align-items:flex-start;gap:10px;margin:20px 0;font-size:13px;color:var(--fg-2);line-height:1.6;cursor:pointer">
+          <input type="checkbox" id="terms" required style="margin-top:3px;width:16px;height:16px;accent-color:var(--accent);cursor:pointer;flex-shrink:0">
+          <span>
+            أوافق على <a href="/terms.html" target="_blank" style="color:var(--accent-fg);font-weight:600;text-decoration:none">شروط الاستخدام</a>
+            و <a href="/privacy.html" target="_blank" style="color:var(--accent-fg);font-weight:600;text-decoration:none">سياسة الخصوصية</a>
+          </span>
+        </label>
+
+        <button type="submit" class="btn btn-primary" id="submitBtn" style="width:100%;height:44px">
+          <span>إنشاء الحساب</span>
+        </button>
+
+      </form>
+
+      <div class="auth-foot">
+        لديك حساب بالفعل؟ <a href="/login.html">تسجيل الدخول</a>
+      </div>
+
+    </div>
+
+    <!-- SUCCESS SCREEN -->
+    <div class="auth-success" id="successSection">
+      <div class="auth-success-icon">
+        <svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>
+      </div>
+      <h2>تم إنشاء حسابك بنجاح!</h2>
+      <p>تم استلام بياناتك وسيتم مراجعتها.</p>
+      <div class="auth-success-note">
+        ⏳ سيتم تفعيل حسابك خلال 24 ساعة
+      </div>
+      <p style="color:var(--fg-3);font-size:13px">
+        لو حسابك <strong>ولي أمر</strong>، في حساب الطالب روح على "الإعدادات" وأضف رقم ولي الأمر.
+      </p>
+      <a href="/login.html" class="btn btn-primary">الذهاب لتسجيل الدخول</a>
+    </div>
+
+  </div>
+
+</div>
+
+<a href="/chat.html" class="floating-chat-btn" aria-label="المساعد الذكي">
+  <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+  <span class="floating-chat-label">محتاج مساعدة؟</span>
+</a>
+
+<script type="module" src="/assets/js/register.js"></script>
+
+</body>
+</html>

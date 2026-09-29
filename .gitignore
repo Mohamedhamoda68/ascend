@@ -1,0 +1,20 @@
+# Dependencies
+node_modules/
+
+# Supabase credentials (SECRET)
+assets/js/config.js
+
+# Environment
+.env
+.env.local
+
+# System
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+
+# Logs
+*.log

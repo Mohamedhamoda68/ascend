@@ -1,0 +1,747 @@
+/* ============================================
+   ASCEND · Legend Theme (Colorful Edition)
+   Beautiful Gradients · Dark/Light · Premium
+   ============================================ */
+
+/* ============================================
+   LIGHT THEME (Default)
+   ============================================ */
+:root{
+  /* Backgrounds */
+  --ld-bg:#F7F8FC;
+  --ld-bg-soft:#EEF1F8;
+  --ld-bg-card:#FFFFFF;
+  --ld-bg-elevated:#FFFFFF;
+  
+  /* Text */
+  --ld-text:#0F172A;
+  --ld-text-2:#475569;
+  --ld-text-3:#94A3B8;
+  --ld-text-4:#CBD5E1;
+  
+  /* Borders */
+  --ld-border:#E2E8F0;
+  --ld-border-2:#CBD5E1;
+  
+  /* Primary Colors */
+  --ld-green:#10B981;
+  --ld-green-d:#059669;
+  --ld-green-soft:rgba(16,185,129,0.1);
+  
+  --ld-blue:#3B82F6;
+  --ld-blue-soft:rgba(59,130,246,0.1);
+  
+  --ld-purple:#8B5CF6;
+  --ld-purple-soft:rgba(139,92,246,0.1);
+  
+  --ld-pink:#EC4899;
+  --ld-pink-soft:rgba(236,72,153,0.1);
+  
+  --ld-orange:#F97316;
+  --ld-orange-soft:rgba(249,115,22,0.1);
+  
+  --ld-yellow:#F59E0B;
+  --ld-yellow-soft:rgba(245,158,11,0.1);
+  
+  --ld-cyan:#06B6D4;
+  --ld-cyan-soft:rgba(6,182,212,0.1);
+  
+  --ld-red:#EF4444;
+  --ld-red-soft:rgba(239,68,68,0.1);
+  
+  --ld-indigo:#6366F1;
+  --ld-indigo-soft:rgba(99,102,241,0.1);
+  
+  /* Gradients */
+  --ld-grad-primary:linear-gradient(135deg, #667EEA 0%, #764BA2 100%);
+  --ld-grad-success:linear-gradient(135deg, #10B981 0%, #059669 100%);
+  --ld-grad-info:linear-gradient(135deg, #3B82F6 0%, #1E40AF 100%);
+  --ld-grad-warn:linear-gradient(135deg, #F59E0B 0%, #EA580C 100%);
+  --ld-grad-danger:linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+  --ld-grad-aurora:linear-gradient(135deg, #667EEA 0%, #764BA2 50%, #F093FB 100%);
+  --ld-grad-sunset:linear-gradient(135deg, #FA709A 0%, #FEE140 100%);
+  --ld-grad-ocean:linear-gradient(135deg, #4FACFE 0%, #00F2FE 100%);
+  --ld-grad-forest:linear-gradient(135deg, #0BA360 0%, #3CBA92 100%);
+  --ld-grad-mint:linear-gradient(135deg, #43E97B 0%, #38F9D7 100%);
+  
+  /* Shadows */
+  --ld-shadow-sm:0 1px 3px rgba(15,23,42,0.06);
+  --ld-shadow:0 4px 12px rgba(15,23,42,0.08);
+  --ld-shadow-lg:0 12px 32px rgba(15,23,42,0.12);
+  --ld-shadow-xl:0 24px 48px -12px rgba(15,23,42,0.18);
+  --ld-shadow-colored:0 12px 32px -8px rgba(99,102,241,0.25);
+}
+
+/* ============================================
+   DARK THEME
+   ============================================ */
+body[data-theme="dark"]{
+  --ld-bg:#0A0E1A;
+  --ld-bg-soft:#0F1525;
+  --ld-bg-card:#151B2E;
+  --ld-bg-elevated:#1C2338;
+  
+  --ld-text:#F1F5F9;
+  --ld-text-2:#94A3B8;
+  --ld-text-3:#64748B;
+  --ld-text-4:#334155;
+  
+  --ld-border:#1E2942;
+  --ld-border-2:#334155;
+  
+  --ld-green:#10B981;
+  --ld-green-d:#059669;
+  --ld-green-soft:rgba(16,185,129,0.15);
+  
+  --ld-blue:#60A5FA;
+  --ld-blue-soft:rgba(96,165,250,0.15);
+  
+  --ld-purple:#A78BFA;
+  --ld-purple-soft:rgba(167,139,250,0.15);
+  
+  --ld-pink:#F472B6;
+  --ld-pink-soft:rgba(244,114,182,0.15);
+  
+  --ld-orange:#FB923C;
+  --ld-orange-soft:rgba(251,146,60,0.15);
+  
+  --ld-yellow:#FBBF24;
+  --ld-yellow-soft:rgba(251,191,36,0.15);
+  
+  --ld-cyan:#22D3EE;
+  --ld-cyan-soft:rgba(34,211,238,0.15);
+  
+  --ld-red:#F87171;
+  --ld-red-soft:rgba(248,113,113,0.15);
+  
+  --ld-indigo:#818CF8;
+  --ld-indigo-soft:rgba(129,140,248,0.15);
+  
+  --ld-grad-primary:linear-gradient(135deg, #8B5CF6 0%, #6366F1 100%);
+  --ld-grad-success:linear-gradient(135deg, #10B981 0%, #059669 100%);
+  --ld-grad-info:linear-gradient(135deg, #60A5FA 0%, #3B82F6 100%);
+  --ld-grad-warn:linear-gradient(135deg, #FBBF24 0%, #F59E0B 100%);
+  --ld-grad-danger:linear-gradient(135deg, #F87171 0%, #EF4444 100%);
+  --ld-grad-aurora:linear-gradient(135deg, #8B5CF6 0%, #6366F1 50%, #EC4899 100%);
+  --ld-grad-sunset:linear-gradient(135deg, #F472B6 0%, #FBBF24 100%);
+  --ld-grad-ocean:linear-gradient(135deg, #22D3EE 0%, #3B82F6 100%);
+  --ld-grad-forest:linear-gradient(135deg, #10B981 0%, #22D3EE 100%);
+  --ld-grad-mint:linear-gradient(135deg, #34D399 0%, #22D3EE 100%);
+  
+  --ld-shadow-sm:0 1px 3px rgba(0,0,0,0.3);
+  --ld-shadow:0 4px 12px rgba(0,0,0,0.4);
+  --ld-shadow-lg:0 12px 32px rgba(0,0,0,0.5);
+  --ld-shadow-xl:0 24px 48px -12px rgba(0,0,0,0.6);
+  --ld-shadow-colored:0 12px 32px -8px rgba(139,92,246,0.4);
+}
+
+/* ============================================
+   GLOBAL
+   ============================================ */
+*{
+  transition:background-color 300ms ease, color 300ms ease, border-color 300ms ease;
+}
+
+body{
+  font-family:'IBM Plex Sans Arabic',system-ui,sans-serif;
+  color:var(--ld-text);
+  background:var(--ld-bg);
+  margin:0;
+}
+
+/* ============================================
+   TOPBAR (Colorful Edition)
+   ============================================ */
+.legend-topbar{
+  background:rgba(255,255,255,0.85);
+  backdrop-filter:blur(20px) saturate(180%);
+  -webkit-backdrop-filter:blur(20px) saturate(180%);
+  border-bottom:1px solid var(--ld-border);
+  padding:0 24px;
+  height:64px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  position:sticky;
+  top:0;
+  z-index:50;
+}
+
+body[data-theme="dark"] .legend-topbar{
+  background:rgba(15,21,37,0.85);
+}
+
+.legend-topbar::after{
+  content:'';
+  position:absolute;
+  bottom:-1px;
+  left:0;
+  right:0;
+  height:2px;
+  background:var(--ld-grad-aurora);
+  opacity:0.6;
+}
+
+.legend-topbar-brand{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-weight:800;
+  font-size:17px;
+  color:var(--ld-text);
+  text-decoration:none;
+  letter-spacing:-0.02em;
+}
+
+.legend-topbar-brand svg{
+  width:36px;
+  height:36px;
+  border-radius:10px;
+  padding:6px;
+  background:var(--ld-grad-aurora);
+  box-shadow:0 8px 20px -6px rgba(139,92,246,0.5);
+}
+
+.legend-topbar-brand span{
+  background:var(--ld-grad-aurora);
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+  font-size:24px;
+  margin-right:-4px;
+}
+
+.legend-topbar-actions{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.legend-icon-btn{
+  width:40px;
+  height:40px;
+  border-radius:12px;
+  display:grid;
+  place-items:center;
+  background:var(--ld-bg-soft);
+  border:1px solid var(--ld-border);
+  color:var(--ld-text-2);
+  cursor:pointer;
+  transition:all 200ms;
+  text-decoration:none;
+}
+
+.legend-icon-btn:hover{
+  background:var(--ld-indigo-soft);
+  color:var(--ld-indigo);
+  border-color:var(--ld-indigo);
+  transform:translateY(-1px);
+}
+
+.legend-icon-btn svg{
+  width:18px;
+  height:18px;
+  stroke:currentColor;
+  stroke-width:2;
+  fill:none;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+
+.legend-icon-btn.avatar{
+  background:var(--ld-grad-aurora);
+  color:#fff;
+  border:none;
+  font-weight:800;
+  font-size:15px;
+  box-shadow:0 8px 20px -6px rgba(139,92,246,0.5);
+}
+
+.legend-icon-btn.avatar:hover{
+  transform:translateY(-1px) scale(1.05);
+  box-shadow:0 12px 28px -6px rgba(139,92,246,0.7);
+}
+
+/* ============================================
+   THEME TOGGLE (Colorful)
+   ============================================ */
+.legend-theme{
+  display:inline-flex;
+  align-items:center;
+  padding:4px;
+  border-radius:999px;
+  background:var(--ld-bg-soft);
+  border:1px solid var(--ld-border);
+  position:relative;
+}
+
+.legend-theme button{
+  width:36px;
+  height:36px;
+  border-radius:999px;
+  border:none;
+  background:transparent;
+  cursor:pointer;
+  display:grid;
+  place-items:center;
+  color:var(--ld-text-3);
+  transition:all 250ms cubic-bezier(0.32,0.72,0,1);
+  position:relative;
+  z-index:1;
+}
+
+.legend-theme button.active{
+  background:var(--ld-grad-warn);
+  color:#fff;
+  box-shadow:0 4px 12px -2px rgba(245,158,11,0.5);
+}
+
+.legend-theme button[data-theme-btn="dark"].active{
+  background:var(--ld-grad-primary);
+  box-shadow:0 4px 12px -2px rgba(99,102,241,0.5);
+}
+
+.legend-theme button svg{
+  width:16px;
+  height:16px;
+  stroke:currentColor;
+  stroke-width:2;
+  fill:none;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+
+/* ============================================
+   PAGE BACKGROUND (Colorful Gradient)
+   ============================================ */
+.legend-page,
+.legend-quiz-page,
+.legend-result-page,
+.legend-lib-page,
+.legend-cert-page,
+.legend-notif-page{
+  background:var(--ld-bg-soft);
+  min-height:100vh;
+  position:relative;
+  overflow-x:hidden;
+}
+
+/* Ambient gradient blobs */
+.legend-page::before,
+.legend-quiz-page::before,
+.legend-lib-page::before{
+  content:'';
+  position:fixed;
+  top:-20%;
+  left:-10%;
+  width:600px;
+  height:600px;
+  background:radial-gradient(circle, rgba(139,92,246,0.15) 0%, transparent 70%);
+  filter:blur(80px);
+  pointer-events:none;
+  z-index:0;
+}
+
+.legend-page::after,
+.legend-quiz-page::after,
+.legend-lib-page::after{
+  content:'';
+  position:fixed;
+  bottom:-20%;
+  right:-10%;
+  width:600px;
+  height:600px;
+  background:radial-gradient(circle, rgba(236,72,153,0.12) 0%, transparent 70%);
+  filter:blur(80px);
+  pointer-events:none;
+  z-index:0;
+}
+
+body[data-theme="dark"] .legend-page::before,
+body[data-theme="dark"] .legend-quiz-page::before,
+body[data-theme="dark"] .legend-lib-page::before{
+  background:radial-gradient(circle, rgba(139,92,246,0.25) 0%, transparent 70%);
+}
+
+body[data-theme="dark"] .legend-page::after,
+body[data-theme="dark"] .legend-quiz-page::after,
+body[data-theme="dark"] .legend-lib-page::after{
+  background:radial-gradient(circle, rgba(236,72,153,0.2) 0%, transparent 70%);
+}
+
+/* Content on top */
+.legend-quiz-container,
+.legend-lib-container,
+.legend-cert-container,
+.legend-notif-container,
+.legend-container{
+  position:relative;
+  z-index:1;
+}
+
+/* ============================================
+   CARDS (Glass + Gradient Border)
+   ============================================ */
+.legend-quiz-card,
+.legend-result-card,
+.legend-numbers-card,
+.legend-attempts-table-wrap,
+.legend-pdf-card,
+.legend-notif-item,
+.legend-mistakes-chapter,
+.legend-review-card{
+  background:var(--ld-bg-card);
+  border:1px solid var(--ld-border);
+  border-radius:16px;
+  box-shadow:var(--ld-shadow);
+  position:relative;
+  overflow:hidden;
+}
+
+body[data-theme="dark"] .legend-quiz-card,
+body[data-theme="dark"] .legend-result-card,
+body[data-theme="dark"] .legend-numbers-card,
+body[data-theme="dark"] .legend-attempts-table-wrap,
+body[data-theme="dark"] .legend-pdf-card,
+body[data-theme="dark"] .legend-notif-item,
+body[data-theme="dark"] .legend-mistakes-chapter,
+body[data-theme="dark"] .legend-review-card{
+  box-shadow:var(--ld-shadow-lg);
+}
+
+/* Colored top border */
+.legend-quiz-card::before,
+.legend-result-card::before,
+.legend-numbers-card::before{
+  content:'';
+  position:absolute;
+  top:0;
+  left:0;
+  right:0;
+  height:3px;
+  background:var(--ld-grad-aurora);
+  opacity:0.8;
+}
+
+/* ============================================
+   BUTTONS (Colorful Gradients)
+   ============================================ */
+.legend-new-exam-btn,
+.legend-review-btn,
+.legend-resume-btn{
+  background:var(--ld-grad-primary);
+  color:#fff;
+  border:none;
+  box-shadow:0 8px 24px -8px rgba(99,102,241,0.5);
+  transition:all 200ms;
+}
+
+.legend-new-exam-btn:hover,
+.legend-review-btn:hover,
+.legend-resume-btn:hover{
+  transform:translateY(-2px);
+  box-shadow:0 12px 32px -8px rgba(99,102,241,0.7);
+}
+
+/* ============================================
+   STAT CARDS (Colorful)
+   ============================================ */
+.legend-stat-box,
+.legend-mistakes-stat,
+.legend-result-stat,
+.legend-stat-card{
+  background:var(--ld-bg-card);
+  border:1px solid var(--ld-border);
+  border-radius:14px;
+  box-shadow:var(--ld-shadow-sm);
+  transition:all 200ms;
+  position:relative;
+  overflow:hidden;
+}
+
+.legend-stat-box:hover,
+.legend-mistakes-stat:hover{
+  transform:translateY(-2px);
+  box-shadow:var(--ld-shadow);
+}
+
+/* Different colored top borders */
+.legend-stat-box:nth-child(1)::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--ld-grad-primary)}
+.legend-stat-box:nth-child(2)::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--ld-grad-info)}
+.legend-stat-box:nth-child(3)::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--ld-grad-success)}
+.legend-stat-box:nth-child(4)::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--ld-grad-warn)}
+
+/* ============================================
+   GRADIENT VALUES
+   ============================================ */
+.legend-stat-value.green,
+.legend-result-percentage,
+.legend-mistakes-stat-value.green{
+  background:var(--ld-grad-success);
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+}
+
+.legend-stat-value.red,
+.legend-mistakes-stat-value.red{
+  background:var(--ld-grad-danger);
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+}
+
+.legend-stat-value.timer{
+  background:var(--ld-grad-info);
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+}
+
+.legend-mistakes-stat-value.blue{
+  background:var(--ld-grad-info);
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+}
+
+/* ============================================
+   NAV SIDEBAR (Dashboard)
+   ============================================ */
+.legend-sidebar,
+.sidebar{
+  background:var(--ld-bg-card);
+  border-left:1px solid var(--ld-border);
+}
+
+body[data-theme="dark"] .legend-sidebar,
+body[data-theme="dark"] .sidebar{
+  background:var(--ld-bg-card);
+}
+
+.sidebar-link.active,
+.legend-sidebar-link.active{
+  background:var(--ld-grad-primary);
+  color:#fff !important;
+  box-shadow:0 8px 20px -8px rgba(99,102,241,0.5);
+}
+
+.sidebar-link.active svg,
+.legend-sidebar-link.active svg{
+  color:#fff !important;
+  opacity:1 !important;
+}
+
+.sidebar-link.active .count{
+  background:rgba(255,255,255,0.25) !important;
+  color:#fff !important;
+}
+
+/* ============================================
+   BADGES & PILLS
+   ============================================ */
+.pill-success{background:var(--ld-green-soft);color:var(--ld-green);border:1px solid var(--ld-green)}
+.pill-warning{background:var(--ld-yellow-soft);color:var(--ld-yellow);border:1px solid var(--ld-yellow)}
+.pill-danger{background:var(--ld-red-soft);color:var(--ld-red);border:1px solid var(--ld-red)}
+.pill-neutral{background:var(--ld-bg-soft);color:var(--ld-text-2);border:1px solid var(--ld-border)}
+
+/* ============================================
+   PROGRESS BAR (Colorful)
+   ============================================ */
+.legend-progress{
+  height:8px;
+  background:var(--ld-bg-soft);
+  border-radius:999px;
+  overflow:hidden;
+  border:none;
+}
+
+.legend-progress-fill{
+  height:100%;
+  background:var(--ld-grad-aurora);
+  border-radius:999px;
+  box-shadow:0 0 12px rgba(139,92,246,0.5);
+  transition:width 600ms cubic-bezier(0.32,0.72,0,1);
+}
+
+.legend-result-bar{
+  height:10px;
+  background:var(--ld-bg-soft);
+  border-radius:999px;
+  overflow:hidden;
+}
+
+.legend-result-bar-fill{
+  height:100%;
+  background:var(--ld-grad-success);
+  border-radius:999px;
+  transition:width 1000ms cubic-bezier(0.32,0.72,0,1);
+}
+
+.legend-result-bar-fill.fail{
+  background:var(--ld-grad-danger);
+}
+
+/* ============================================
+   QUESTION NUMBERS (Colorful)
+   ============================================ */
+.legend-num{
+  background:var(--ld-bg-card);
+  border:1.5px solid var(--ld-border);
+  color:var(--ld-text-2);
+  transition:all 200ms;
+}
+
+.legend-num:hover{
+  border-color:var(--ld-indigo);
+  color:var(--ld-indigo);
+  transform:translateY(-1px);
+}
+
+.legend-num.active{
+  background:var(--ld-grad-primary);
+  color:#fff;
+  border-color:transparent;
+  box-shadow:0 8px 20px -6px rgba(99,102,241,0.5);
+}
+
+.legend-num.answered{
+  background:var(--ld-green-soft);
+  border-color:var(--ld-green);
+  color:var(--ld-green);
+}
+
+.legend-num.answered.active{
+  background:var(--ld-grad-primary);
+  color:#fff;
+  border-color:transparent;
+}
+
+/* ============================================
+   OPTIONS (Colorful)
+   ============================================ */
+.legend-option{
+  background:var(--ld-bg-card);
+  border:1.5px solid var(--ld-border);
+  transition:all 200ms cubic-bezier(0.32,0.72,0,1);
+}
+
+.legend-option:hover{
+  border-color:var(--ld-indigo);
+  background:var(--ld-indigo-soft);
+  transform:translateX(-3px);
+}
+
+.legend-option.selected{
+  border-color:var(--ld-indigo);
+  background:var(--ld-indigo-soft);
+  border-width:2px;
+}
+
+.legend-option.selected .legend-option-letter{
+  background:var(--ld-grad-primary);
+  border-color:transparent;
+  color:#fff;
+  box-shadow:0 4px 12px -2px rgba(99,102,241,0.5);
+}
+
+/* ============================================
+   ACTION BUTTONS (Colorful)
+   ============================================ */
+.legend-btn-row.red{
+  background:var(--ld-grad-danger);
+  box-shadow:0 6px 16px -6px rgba(239,68,68,0.5);
+}
+
+.legend-btn-row.green{
+  background:var(--ld-grad-success);
+  box-shadow:0 6px 16px -6px rgba(16,185,129,0.5);
+}
+
+.legend-btn-row.yellow{
+  background:var(--ld-grad-warn);
+  box-shadow:0 6px 16px -6px rgba(245,158,11,0.5);
+}
+
+.legend-btn-row:hover{
+  transform:translateY(-2px);
+}
+
+/* ============================================
+   PREV / NEXT (Colorful)
+   ============================================ */
+.legend-btn-pn.next{
+  background:var(--ld-grad-primary);
+  box-shadow:0 8px 20px -6px rgba(99,102,241,0.5);
+}
+
+.legend-btn-pn.next:hover:not(:disabled){
+  transform:translateY(-2px);
+  box-shadow:0 12px 28px -6px rgba(99,102,241,0.7);
+}
+
+/* ============================================
+   REVIEW CARDS (Colorful)
+   ============================================ */
+.legend-review-card.correct{
+  border-color:var(--ld-green);
+  border-width:2px;
+  box-shadow:0 8px 24px -8px rgba(16,185,129,0.25);
+}
+
+.legend-review-card.wrong{
+  border-color:var(--ld-red);
+  border-width:2px;
+  box-shadow:0 8px 24px -8px rgba(239,68,68,0.25);
+}
+
+/* ============================================
+   TABLE
+   ============================================ */
+.legend-attempts-table thead th{
+  background:var(--ld-bg-soft);
+  color:var(--ld-text-2);
+}
+
+.legend-attempts-table tbody tr:hover{
+  background:var(--ld-indigo-soft);
+}
+
+/* ============================================
+   SMOOTH TRANSITIONS
+   ============================================ */
+*,
+*::before,
+*::after{
+  transition:background-color 300ms ease,
+             color 300ms ease,
+             border-color 300ms ease,
+             box-shadow 300ms ease,
+             transform 200ms ease;
+}
+
+/* Exceptions */
+.legend-progress-fill,
+.legend-result-bar-fill{
+  transition:width 600ms cubic-bezier(0.32,0.72,0,1),
+             background 300ms ease !important;
+}
+
+input, textarea, select{
+  transition:border-color 200ms ease,
+             box-shadow 200ms ease,
+             background-color 300ms ease,
+             color 300ms ease !important;
+}
+
+/* ============================================
+   MOBILE
+   ============================================ */
+@media(max-width:720px){
+  .legend-topbar{padding:0 16px;height:60px}
+  .legend-topbar-brand{font-size:15px}
+  .legend-topbar-brand svg{width:32px;height:32px}
+  .legend-topbar-brand span{font-size:20px}
+  .legend-theme button{width:32px;height:32px}
+  .legend-icon-btn{width:36px;height:36px}
+}

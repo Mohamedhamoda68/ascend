@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#050506">
+<meta name="color-scheme" content="dark">
+
+<title>التحقق من الرقم — ASCEND</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" type="image/svg+xml" href="/assets/img/favicon.svg">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700;800&display=swap">
+
+<link rel="stylesheet" href="/assets/css/base.css">
+<link rel="stylesheet" href="/assets/css/components.css">
+<link rel="stylesheet" href="/assets/css/layout.css">
+<link rel="stylesheet" href="/assets/css/verify.css">
+</head>
+<body>
+
+<div class="verify-wrap">
+  <div class="verify-card">
+
+    <a href="/" class="brand" style="justify-content:center;margin-bottom:24px;display:flex">
+      <span class="brand-mark">
+        <svg viewBox="0 0 24 24"><path d="M7 17L17 7M17 7H9M17 7v8"/></svg>
+      </span>
+      ASCEND
+    </a>
+
+    <!-- STEP 1: Enter Phone -->
+    <div class="verify-step active" id="step1">
+      <div class="verify-icon">
+        <svg viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 18h.01"/></svg>
+      </div>
+      <h2>تحقق من رقم تليفونك</h2>
+      <p>هيتم إرسال كود على Telegram للتحقق من رقمك</p>
+
+      <div class="alert alert-error" id="alert1"></div>
+
+      <div class="field">
+        <label for="phone">رقم التليفون</label>
+        <input type="tel" id="phone" placeholder="01xxxxxxxxx" inputmode="numeric" autocomplete="tel">
+      </div>
+
+      <button class="btn btn-primary" id="sendCodeBtn" style="width:100%;height:44px;margin-top:8px">
+        <span>إرسال الكود على Telegram</span>
+      </button>
+
+      <div class="verify-note">
+        <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z"/></svg>
+        لو مفيش عندك Telegram، حمّله من هاتفك أولاً
+      </div>
+    </div>
+
+    <!-- STEP 2: Open Telegram -->
+    <div class="verify-step" id="step2">
+      <div class="verify-icon">
+        <svg viewBox="0 0 24 24"><path d="M21.5 2L2 10.5l6 2 2 6z"/><path d="M21.5 2L11 14"/></svg>
+      </div>
+      <h2>اضغط على الزر للتحقق</h2>
+      <p>هيتم فتح Telegram لإرسال الكود</p>
+
+      <div class="code-display">
+        <div class="code-label">كود التحقق</div>
+        <div class="code-value" id="codeValue">------</div>
+      </div>
+
+      <a href="#" id="openTelegramBtn" class="btn btn-primary" style="width:100%;height:44px;margin-top:16px" target="_blank">
+        <svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:currentColor;stroke-width:2;fill:none;margin-left:8px"><path d="M21.5 2L2 10.5l6 2 2 6z"/><path d="M21.5 2L11 14"/></svg>
+        <span>افتح Telegram</span>
+      </a>
+
+      <button class="btn btn-ghost" id="checkVerifiedBtn" style="width:100%;height:44px;margin-top:10px">
+        <span>✓ فعلت التحقق، تابع</span>
+      </button>
+
+      <button class="btn btn-ghost" id="backBtn" style="width:100%;height:36px;margin-top:8px;font-size:13px">
+        ← رجوع
+      </button>
+    </div>
+
+    <!-- STEP 3: Success -->
+    <div class="verify-step" id="step3">
+      <div class="verify-success-icon">
+        <svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>
+      </div>
+      <h2>تم التحقق بنجاح!</h2>
+      <p>رقمك اتربط بحساب Telegram بنجاح</p>
+      <p style="color:var(--fg-3);font-size:13px;margin-top:8px">
+        هتستقبل إشعارات على Telegram عن أي جديد
+      </p>
+      <a href="/dashboard.html" class="btn btn-primary" style="width:100%;height:44px;margin-top:20px">
+        <span>الذهاب للوحة</span>
+      </a>
+    </div>
+
+  </div>
+</div>
+
+<a href="/chat.html" class="floating-chat-btn" aria-label="المساعد الذكي">
+  <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+  <span class="floating-chat-label">محتاج مساعدة؟</span>
+</a>
+
+<script type="module" src="/assets/js/verify.js"></script>
+
+</body>
+</html>

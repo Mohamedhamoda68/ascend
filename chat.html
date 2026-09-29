@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#FFFFFF">
+<meta name="color-scheme" content="light dark">
+<title>المساعد الذكي — ASCEND</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" type="image/svg+xml" href="/assets/img/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="/assets/css/legend.css">
+<link rel="stylesheet" href="/assets/css/chat.css">
+</head>
+<body data-theme="light">
+
+<header class="legend-topbar">
+  <a href="/dashboard.html" class="legend-topbar-brand">
+    <svg viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:36px;height:36px">
+      <path d="M7 17L17 7M17 7H9M17 7v8"/>
+    </svg>
+    ASCEND<span>.</span>
+  </a>
+  <div class="legend-topbar-actions">
+    <div class="legend-theme" role="group">
+      <button data-theme-btn="light" class="active" aria-label="فاتح">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+      </button>
+      <button data-theme-btn="dark" aria-label="داكن">
+        <svg viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+      </button>
+    </div>
+    <a href="/dashboard.html" class="legend-icon-btn" aria-label="رجوع">
+      <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
+    </a>
+  </div>
+</header>
+
+<div class="legend-chat-page">
+  <div class="legend-chat-container">
+
+    <div class="legend-chat-header">
+      <div class="legend-chat-avatar">
+        <svg viewBox="0 0 24 24"><path d="M12 2a2 2 0 012 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 017 7h1a1 1 0 011 1v3a1 1 0 01-1 1h-1v1a2 2 0 01-2 2H5a2 2 0 01-2-2v-1H2a1 1 0 01-1-1v-3a1 1 0 011-1h1a7 7 0 017-7h1V5.73c-.6-.34-1-.99-1-1.73a2 2 0 012-2zM7.5 13a2.5 2.5 0 100 5 2.5 2.5 0 000-5zm9 0a2.5 2.5 0 100 5 2.5 2.5 0 000-5z"/></svg>
+      </div>
+      <div class="legend-chat-info">
+        <div class="legend-chat-title">المساعد الذكي</div>
+        <div class="legend-chat-status">
+          <span class="online-dot"></span>
+          متاح الآن
+        </div>
+      </div>
+    </div>
+
+    <div class="legend-chat-body" id="chatBody">
+      <!-- Messages inject here -->
+    </div>
+
+    <div class="legend-chat-options" id="chatOptions">
+      <!-- Options inject here -->
+    </div>
+
+  </div>
+</div>
+
+<script type="module" src="/assets/js/chat.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#050506">
+<meta name="color-scheme" content="dark">
+
+<title>لوحتي — ASCEND</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" type="image/svg+xml" href="/assets/img/favicon.svg">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap">
+
+<link rel="stylesheet" href="/assets/css/base.css">
+<link rel="stylesheet" href="/assets/css/components.css">
+<link rel="stylesheet" href="/assets/css/dashboard.css">
+</head>
+<body>
+
+<div class="app">
+
+  <!-- ============ SIDEBAR ============ -->
+  <aside class="sidebar" id="sidebar">
+
+    <a href="/" class="sidebar-brand">
+      <span class="brand-mark">
+        <svg viewBox="0 0 24 24"><path d="M7 17L17 7M17 7H9M17 7v8"/></svg>
+      </span>
+      ASCEND
+    </a>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">القائمة الرئيسية</div>
+      <nav class="sidebar-nav">
+        <a class="sidebar-link active" href="/dashboard.html">
+          <svg viewBox="0 0 24 24"><path d="M3 12l9-9 9 9M5 10v10h14V10"/></svg>
+          الرئيسية
+        </a>
+        <a class="sidebar-link" href="#subjects">
+          <svg viewBox="0 0 24 24"><path d="M4 4h6a2 2 0 012 2v14a2 2 0 00-2-2H4z"/><path d="M20 4h-6a2 2 0 00-2 2v14a2 2 0 012-2h6z"/></svg>
+          المواد
+        </a>
+        <a class="sidebar-link" href="/library.html">
+          <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>
+          المكتبة
+        </a>
+        <a class="sidebar-link" href="/mistakes.html">
+          <svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
+          غلطاتي
+          <span class="count" id="mistakesCount">0</span>
+        </a>
+      </nav>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">حسابي</div>
+      <nav class="sidebar-nav">
+        <a class="sidebar-link" href="/certificate.html?all=1">
+          <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z"/></svg>
+          شهاداتي
+        </a>
+        <a class="sidebar-link" href="/notifications.html">
+          <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/></svg>
+          الإشعارات
+          <span class="count" id="notifSidebarCount">0</span>
+        </a>
+        <a class="sidebar-link" href="/chat.html">
+          <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+          المساعد الذكي
+        </a>
+      </nav>
+    </div>
+
+    <div class="sidebar-bottom">
+      <div class="user-card">
+        <div class="user-card-avatar" id="userAvatar">?</div>
+        <div class="user-card-info">
+          <div class="user-card-name" id="userName">جاري التحميل…</div>
+          <div class="user-card-role" id="userRole">طالب</div>
+        </div>
+      </div>
+    </div>
+
+  </aside>
+
+  <!-- ============ MAIN ============ -->
+  <div class="main">
+
+    <header class="topbar">
+      <div style="display:flex;align-items:center;gap:12px">
+        <button class="icon-btn menu-toggle" id="menuToggle" aria-label="القائمة">
+          <svg viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+        </button>
+        <div class="topbar-title">لوحة الطالب</div>
+      </div>
+      <div class="topbar-actions">
+        <button class="icon-btn" aria-label="الإشعارات" id="notifBtn">
+          <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/></svg>
+          <span class="dot" id="notifDot" style="display:none"></span>
+        </button>
+        <button class="icon-btn" aria-label="تسجيل الخروج" id="logoutBtn">
+          <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <main class="content">
+
+      <div class="pending-banner" id="pendingBanner" style="display:none">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+        <div>
+          <strong>حسابك قيد المراجعة.</strong>
+          بعض الميزات غير متاحة حتى يتم تفعيل حسابك. سيتم التفعيل خلال 24 ساعة.
+        </div>
+      </div>
+
+      <div class="page-head">
+        <h1>أهلاً، <span id="greetName">…</span></h1>
+        <p>كمّل رحلتك النهاردة — كل دقيقة بتقربك من هدفك.</p>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-card-head">
+            <div class="stat-card-label">النقاط</div>
+            <div class="stat-card-icon"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z"/></svg></div>
+          </div>
+          <div class="stat-card-value accent" id="statPoints">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-head">
+            <div class="stat-card-label">أيام متتالية</div>
+            <div class="stat-card-icon"><svg viewBox="0 0 24 24"><path d="M12 2s4 4 4 8a4 4 0 11-8 0c0-4 4-8 4-8z"/></svg></div>
+          </div>
+          <div class="stat-card-value gold" id="statStreak">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-head">
+            <div class="stat-card-label">المواد المتاحة</div>
+            <div class="stat-card-icon"><svg viewBox="0 0 24 24"><path d="M4 4h6a2 2 0 012 2v14a2 2 0 00-2-2H4z"/><path d="M20 4h-6a2 2 0 00-2 2v14a2 2 0 012-2h6z"/></svg></div>
+          </div>
+          <div class="stat-card-value" id="statSubjects">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-head">
+            <div class="stat-card-label">الحالة</div>
+            <div class="stat-card-icon"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg></div>
+          </div>
+          <div class="stat-card-value success" id="statStatus" style="font-size:18px">—</div>
+        </div>
+      </div>
+
+      <section class="section-block" id="subjects">
+        <div class="section-block-head">
+          <h2 class="section-block-title">المواد الدراسية</h2>
+        </div>
+        <div class="subjects-grid" id="subjectsGrid">
+          <div class="skeleton" style="height:130px;border-radius:12px"></div>
+          <div class="skeleton" style="height:130px;border-radius:12px"></div>
+          <div class="skeleton" style="height:130px;border-radius:12px"></div>
+        </div>
+      </section>
+
+      <section class="section-block">
+        <div class="section-block-head">
+          <h2 class="section-block-title">آخر النشاطات</h2>
+        </div>
+        <div class="activity-list" id="activityList">
+          <div class="empty-state">
+            <svg viewBox="0 0 24 24"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="10"/></svg>
+            <div>لا يوجد نشاط حتى الآن. ابدأ بأول فيديو!</div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+</div>
+
+<!-- ============ FLOATING CHAT BUTTON ============ -->
+<a href="/chat.html" class="floating-chat-btn" aria-label="المساعد الذكي">
+  <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+  <span class="floating-chat-label">محتاج مساعدة؟</span>
+</a>
+
+<script type="module" src="/assets/js/dashboard.js"></script>
+
+</body>
+</html>

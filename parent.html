@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#050506">
+<meta name="color-scheme" content="dark">
+
+<title>لوحة ولي الأمر — ASCEND</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" type="image/svg+xml" href="/assets/img/favicon.svg">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700;800&display=swap">
+
+<link rel="stylesheet" href="/assets/css/base.css">
+<link rel="stylesheet" href="/assets/css/components.css">
+<link rel="stylesheet" href="/assets/css/parent.css">
+</head>
+<body>
+
+<div class="app">
+
+  <!-- ============ SIDEBAR ============ -->
+  <aside class="sidebar" id="sidebar">
+
+    <a href="/" class="sidebar-brand">
+      <span class="brand-mark">
+        <svg viewBox="0 0 24 24"><path d="M7 17L17 7M17 7H9M17 7v8"/></svg>
+      </span>
+      ASCEND
+      <span class="sidebar-badge">ولي أمر</span>
+    </a>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">القائمة</div>
+      <nav class="sidebar-nav">
+        <a class="sidebar-link active" href="/parent.html">
+          <svg viewBox="0 0 24 24"><path d="M3 12l9-9 9 9M5 10v10h14V10"/></svg>
+          لوحة المتابعة
+        </a>
+        <a class="sidebar-link" href="/chat.html">
+          <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+          المساعد الذكي
+        </a>
+      </nav>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">حسابي</div>
+      <nav class="sidebar-nav">
+        <a class="sidebar-link" href="#" id="addChildBtn">
+          <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+          إضافة طالب
+        </a>
+        <a class="sidebar-link" href="#" id="logoutBtn">
+          <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+          تسجيل الخروج
+        </a>
+      </nav>
+    </div>
+
+    <div class="sidebar-bottom">
+      <div class="user-card">
+        <div class="user-card-avatar" id="userAvatar">؟</div>
+        <div class="user-card-info">
+          <div class="user-card-name" id="userName">جاري التحميل…</div>
+          <div class="user-card-role">ولي أمر</div>
+        </div>
+      </div>
+    </div>
+
+  </aside>
+
+  <!-- ============ MAIN ============ -->
+  <div class="main">
+
+    <header class="topbar">
+      <div style="display:flex;align-items:center;gap:12px">
+        <button class="icon-btn menu-toggle" id="menuToggle" aria-label="القائمة">
+          <svg viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+        </button>
+        <div class="topbar-title">لوحة ولي الأمر</div>
+      </div>
+      <div class="topbar-actions">
+        <a href="/chat.html" class="icon-btn" aria-label="المساعد">
+          <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+        </a>
+        <button class="icon-btn" id="logoutBtn2" aria-label="خروج">
+          <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <main class="content" id="contentRoot">
+
+      <div class="loading-inline" style="padding:80px;text-align:center;color:var(--fg-3);font-size:14px">
+        جاري تحميل البيانات…
+      </div>
+
+    </main>
+  </div>
+
+</div>
+
+<!-- ============ MODAL: ADD CHILD ============ -->
+<div class="modal-overlay" id="modalAddChild">
+  <div class="modal">
+    <div class="modal-head">
+      <h3>ربط طالب بحسابك</h3>
+      <button class="modal-close" onclick="closeModal('modalAddChild')">
+        <svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="alert alert-error" id="addChildError"></div>
+      <div class="alert alert-success" id="addChildSuccess"></div>
+
+      <p style="font-size:13.5px;color:var(--fg-2);line-height:1.7;margin-bottom:16px">
+        لو ابنك عنده حساب على ASCEND، اكتب رقم تليفونه هنا عشان يتربط بحسابك تلقائيًا.
+      </p>
+
+      <div class="field">
+        <label for="childPhone">رقم تليفون الطالب</label>
+        <input type="tel" id="childPhone" placeholder="01xxxxxxxxx" inputmode="numeric">
+        <div class="hint">نفس الرقم اللي سجّل بيه على المنصة</div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal('modalAddChild')">إلغاء</button>
+      <button class="btn btn-primary" id="saveAddChildBtn"><span>ربط الطالب</span></button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ MODAL: CHILD DETAILS ============ -->
+<div class="modal-overlay" id="modalChildDetails">
+  <div class="modal" style="max-width:640px">
+    <div class="modal-head">
+      <h3 id="childDetailsTitle">تفاصيل الطالب</h3>
+      <button class="modal-close" onclick="closeModal('modalChildDetails')">
+        <svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="modal-body" id="childDetailsBody">
+      <div class="loading-inline">جاري التحميل…</div>
+    </div>
+  </div>
+</div>
+
+<a href="/chat.html" class="floating-chat-btn" aria-label="المساعد الذكي">
+  <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+  <span class="floating-chat-label">محتاج مساعدة؟</span>
+</a>
+
+<script type="module" src="/assets/js/parent.js"></script>
+
+</body>
+</html>

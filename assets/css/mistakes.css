@@ -1,0 +1,362 @@
+/* ============================================
+   ASCEND · Mistakes Page
+   ============================================ */
+
+.legend-mistakes-header{
+  text-align:center;
+  margin-bottom:32px;
+}
+
+.legend-mistakes-header h1{
+  font-size:26px;
+  font-weight:800;
+  color:var(--ld-text);
+  margin-bottom:8px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:12px;
+}
+
+.legend-mistakes-header h1 svg{
+  width:28px;height:28px;
+  stroke:var(--ld-red);stroke-width:2.2;
+  fill:none;stroke-linecap:round;stroke-linejoin:round;
+}
+
+.legend-mistakes-header p{
+  font-size:14.5px;
+  color:var(--ld-text-2);
+}
+
+/* Overall stats */
+.legend-mistakes-stats{
+  display:grid;
+  grid-template-columns:repeat(3, 1fr);
+  gap:12px;
+  margin-bottom:32px;
+}
+
+.legend-mistakes-stat{
+  background:var(--ld-bg-card);
+  border:1px solid var(--ld-border);
+  border-radius:14px;
+  padding:20px;
+  text-align:center;
+}
+
+.legend-mistakes-stat-value{
+  font-size:32px;
+  font-weight:800;
+  line-height:1;
+  margin-bottom:8px;
+  font-variant-numeric:tabular-nums;
+  color:var(--ld-text);
+}
+.legend-mistakes-stat-value.red{color:var(--ld-red)}
+.legend-mistakes-stat-value.green{color:var(--ld-green)}
+.legend-mistakes-stat-value.blue{color:var(--ld-blue)}
+
+.legend-mistakes-stat-label{
+  font-size:13px;
+  color:var(--ld-text-3);
+  font-weight:500;
+}
+
+/* Subject sections */
+.legend-mistakes-section{
+  margin-bottom:24px;
+}
+
+.legend-mistakes-section-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:12px;
+  padding:0 4px;
+}
+
+.legend-mistakes-section-title{
+  font-size:16px;
+  font-weight:700;
+  color:var(--ld-text);
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.legend-mistakes-section-badge{
+  font-size:12px;
+  padding:4px 12px;
+  border-radius:999px;
+  background:rgba(239,68,68,0.1);
+  color:var(--ld-red);
+  font-weight:600;
+}
+
+/* Chapter row */
+.legend-mistakes-chapter{
+  background:var(--ld-bg-card);
+  border:1px solid var(--ld-border);
+  border-radius:14px;
+  padding:16px 20px;
+  margin-bottom:10px;
+  display:flex;
+  align-items:center;
+  gap:16px;
+  text-decoration:none;
+  color:inherit;
+  transition:all 180ms;
+  cursor:pointer;
+}
+.legend-mistakes-chapter:hover{
+  border-color:var(--ld-red);
+  transform:translateX(-3px);
+  box-shadow:0 8px 24px -8px rgba(239,68,68,0.25);
+}
+
+.legend-mistakes-chapter-icon{
+  width:44px;height:44px;
+  border-radius:12px;
+  background:rgba(239,68,68,0.1);
+  color:var(--ld-red);
+  display:grid;place-items:center;
+  flex-shrink:0;
+}
+.legend-mistakes-chapter-icon svg{
+  width:20px;height:20px;
+  stroke:currentColor;stroke-width:2;
+  fill:none;stroke-linecap:round;stroke-linejoin:round;
+}
+
+.legend-mistakes-chapter-body{flex:1;min-width:0}
+.legend-mistakes-chapter-title{
+  font-size:15px;font-weight:600;
+  color:var(--ld-text);margin-bottom:4px;
+}
+.legend-mistakes-chapter-meta{
+  font-size:12.5px;color:var(--ld-text-3);
+  display:flex;gap:12px;flex-wrap:wrap;
+}
+.legend-mistakes-chapter-meta span{
+  display:inline-flex;align-items:center;gap:4px;
+}
+.legend-mistakes-chapter-meta .dot{
+  width:4px;height:4px;border-radius:50%;
+  background:var(--ld-text-3);
+}
+
+.legend-mistakes-chapter-action{
+  padding:10px 20px;
+  border-radius:10px;
+  background:var(--ld-red);
+  color:#fff;
+  font-size:13px;font-weight:700;
+  border:none;cursor:pointer;
+  font-family:inherit;
+  white-space:nowrap;
+  transition:all 180ms;
+}
+.legend-mistakes-chapter-action:hover{background:#DC2626}
+
+/* Empty state */
+.legend-mistakes-empty{
+  text-align:center;
+  padding:80px 24px;
+}
+.legend-mistakes-empty-icon{
+  width:80px;height:80px;
+  margin:0 auto 20px;
+  border-radius:50%;
+  background:var(--ld-green-soft);
+  display:grid;place-items:center;
+  color:var(--ld-green);
+}
+.legend-mistakes-empty-icon svg{
+  width:40px;height:40px;
+  stroke:currentColor;stroke-width:2.5;
+  fill:none;stroke-linecap:round;stroke-linejoin:round;
+}
+.legend-mistakes-empty h2{
+  font-size:22px;font-weight:700;
+  color:var(--ld-text);margin-bottom:8px;
+}
+.legend-mistakes-empty p{
+  font-size:14.5px;color:var(--ld-text-2);
+}
+
+/* Detailed mistakes list */
+.legend-mistake-item{
+  background:var(--ld-bg-card);
+  border:2px solid var(--ld-red);
+  border-radius:14px;
+  padding:24px;
+  margin-bottom:14px;
+}
+
+.legend-mistake-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:16px;
+  padding-bottom:14px;
+  border-bottom:1px solid var(--ld-border);
+  flex-wrap:wrap;
+}
+
+.legend-mistake-head-left{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  flex-wrap:wrap;
+}
+
+.legend-mistake-badge{
+  padding:6px 14px;
+  border-radius:999px;
+  font-size:12.5px;
+  font-weight:600;
+  background:rgba(239,68,68,0.1);
+  color:var(--ld-red);
+  border:1px solid rgba(239,68,68,0.3);
+}
+
+.legend-mistake-lesson{
+  font-size:13px;
+  color:var(--ld-text-3);
+}
+
+.legend-mistake-num{
+  width:36px;height:36px;
+  border-radius:50%;
+  background:var(--ld-red);
+  color:#fff;
+  display:grid;place-items:center;
+  font-size:15px;font-weight:700;
+}
+
+.legend-mistake-question{
+  font-size:16px;
+  font-weight:500;
+  color:var(--ld-text);
+  line-height:1.7;
+  margin-bottom:20px;
+}
+
+.legend-mistake-options{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  margin-bottom:16px;
+}
+
+.legend-mistake-option{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:14px 16px;
+  border-radius:10px;
+  border:1.5px solid var(--ld-border);
+  background:var(--ld-bg-card);
+  font-size:14.5px;
+  color:var(--ld-text);
+  font-weight:500;
+}
+.legend-mistake-option.correct{
+  background:var(--ld-green-soft);
+  border-color:var(--ld-green);
+  color:var(--ld-green);
+  font-weight:600;
+}
+.legend-mistake-option.wrong{
+  background:rgba(239,68,68,0.08);
+  border-color:var(--ld-red);
+  color:var(--ld-red);
+  font-weight:600;
+}
+
+.legend-mistake-option-letter{
+  width:28px;height:28px;
+  border-radius:50%;
+  border:2px solid currentColor;
+  display:grid;place-items:center;
+  font-size:13px;font-weight:700;
+  flex-shrink:0;
+}
+
+.legend-mistake-option-mark{
+  margin-right:auto;
+  display:flex;
+  align-items:center;
+  gap:6px;
+  font-size:12.5px;
+  font-weight:600;
+}
+.legend-mistake-option-mark svg{
+  width:16px;height:16px;
+  stroke:currentColor;stroke-width:2.5;
+  fill:none;stroke-linecap:round;stroke-linejoin:round;
+}
+
+.legend-mistake-footer{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding-top:16px;
+  border-top:1px solid var(--ld-border);
+}
+
+.legend-mistake-retry{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:10px 20px;
+  border-radius:10px;
+  background:var(--ld-green);
+  color:#fff;
+  border:none;
+  font-size:13.5px;
+  font-weight:600;
+  font-family:inherit;
+  cursor:pointer;
+  text-decoration:none;
+  transition:all 180ms;
+}
+.legend-mistake-retry:hover{background:var(--ld-green-d);transform:translateY(-1px)}
+.legend-mistake-retry svg{
+  width:16px;height:16px;
+  stroke:currentColor;stroke-width:2.2;
+  fill:none;stroke-linecap:round;stroke-linejoin:round;
+}
+
+.legend-back-btn{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:10px 20px;
+  border-radius:10px;
+  background:var(--ld-bg-card);
+  color:var(--ld-text);
+  border:1.5px solid var(--ld-border-2);
+  font-size:13.5px;
+  font-weight:600;
+  text-decoration:none;
+  transition:all 180ms;
+  cursor:pointer;
+  font-family:inherit;
+}
+.legend-back-btn:hover{border-color:var(--ld-green);color:var(--ld-green)}
+.legend-back-btn svg{
+  width:16px;height:16px;
+  stroke:currentColor;stroke-width:2.2;
+  fill:none;stroke-linecap:round;stroke-linejoin:round;
+}
+
+@media(max-width:640px){
+  .legend-mistakes-stats{grid-template-columns:1fr}
+  .legend-mistakes-chapter{padding:14px 16px;gap:12px}
+  .legend-mistakes-chapter-action{padding:8px 14px;font-size:12px}
+  .legend-mistake-item{padding:16px}
+}
