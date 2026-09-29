@@ -1,12 +1,14 @@
 # Dependencies
 node_modules/
 
-# Supabase credentials (SECRET)
-assets/js/config.js
-
-# Environment
+# Environment & Secrets
 .env
 .env.local
+assets/js/config.js
+
+# Supabase temp
+supabase/.temp/
+supabase/.branches/
 
 # System
 .DS_Store
