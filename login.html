@@ -7,7 +7,7 @@
 <meta name="color-scheme" content="dark">
 
 <title>تسجيل الدخول — ASCEND</title>
-<meta name="description" content="سجّل دخولك إلى منصة ASCEND التعليمية وتابع رحلتك نحو التفوق.">
+<meta name="description" content="سجّل دخولك إلى منصة ASCEND التعليمية.">
 <meta name="robots" content="index, follow">
 <link rel="icon" type="image/svg+xml" href="/assets/img/favicon.svg">
 
@@ -18,6 +18,7 @@
 <link rel="stylesheet" href="/assets/css/base.css">
 <link rel="stylesheet" href="/assets/css/components.css">
 <link rel="stylesheet" href="/assets/css/layout.css">
+<link rel="stylesheet" href="/assets/css/login.css">
 </head>
 <body>
 
@@ -32,41 +33,98 @@
       ASCEND
     </a>
 
-    <h1 style="text-align:center">مرحبًا بعودتك</h1>
-    <p class="sub" style="text-align:center">سجّل دخولك لمتابعة رحلتك التعليمية</p>
+    <!-- LOGIN FORM -->
+    <div id="loginSection">
+      <h1 style="text-align:center">مرحبًا بعودتك</h1>
+      <p class="sub" style="text-align:center">سجّل دخولك لمتابعة رحلتك التعليمية</p>
 
-    <div class="alert alert-error" id="alert" role="alert"></div>
+      <div class="alert alert-error" id="alert" role="alert"></div>
 
-    <form id="loginForm" novalidate>
+      <form id="loginForm" novalidate>
 
-      <div class="field" id="emailField">
-        <label for="email">البريد الإلكتروني</label>
-        <input type="email" id="email" name="email" placeholder="name@example.com" autocomplete="email" required>
-        <div class="error-msg">يرجى إدخال بريد إلكتروني صحيح</div>
+        <div class="field" id="emailField">
+          <label for="email">البريد الإلكتروني</label>
+          <input type="email" id="email" name="email" placeholder="name@example.com" autocomplete="email" required>
+          <div class="error-msg">يرجى إدخال بريد إلكتروني صحيح</div>
+        </div>
+
+        <div class="field" id="passwordField">
+          <label for="password">كلمة المرور</label>
+          <input type="password" id="password" name="password" placeholder="••••••••" autocomplete="current-password" required>
+          <div class="error-msg">كلمة المرور مطلوبة</div>
+        </div>
+
+        <div style="display:flex;align-items:center;justify-content:space-between;margin:16px 0 20px;font-size:13px">
+          <label style="display:inline-flex;align-items:center;gap:8px;color:var(--fg-2);cursor:pointer">
+            <input type="checkbox" name="remember" style="width:16px;height:16px;accent-color:var(--accent);cursor:pointer">
+            تذكّرني
+          </label>
+          <a href="/forgot-password.html" style="color:var(--accent-fg);font-weight:600;text-decoration:none">نسيت كلمة المرور؟</a>
+        </div>
+
+        <button type="submit" class="btn btn-primary" id="submitBtn" style="width:100%;height:44px">
+          <span>تسجيل الدخول</span>
+        </button>
+
+      </form>
+
+      <div class="auth-foot">
+        ليس لديك حساب؟ <a href="/register.html">إنشاء حساب جديد</a>
+      </div>
+    </div>
+
+    <!-- ROLE PICKER (for multi-role accounts) -->
+    <div id="rolePickerSection" style="display:none">
+      <div class="role-picker-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2a2 2 0 012 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 017 7h1a1 1 0 011 1v3a1 1 0 01-1 1h-1v1a2 2 0 01-2 2H5a2 2 0 01-2-2v-1H2a1 1 0 01-1-1v-3a1 1 0 011-1h1a7 7 0 017-7h1V5.73c-.6-.34-1-.99-1-1.73a2 2 0 012-2z"/>
+        </svg>
       </div>
 
-      <div class="field" id="passwordField">
-        <label for="password">كلمة المرور</label>
-        <input type="password" id="password" name="password" placeholder="••••••••" autocomplete="current-password" required>
-        <div class="error-msg">كلمة المرور مطلوبة</div>
+      <h2 style="text-align:center;font-size:22px;font-weight:800;margin-bottom:8px">اختر الواجهة</h2>
+      <p class="sub" style="text-align:center;margin-bottom:28px">
+        حسابك عنده أكتر من صلاحية — اختار إنت عايز تدخل بأنهي واجهة
+      </p>
+
+      <div class="role-picker">
+        <button type="button" class="role-option" data-target="/admin.html" data-color="admin">
+          <div class="role-option-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 15a3 3 0 100-6 3 3 0 000 6z"/>
+              <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9"/>
+            </svg>
+          </div>
+          <div class="role-option-label">لوحة الإدارة</div>
+          <div class="role-option-desc">تحكم كامل في المنصة</div>
+        </button>
+
+        <button type="button" class="role-option" data-target="/dashboard.html" data-color="student">
+          <div class="role-option-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+              <path d="M6 12v5c3 3 9 3 12 0v-5"/>
+            </svg>
+          </div>
+          <div class="role-option-label">لوحة الطالب</div>
+          <div class="role-option-desc">شوف دروسك واختباراتك</div>
+        </button>
+
+        <button type="button" class="role-option" data-target="/parent.html" data-color="parent">
+          <div class="role-option-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+              <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/>
+            </svg>
+          </div>
+          <div class="role-option-label">لوحة ولي الأمر</div>
+          <div class="role-option-desc">تابع تقدم أبنائك</div>
+        </button>
       </div>
 
-      <div style="display:flex;align-items:center;justify-content:space-between;margin:16px 0 20px;font-size:13px">
-        <label style="display:inline-flex;align-items:center;gap:8px;color:var(--fg-2);cursor:pointer">
-          <input type="checkbox" name="remember" style="width:16px;height:16px;accent-color:var(--accent);cursor:pointer">
-          تذكّرني
-        </label>
-        <a href="/forgot-password.html" style="color:var(--accent-fg);font-weight:600;text-decoration:none">نسيت كلمة المرور؟</a>
-      </div>
-
-      <button type="submit" class="btn btn-primary" id="submitBtn" style="width:100%;height:44px">
-        <span>تسجيل الدخول</span>
+      <button type="button" class="btn btn-ghost" id="backToLoginBtn" style="width:100%;height:40px;margin-top:20px">
+        <span>← رجوع</span>
       </button>
-
-    </form>
-
-    <div class="auth-foot">
-      ليس لديك حساب؟ <a href="/register.html">إنشاء حساب جديد</a>
     </div>
 
   </div>
@@ -78,113 +136,7 @@
   <span class="floating-chat-label">محتاج مساعدة؟</span>
 </a>
 
-<script type="module">
-import { supabase } from '/assets/js/supabase.js';
-import { $, toast } from '/assets/js/utils.js';
-
-const form = $('#loginForm');
-const alertBox = $('#alert');
-const submitBtn = $('#submitBtn');
-const emailField = $('#emailField');
-const passwordField = $('#passwordField');
-
-/* ---------- Validation ---------- */
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-function clearErrors() {
-  emailField?.classList.remove('has-error');
-  passwordField?.classList.remove('has-error');
-  alertBox?.classList.remove('show');
-}
-
-function showAlert(msg, type = 'error') {
-  alertBox.textContent = msg;
-  alertBox.className = `alert alert-${type} show`;
-}
-
-function setLoading(btn, loading, text) {
-  btn.disabled = loading;
-  btn.innerHTML = loading
-    ? '<span class="spinner"></span><span>جارٍ التحقق…</span>'
-    : `<span>${text}</span>`;
-}
-
-/* ---------- Submit ---------- */
-form.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  clearErrors();
-
-  const email = form.email.value.trim();
-  const password = form.password.value;
-
-  let valid = true;
-  if (!EMAIL_RE.test(email)) { emailField.classList.add('has-error'); valid = false; }
-  if (!password || password.length < 6) { passwordField.classList.add('has-error'); valid = false; }
-  if (!valid) return;
-
-  setLoading(submitBtn, true);
-
-  try {
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-
-    if (error) {
-      if (error.message.includes('Invalid login')) {
-        showAlert('البريد الإلكتروني أو كلمة المرور غير صحيحة.');
-      } else if (error.message.includes('Email not confirmed')) {
-        showAlert('يرجى تأكيد بريدك الإلكتروني أولًا.');
-      } else {
-        showAlert('حدث خطأ أثناء تسجيل الدخول. حاول مرة أخرى.');
-      }
-      setLoading(submitBtn, false, 'تسجيل الدخول');
-      return;
-    }
-
-    /* ---------- Fetch profile ---------- */
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('role, status')
-      .eq('id', data.user.id)
-      .single();
-
-    /* ---------- Redirect based on role ---------- */
-    const role = profile?.role || 'student';
-    const status = profile?.status || 'pending';
-
-    if (role === 'admin') {
-      location.href = '/admin.html';
-    } else if (role === 'parent') {
-      location.href = '/parent.html';
-    } else if (status === 'pending') {
-      showAlert('حسابك قيد المراجعة. سيتم تفعيله قريبًا.', 'info');
-      await supabase.auth.signOut();
-      setLoading(submitBtn, false, 'تسجيل الدخول');
-    } else if (status === 'suspended') {
-      showAlert('حسابك موقوف. تواصل مع الإدارة.', 'error');
-      await supabase.auth.signOut();
-      setLoading(submitBtn, false, 'تسجيل الدخول');
-    } else {
-      location.href = '/dashboard.html';
-    }
-
-  } catch (err) {
-    console.error('[ASCEND] Login error:', err);
-    showAlert('تعذّر الاتصال بالخادم. تحقّق من الإنترنت.');
-    setLoading(submitBtn, false, 'تسجيل الدخول');
-  }
-});
-
-/* ---------- Live validation ---------- */
-form.email?.addEventListener('blur', () => {
-  if (form.email.value && !EMAIL_RE.test(form.email.value.trim())) {
-    emailField.classList.add('has-error');
-  } else {
-    emailField.classList.remove('has-error');
-  }
-});
-
-/* ---------- Auto-focus ---------- */
-window.addEventListener('load', () => form.email?.focus());
-</script>
+<script type="module" src="/assets/js/login.js"></script>
 
 </body>
 </html>
