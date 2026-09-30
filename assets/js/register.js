@@ -3,7 +3,7 @@
 // Created by Mohamed Hamouda
 // ============================================
 import { supabase } from './supabase.js';
-import { $, escapeHtml } from './utils.js';
+import { $ } from './utils.js';
 
 /* ========== STATE ========== */
 let selectedRole = 'student';
@@ -17,8 +17,6 @@ const successSection = document.getElementById('successSection');
 
 const roleOptions = document.querySelectorAll('.role-option');
 const studentOnlyFields = document.getElementById('studentOnlyFields');
-const parentPhoneField = document.getElementById('parentPhoneField');
-const schoolField = document.getElementById('schoolField');
 
 const fields = {
   full_name: document.getElementById('nameField'),
@@ -26,7 +24,7 @@ const fields = {
   phone: document.getElementById('phoneField'),
   governorate: document.getElementById('govField'),
   password: document.getElementById('passwordField'),
-  parent_phone: parentPhoneField
+  parent_phone: document.getElementById('parentPhoneField')
 };
 
 /* ========== PATTERNS ========== */
@@ -38,24 +36,17 @@ roleOptions.forEach(btn => {
   btn.addEventListener('click', () => {
     const role = btn.dataset.role;
     if (role === selectedRole) return;
-
     selectedRole = role;
-
-    /* Toggle active state */
     roleOptions.forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
 
-    /* Show/hide student-only fields */
     if (role === 'student') {
       studentOnlyFields.style.display = 'block';
     } else {
       studentOnlyFields.style.display = 'none';
-      /* Clear student-only fields */
       document.getElementById('school').value = '';
       document.getElementById('parent_phone').value = '';
     }
-
-    /* Clear errors */
     clearErrors();
   });
 });
@@ -96,43 +87,19 @@ form.addEventListener('submit', async (e) => {
 
   /* ===== Validation ===== */
   let valid = true;
-
-  if (data.full_name.length < 2) {
-    fields.full_name?.classList.add('has-error');
-    valid = false;
-  }
-
-  if (!EMAIL_RE.test(data.email)) {
-    fields.email?.classList.add('has-error');
-    valid = false;
-  }
-
-  if (!PHONE_RE.test(data.phone)) {
-    fields.phone?.classList.add('has-error');
-    valid = false;
-  }
-
-  if (!data.governorate) {
-    fields.governorate?.classList.add('has-error');
-    valid = false;
-  }
-
-  if (data.password.length < 8) {
-    fields.password?.classList.add('has-error');
-    valid = false;
-  }
-
-  /* Parent phone validation (student only, optional) */
+  if (data.full_name.length < 2) { fields.full_name?.classList.add('has-error'); valid = false; }
+  if (!EMAIL_RE.test(data.email)) { fields.email?.classList.add('has-error'); valid = false; }
+  if (!PHONE_RE.test(data.phone)) { fields.phone?.classList.add('has-error'); valid = false; }
+  if (!data.governorate) { fields.governorate?.classList.add('has-error'); valid = false; }
+  if (data.password.length < 8) { fields.password?.classList.add('has-error'); valid = false; }
   if (selectedRole === 'student' && data.parent_phone && !PHONE_RE.test(data.parent_phone)) {
     fields.parent_phone?.classList.add('has-error');
     valid = false;
   }
-
   if (!form.terms.checked) {
     showAlert('يجب الموافقة على الشروط وسياسة الخصوصية.');
     return;
   }
-
   if (!valid) return;
 
   /* ===== Submit ===== */
@@ -167,52 +134,38 @@ form.addEventListener('submit', async (e) => {
       return;
     }
 
-    /* 2. Update profile with role + parent_phone */
+    /* 2. Update profile */
     if (authData.user) {
-      /* Wait a bit for trigger to create profile */
       await new Promise(r => setTimeout(r, 800));
-
-      const updateData = {
-        role: data.role,
-        parent_phone: data.parent_phone || null
-      };
-
-      /* Try update */
       try {
-        await supabase
-          .from('profiles')
-          .update(updateData)
-          .eq('id', authData.user.id);
-      } catch (err) {
-        console.warn('Profile update failed:', err);
-      }
+        await supabase.from('profiles').update({
+          role: data.role,
+          parent_phone: data.parent_phone || null
+        }).eq('id', authData.user.id);
+      } catch (err) { console.warn(err); }
 
-      /* 3. Link parent to student if parent_phone matches */
-      if (data.role === 'student' && data.parent_phone) {
-        try {
-          const { data: parentProfile } = await supabase
-            .from('profiles')
-            .select('id')
-            .eq('phone', data.parent_phone)
-            .eq('role', 'parent')
-            .maybeSingle();
+      /* 3. Show success */
+      registerSection.style.display = 'none';
+      successSection.classList.add('show');
+      successSection.innerHTML = `
+        <div class="auth-success-icon" style="background:rgba(139,92,246,0.15);border-color:rgba(139,92,246,0.3);color:#A78BFA">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:40px;height:40px">
+            <path d="M20 6L9 17l-5-5"/>
+          </svg>
+        </div>
+        <h2>تم إنشاء حسابك!</h2>
+        <p>هيتم توجيهك لتأكيد رقمك عبر Telegram</p>
+        <div class="auth-success-note" style="background:rgba(139,92,246,0.1);border-color:rgba(139,92,246,0.3);color:#C4B5FD">
+          ⏳ جاري التحويل...
+        </div>
+      `;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
 
-          if (parentProfile) {
-            await supabase
-              .from('profiles')
-              .update({ parent_id: parentProfile.id })
-              .eq('id', authData.user.id);
-          }
-        } catch (err) {
-          console.warn('Parent link failed:', err);
-        }
-      }
+      /* 4. Redirect to verify */
+      setTimeout(() => {
+        location.href = '/verify.html';
+      }, 1500);
     }
-
-    /* 4. Show success */
-    registerSection.style.display = 'none';
-    successSection.classList.add('show');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
 
   } catch (err) {
     console.error('[ASCEND] Register failed:', err);
@@ -221,22 +174,13 @@ form.addEventListener('submit', async (e) => {
   }
 });
 
-/* ========== LIVE INPUT ========== */
+/* ========== LIVE VALIDATION ========== */
 document.getElementById('phone')?.addEventListener('input', (e) => {
   e.target.value = e.target.value.replace(/\D/g, '').slice(0, 11);
 });
 
 document.getElementById('parent_phone')?.addEventListener('input', (e) => {
   e.target.value = e.target.value.replace(/\D/g, '').slice(0, 11);
-});
-
-document.getElementById('email')?.addEventListener('blur', () => {
-  const emailField = document.getElementById('email');
-  if (emailField.value && !EMAIL_RE.test(emailField.value.trim())) {
-    fields.email?.classList.add('has-error');
-  } else {
-    fields.email?.classList.remove('has-error');
-  }
 });
 
 /* ========== AUTO-FOCUS ========== */

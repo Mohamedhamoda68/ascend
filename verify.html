@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#050506">
 <meta name="color-scheme" content="dark">
 
-<title>التحقق من الرقم — ASCEND</title>
+<title>تأكيد الرقم — ASCEND</title>
 <meta name="robots" content="noindex, nofollow">
 <link rel="icon" type="image/svg+xml" href="/assets/img/favicon.svg">
 
@@ -31,51 +31,66 @@
       ASCEND
     </a>
 
-    <!-- STEP 1: Enter Phone -->
+    <!-- STEP 1: Show phone + button -->
     <div class="verify-step active" id="step1">
       <div class="verify-icon">
-        <svg viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 18h.01"/></svg>
-      </div>
-      <h2>تحقق من رقم تليفونك</h2>
-      <p>هيتم إرسال كود على Telegram للتحقق من رقمك</p>
-
-      <div class="alert alert-error" id="alert1"></div>
-
-      <div class="field">
-        <label for="phone">رقم التليفون</label>
-        <input type="tel" id="phone" placeholder="01xxxxxxxxx" inputmode="numeric" autocomplete="tel">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21.5 2L2 10.5l6 2 2 6z"/>
+          <path d="M21.5 2L11 14"/>
+        </svg>
       </div>
 
-      <button class="btn btn-primary" id="sendCodeBtn" style="width:100%;height:44px;margin-top:8px">
-        <span>إرسال الكود على Telegram</span>
+      <h2>تأكيد رقم التليفون</h2>
+      <p>عشان نفعّل حسابك، محتاجين نتأكد إن الرقم بتاعك صحيح</p>
+
+      <div class="phone-box">
+        <div class="phone-box-label">رقمك</div>
+        <div class="phone-box-value" id="phoneDisplay">—</div>
+      </div>
+
+      <div class="alert alert-error" id="alert" role="alert"></div>
+
+      <button class="btn btn-primary" id="confirmBtn" style="width:100%;height:48px;margin-top:16px;font-size:15px">
+        <svg viewBox="0 0 24 24" style="width:20px;height:20px;stroke:currentColor;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round;margin-left:8px">
+          <path d="M21.5 2L2 10.5l6 2 2 6z"/>
+          <path d="M21.5 2L11 14"/>
+        </svg>
+        <span>تأكيد الرقم</span>
       </button>
 
       <div class="verify-note">
-        <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z"/></svg>
-        لو مفيش عندك Telegram، حمّله من هاتفك أولاً
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z"/>
+        </svg>
+        لو مفيش عندك Telegram، اضغط على الزر وهيفتحلك التطبيق تلقائي
       </div>
     </div>
 
-    <!-- STEP 2: Open Telegram -->
+    <!-- STEP 2: Waiting -->
     <div class="verify-step" id="step2">
-      <div class="verify-icon">
-        <svg viewBox="0 0 24 24"><path d="M21.5 2L2 10.5l6 2 2 6z"/><path d="M21.5 2L11 14"/></svg>
-      </div>
-      <h2>اضغط على الزر للتحقق</h2>
-      <p>هيتم فتح Telegram لإرسال الكود</p>
-
-      <div class="code-display">
-        <div class="code-label">كود التحقق</div>
-        <div class="code-value" id="codeValue">------</div>
+      <div class="verify-loading">
+        <div class="loading-circle"></div>
+        <div class="loading-circle"></div>
+        <div class="loading-circle"></div>
       </div>
 
-      <a href="#" id="openTelegramBtn" class="btn btn-primary" style="width:100%;height:44px;margin-top:16px" target="_blank">
-        <svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:currentColor;stroke-width:2;fill:none;margin-left:8px"><path d="M21.5 2L2 10.5l6 2 2 6z"/><path d="M21.5 2L11 14"/></svg>
-        <span>افتح Telegram</span>
-      </a>
+      <h2>في انتظار التأكيد...</h2>
+      <p>على Telegram، اضغط على زر <strong>"Start"</strong> في البوت عشان يتأكد الرقم</p>
 
-      <button class="btn btn-ghost" id="checkVerifiedBtn" style="width:100%;height:44px;margin-top:10px">
-        <span>✓ فعلت التحقق، تابع</span>
+      <div class="waiting-note">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M12 6v6l4 2"/>
+        </svg>
+        لما تتأكد، الصفحة هتتحدّث تلقائي
+      </div>
+
+      <button class="btn btn-ghost" id="reopenTelegramBtn" style="width:100%;height:44px;margin-top:16px">
+        <svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:currentColor;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round;margin-left:8px">
+          <path d="M21.5 2L2 10.5l6 2 2 6z"/>
+          <path d="M21.5 2L11 14"/>
+        </svg>
+        <span>فتح Telegram تاني</span>
       </button>
 
       <button class="btn btn-ghost" id="backBtn" style="width:100%;height:36px;margin-top:8px;font-size:13px">
@@ -86,15 +101,14 @@
     <!-- STEP 3: Success -->
     <div class="verify-step" id="step3">
       <div class="verify-success-icon">
-        <svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 6L9 17l-5-5"/>
+        </svg>
       </div>
-      <h2>تم التحقق بنجاح!</h2>
-      <p>رقمك اتربط بحساب Telegram بنجاح</p>
-      <p style="color:var(--fg-3);font-size:13px;margin-top:8px">
-        هتستقبل إشعارات على Telegram عن أي جديد
-      </p>
-      <a href="/dashboard.html" class="btn btn-primary" style="width:100%;height:44px;margin-top:20px">
-        <span>الذهاب للوحة</span>
+      <h2>تم التأكيد بنجاح!</h2>
+      <p>رقمك اتأكد وحسابك بقى جاهز</p>
+      <a href="/dashboard.html" class="btn btn-primary" style="width:100%;height:48px;margin-top:24px;font-size:15px">
+        <span>اذهب للوحة التحكم</span>
       </a>
     </div>
 
