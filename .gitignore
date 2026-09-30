@@ -1,14 +1,9 @@
 # Dependencies
 node_modules/
 
-# Environment & Secrets
+# Environment
 .env
 .env.local
-assets/js/config.js
-
-# Supabase temp
-supabase/.temp/
-supabase/.branches/
 
 # System
 .DS_Store
@@ -20,3 +15,7 @@ Thumbs.db
 
 # Logs
 *.log
+
+# Supabase temp
+supabase/.temp/
+supabase/.branches/
