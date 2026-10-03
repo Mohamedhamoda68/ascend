@@ -122,7 +122,6 @@ async function renderStudentsTable(list) {
     return;
   }
 
-  /* Get parent names for linked students */
   const parentIds = [...new Set(list.filter(s => s.parent_id).map(s => s.parent_id))];
   let parentMap = {};
   if (parentIds.length > 0) {
@@ -201,7 +200,6 @@ async function loadParents() {
     return;
   }
 
-  /* Count children for each parent */
   const parentIds = (data || []).map(p => p.id);
   let childCount = {};
   if (parentIds.length > 0) {
@@ -594,28 +592,37 @@ window.deleteLesson = async (id) => {
    ============================================ */
 async function loadVideos() {
   const tbody = document.getElementById('videosBody');
-  tbody.innerHTML = '<tr><td colspan="5" class="loading-inline">جاري التحميل…</td></tr>';
+  tbody.innerHTML = '<tr><td colspan="6" class="loading-inline">جاري التحميل…</td></tr>';
 
   const { data, error } = await supabase
     .from('videos')
-    .select('*, lessons(title, chapters(title, subjects(name)))')
+    .select('*, teachers(name), lessons(title, chapters(title, subjects(name)))')
     .order('created_at', { ascending: false });
 
   if (error || !data) {
-    tbody.innerHTML = '<tr><td colspan="5" class="empty-state" style="color:#F85149">تعذّر التحميل</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="6" class="empty-state" style="color:#F85149">تعذّر التحميل</td></tr>';
     return;
   }
 
   if (data.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="5"><div class="empty-state">لا يوجد فيديوهات</div></td></tr>';
+    tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state">لا يوجد فيديوهات</div></td></tr>';
     return;
   }
 
-  tbody.innerHTML = data.map(v => `
+  tbody.innerHTML = data.map(v => {
+    const subject = v.lessons?.chapters?.subjects?.name || '—';
+    const chapter = v.lessons?.chapters?.title || '—';
+    const lesson = v.lessons?.title || '—';
+    const teacher = v.teachers?.name
+      ? escapeHtml(v.teachers.name)
+      : '<span style="color:#EF4444;font-size:12px">— غير محدد —</span>';
+
+    return `
     <tr>
       <td class="cell-name">${escapeHtml(v.title)}</td>
-      <td class="cell-muted">${escapeHtml(v.lessons?.chapters?.subjects?.name || '—')}</td>
-      <td class="cell-muted">${escapeHtml(v.lessons?.chapters?.title || '—')} · ${escapeHtml(v.lessons?.title || '—')}</td>
+      <td class="cell-muted">${escapeHtml(subject)}</td>
+      <td class="cell-muted">${teacher}</td>
+      <td class="cell-muted">${escapeHtml(chapter)} · ${escapeHtml(lesson)}</td>
       <td class="cell-muted">${escapeHtml(v.youtube_id)}</td>
       <td>
         <div class="row-actions">
@@ -625,7 +632,7 @@ async function loadVideos() {
         </div>
       </td>
     </tr>
-  `).join('');
+  `}).join('');
 }
 
 window.deleteVideo = async (id) => {
@@ -640,32 +647,74 @@ window.openAddVideo = async () => {
   document.getElementById('videoTitle').value = '';
   document.getElementById('videoYoutubeId').value = '';
   document.getElementById('videoDesc').value = '';
-  document.getElementById('modalVideo').classList.add('open');
-  await loadLessonsIntoSelect('#videoLessonId');
-};
+  document.getElementById('videoError').classList.remove('show');
 
-async function loadLessonsIntoSelect(selector) {
-  const select = document.querySelector(selector);
-  select.innerHTML = '<option value="">جاري التحميل…</option>';
+  const subjectSelect = document.getElementById('videoSubjectId');
+  subjectSelect.innerHTML = '<option value="">— اختر مادة —</option>';
 
-  const { data } = await supabase
-    .from('lessons')
-    .select('id, title, chapters(title, subjects(name))')
-    .order('id');
-
-  if (!data || data.length === 0) {
-    select.innerHTML = '<option value="">لا يوجد دروس</option>';
-    return;
+  if (subjectsCache.length === 0) {
+    const { data } = await supabase.from('subjects').select('*').order('id');
+    subjectsCache = data || [];
   }
 
-  select.innerHTML = '<option value="">— اختر درس —</option>' + data.map(l => `
-    <option value="${l.id}">
-      ${escapeHtml(l.chapters?.subjects?.name || '')} · ${escapeHtml(l.chapters?.title || '')} · ${escapeHtml(l.title)}
-    </option>
-  `).join('');
-}
+  subjectsCache.forEach(s => {
+    const opt = document.createElement('option');
+    opt.value = s.id;
+    opt.textContent = s.name;
+    subjectSelect.appendChild(opt);
+  });
+
+  document.getElementById('videoTeacherId').innerHTML = '<option value="">— اختر مادة أولاً —</option>';
+  document.getElementById('videoLessonId').innerHTML = '<option value="">— اختر مادة أولاً —</option>';
+
+  subjectSelect.onchange = async () => {
+    const subjectId = parseInt(subjectSelect.value, 10);
+    const teacherSelect = document.getElementById('videoTeacherId');
+    const lessonSelect = document.getElementById('videoLessonId');
+
+    if (!subjectId) {
+      teacherSelect.innerHTML = '<option value="">— اختر مادة أولاً —</option>';
+      lessonSelect.innerHTML = '<option value="">— اختر مادة أولاً —</option>';
+      return;
+    }
+
+    teacherSelect.innerHTML = '<option value="">جاري التحميل…</option>';
+    const { data: teachers } = await supabase
+      .from('teachers').select('id, name').eq('subject_id', subjectId).order('id');
+
+    teacherSelect.innerHTML = '<option value="">— اختر مدرس —</option>';
+    (teachers || []).forEach(t => {
+      const opt = document.createElement('option');
+      opt.value = t.id;
+      opt.textContent = t.name;
+      teacherSelect.appendChild(opt);
+    });
+
+    lessonSelect.innerHTML = '<option value="">جاري التحميل…</option>';
+    const { data: chapters } = await supabase
+      .from('chapters')
+      .select('id, title, "order", lessons(id, title, "order")')
+      .eq('subject_id', subjectId)
+      .order('order');
+
+    lessonSelect.innerHTML = '<option value="">— اختر درس —</option>';
+    (chapters || []).forEach(ch => {
+      const lessons = (ch.lessons || []).sort((a, b) => (a.order || 0) - (b.order || 0));
+      lessons.forEach(l => {
+        const opt = document.createElement('option');
+        opt.value = l.id;
+        opt.textContent = `${ch.title} · ${l.title}`;
+        lessonSelect.appendChild(opt);
+      });
+    });
+  };
+
+  document.getElementById('modalVideo').classList.add('open');
+};
 
 document.getElementById('saveVideoBtn')?.addEventListener('click', async () => {
+  const subjectId = parseInt(document.getElementById('videoSubjectId').value, 10);
+  const teacherId = parseInt(document.getElementById('videoTeacherId').value, 10);
   const lessonId = parseInt(document.getElementById('videoLessonId').value, 10);
   const title = document.getElementById('videoTitle').value.trim();
   const youtubeId = document.getElementById('videoYoutubeId').value.trim();
@@ -673,6 +722,8 @@ document.getElementById('saveVideoBtn')?.addEventListener('click', async () => {
   const err = document.getElementById('videoError');
   err.classList.remove('show');
 
+  if (!subjectId) { err.textContent = 'اختر المادة'; err.classList.add('show'); return; }
+  if (!teacherId) { err.textContent = 'اختر المدرس'; err.classList.add('show'); return; }
   if (!lessonId) { err.textContent = 'اختر الدرس'; err.classList.add('show'); return; }
   if (!title) { err.textContent = 'العنوان مطلوب'; err.classList.add('show'); return; }
   if (!youtubeId || youtubeId.length !== 11) { err.textContent = 'YouTube ID لازم 11 حرف'; err.classList.add('show'); return; }
@@ -682,7 +733,11 @@ document.getElementById('saveVideoBtn')?.addEventListener('click', async () => {
   btn.innerHTML = '<span class="spinner"></span><span>جارٍ الحفظ…</span>';
 
   const { error } = await supabase.from('videos').insert({
-    lesson_id: lessonId, title, youtube_id: youtubeId, description
+    lesson_id: lessonId,
+    teacher_id: teacherId,
+    title,
+    youtube_id: youtubeId,
+    description
   });
 
   btn.disabled = false;
@@ -1079,7 +1134,6 @@ document.getElementById('saveQuestionBtn')?.addEventListener('click', async () =
 
   toast('تم إضافة السؤال ✅', 'success');
 
-  /* Reset */
   document.getElementById('questionText').value = '';
   document.getElementById('questionImage').value = '';
   document.getElementById('qOptionA').value = '';
@@ -1321,6 +1375,31 @@ async function loadCertificatesAdmin() {
       <td class="cell-muted">${r.avg}%</td>
       <td class="cell-muted">${new Date(r.last).toLocaleDateString('ar-EG')}</td>
     </tr>
+  `).join('');
+}
+
+/* ============================================
+   HELPER: LOAD LESSONS INTO SELECT
+   ============================================ */
+async function loadLessonsIntoSelect(selector) {
+  const select = document.querySelector(selector);
+  if (!select) return;
+  select.innerHTML = '<option value="">جاري التحميل…</option>';
+
+  const { data } = await supabase
+    .from('lessons')
+    .select('id, title, chapters(title, subjects(name))')
+    .order('id');
+
+  if (!data || data.length === 0) {
+    select.innerHTML = '<option value="">لا يوجد دروس</option>';
+    return;
+  }
+
+  select.innerHTML = '<option value="">— اختر درس —</option>' + data.map(l => `
+    <option value="${l.id}">
+      ${escapeHtml(l.chapters?.subjects?.name || '')} · ${escapeHtml(l.chapters?.title || '')} · ${escapeHtml(l.title)}
+    </option>
   `).join('');
 }
 
