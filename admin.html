@@ -282,6 +282,535 @@
                 <tr>
                   <th>العنوان</th>
                   <th>المادة</th>
+                  <th>المدرس</th>
+                  <th>الفصل · الدرس</th>
+                  <th>YouTube ID</th>
+                  <th style="text-align:left">إجراءات</th>
+                </tr>
+              </thead>
+              <tbody id="videosBody">
+                <tr><td colspan="6" class="loading-inline">جاري التحميل…</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-panel" id="panel-library">
+        <div class="page-head">
+          <div><h1>المكتبة (PDF)</h1><p>رفع وإدارة ملفات الملازم والمراجعات</p></div>
+          <button class="btn btn-primary" onclick="openAddPdf()">+ رفع ملف PDF</button>
+        </div>
+        <div class="section-block">
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>العنوان</th>
+                  <th>المادة</th>
+                  <th>الحجم</th>
+                  <th>التحميلات</th>
+                  <th style="text-align:left">إجراءات</th>
+                </tr>
+              </thead>
+              <tbody id="libraryBody">
+                <tr><td colspan="5" class="loading-inline">جاري التحميل…</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-panel" id="panel-quizzes">
+        <div class="page-head">
+          <div><h1>الاختبارات</h1><p>إدارة اختبارات الدروس والأسئلة</p></div>
+          <button class="btn btn-primary" onclick="openAddQuiz()">+ إضافة اختبار</button>
+        </div>
+        <div class="section-block">
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>العنوان</th>
+                  <th>الدرس</th>
+                  <th>الأسئلة</th>
+                  <th>الوقت</th>
+                  <th>النجاح</th>
+                  <th style="text-align:left">إجراءات</th>
+                </tr>
+              </thead>
+              <tbody id="quizzesBody">
+                <tr><td colspan="6" class="loading-inline">جاري التحميل…</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-panel" id="panel-homework">
+        <div class="page-head">
+          <div><h1>الواجبات</h1><p>إدارة واجبات الدروس</p></div>
+          <button class="btn btn-primary" onclick="openAddHomework()">+ إضافة واجب</button>
+        </div>
+        <div class="section-block">
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>العنوان</th>
+                  <th>الدرس</th>
+                  <th>الملف</th>
+                  <th style="text-align:left">إجراءات</th>
+                </tr>
+              </thead>
+              <tbody id="homeworkBody">
+                <tr><td colspan="4" class="loading-inline">جاري التحميل…</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-panel" id="panel-teachers">
+        <div class="page-head">
+          <div><h1>المدرسين</h1><p>قائمة جميع المدرسين المعتمدين</p></div>
+        </div>
+        <div class="section-block">
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>الاسم</th>
+                  <th>المادة</th>
+                  <th>نبذة</th>
+                  <th style="text-align:left">إجراءات</th>
+                </tr>
+              </thead>
+              <tbody id="teachersBody">
+                <tr><td colspan="4" class="loading-inline">جاري التحميل…</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-panel" id="panel-notifications">
+        <div class="page-head">
+          <div><h1>إرسال إشعار</h1><p>أرسل إشعار لجميع الطلاب</p></div>
+        </div>
+        <div class="section-block">
+          <div class="form-card">
+            <div class="field">
+              <label>عنوان الإشعار</label>
+              <input type="text" id="notifTitle" placeholder="مثال: تم إضافة درس جديد">
+            </div>
+            <div class="field">
+              <label>نص الإشعار</label>
+              <textarea id="notifBody" placeholder="اكتب نص الإشعار هنا..."></textarea>
+            </div>
+            <div class="field-row">
+              <div class="field">
+                <label>النوع</label>
+                <select id="notifType">
+                  <option value="info">معلومات</option>
+                  <option value="success">نجاح</option>
+                  <option value="warning">تنبيه</option>
+                  <option value="new_video">فيديو جديد</option>
+                  <option value="new_quiz">اختبار جديد</option>
+                  <option value="certificate">شهادة</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>الرابط (اختياري)</label>
+                <input type="text" id="notifLink" placeholder="/lesson.html?id=...">
+              </div>
+            </div>
+            <div class="field">
+              <label>
+                <input type="checkbox" id="notifAll" checked style="width:auto;margin-left:8px">
+                إرسال لجميع الطلاب
+              </label>
+            </div>
+            <button class="btn btn-primary" id="sendNotifBtn" style="width:100%;height:44px;margin-top:8px">
+              إرسال الإشعار
+            </button>
+          </div>
+        </div>
+
+        <div class="section-block">
+          <div class="section-block-head">
+            <h2 class="section-block-title">آخر الإشعارات المُرسلة</h2>
+          </div>
+          <div id="sentNotificationsList">
+            <div class="loading-inline">جاري التحميل…</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-panel" id="panel-certificates">
+        <div class="page-head">
+          <div><h1>الشهادات</h1><p>إحصائيات الشهادات المُصدرة للطلاب</p></div>
+        </div>
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-card-head"><div class="stat-card-label">شهادات مُصدرة</div></div>
+            <div class="stat-card-value accent" id="statCertificates">—</div>
+          </div>
+        </div>
+        <div class="section-block">
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>الطالب</th>
+                  <th>المادة</th>
+                  <th>متوسط الدرجات</th>
+                  <th>التاريخ</th>
+                </tr>
+              </thead>
+              <tbody id="certificatesBody">
+                <tr><td colspan="4" class="loading-inline">جاري التحميل…</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- MODAL: TEACHER -->
+<div class="modal-overlay" id="modalTeacher">
+  <div class="modal">
+    <div class="modal-head">
+      <h3>إضافة مدرس</h3>
+      <button class="modal-close" onclick="closeModal('modalTeacher')"><svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <div class="alert alert-error" id="teacherError"></div>
+      <input type="hidden" id="teacherSubjectId">
+      <div class="field"><label>اسم المدرس</label><input type="text" id="teacherName" placeholder="مثال: خالد صقر"></div>
+      <div class="field"><label>نبذة مختصرة (اختياري)</label><textarea id="teacherBio"></textarea></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal('modalTeacher')">إلغاء</button>
+      <button class="btn btn-primary" id="saveTeacherBtn"><span>حفظ</span></button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: VIDEO -->
+<div class="modal-overlay" id="modalVideo">
+  <div class="modal">
+    <div class="modal-head">
+      <h3>إضافة فيديو</h3>
+      <button class="modal-close" onclick="closeModal('modalVideo')"><svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <div class="alert alert-error" id="videoError"></div>
+      
+      <div class="field-row">
+        <div class="field">
+          <label>المادة</label>
+          <select id="videoSubjectId">
+            <option value="">— اختر مادة —</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>المدرس</label>
+          <select id="videoTeacherId">
+            <option value="">— اختر مادة أولاً —</option>
+          </select>
+        </div>
+      </div>
+      
+      <div class="field">
+        <label>الدرس</label>
+        <select id="videoLessonId">
+          <option value="">— اختر مادة أولاً —</option>
+        </select>
+      </div>
+      
+      <div class="field"><label>عنوان الفيديو</label><input type="text" id="videoTitle"></div>
+      <div class="field"><label>YouTube Video ID</label><input type="text" id="videoYoutubeId" placeholder="dQw4w9WgXcQ"></div>
+      <div class="field"><label>الوصف (اختياري)</label><textarea id="videoDesc"></textarea></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal('modalVideo')">إلغاء</button>
+      <button class="btn btn-primary" id="saveVideoBtn"><span>حفظ</span></button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: PDF -->
+<div class="modal-overlay" id="modalPdf">
+  <div class="modal">
+    <div class="modal-head">
+      <h3>رفع ملف PDF</h3>
+      <button class="modal-close" onclick="closeModal('modalPdf')"><svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <div class="alert alert-error" id="pdfError"></div>
+      <div class="field"><label>المادة</label><select id="pdfSubject"><option value="">— اختر مادة —</option></select></div>
+      <div class="field"><label>عنوان الملف</label><input type="text" id="pdfTitle"></div>
+      <div class="field"><label>الوصف</label><textarea id="pdfDescription"></textarea></div>
+      <div class="field"><label>ملف PDF (حد أقصى 50 MB)</label><input type="file" id="pdfFile" accept=".pdf,application/pdf"></div>
+      <div id="pdfProgress" style="display:none">
+        <div class="progress-bar"><div class="progress-fill" id="pdfProgressFill"></div></div>
+        <div class="progress-text" id="pdfProgressText">جاري الرفع…</div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal('modalPdf')">إلغاء</button>
+      <button class="btn btn-primary" id="savePdfBtn"><span>رفع الملف</span></button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: CHAPTER -->
+<div class="modal-overlay" id="modalChapter">
+  <div class="modal">
+    <div class="modal-head">
+      <h3>إضافة فصل</h3>
+      <button class="modal-close" onclick="closeModal('modalChapter')"><svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <div class="alert alert-error" id="chapterError"></div>
+      <input type="hidden" id="chapterSubjectId">
+      <div class="field"><label>اسم الفصل</label><input type="text" id="chapterTitle"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal('modalChapter')">إلغاء</button>
+      <button class="btn btn-primary" id="saveChapterBtn"><span>حفظ</span></button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: LESSON -->
+<div class="modal-overlay" id="modalLesson">
+  <div class="modal">
+    <div class="modal-head">
+      <h3>إضافة درس</h3>
+      <button class="modal-close" onclick="closeModal('modalLesson')"><svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <div class="alert alert-error" id="lessonError"></div>
+      <input type="hidden" id="lessonChapterId">
+      <div class="field"><label>اسم الدرس</label><input type="text" id="lessonTitle"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal('modalLesson')">إلغاء</button>
+      <button class="btn btn-primary" id="saveLessonBtn"><span>حفظ</span></button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: QUIZ -->
+<div class="modal-overlay" id="modalQuiz">
+  <div class="modal">
+    <div class="modal-head">
+      <h3>إضافة اختبار</h3>
+      <button class="modal-close" onclick="closeModal('modalQuiz')"><svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <div class="alert alert-error" id="quizError"></div>
+      <div class="field"><label>الدرس</label><select id="quizLessonId"><option value="">جاري التحميل…</option></select></div>
+      <div class="field"><label>عنوان الاختبار</label><input type="text" id="quizTitle"></div>
+      <div class="field-row">
+        <div class="field"><label>الوقت (دقيقة)</label><input type="number" id="quizTime" value="10" min="1"></div>
+        <div class="field"><label>نسبة النجاح (%)</label><input type="number" id="quizPass" value="60" min="1" max="100"></div>
+      </div>
+      <div class="field"><label>الوصف (اختياري)</label><textarea id="quizDescription"></textarea></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal('modalQuiz')">إلغاء</button>
+      <button class="btn btn-primary" id="saveQuizBtn"><span>حفظ</span></button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: QUESTION (Photo-First) -->
+<div class="modal-overlay" id="modalQuestion">
+  <div class="modal" style="max-width:640px">
+    <div class="modal-head">
+      <h3>إضافة سؤال بصورة</h3>
+      <button class="modal-close" onclick="closeModal('modalQuestion')"><svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <div class="alert alert-error" id="questionError"></div>
+      <input type="hidden" id="questionQuizId">
+
+      <div class="field">
+        <label style="font-size:14px;color:var(--fg)">📸 صورة السؤال (أساسي)</label>
+        <div id="questionImageDrop" style="
+          position:relative;
+          border:2px dashed var(--border-3);
+          border-radius:14px;
+          padding:24px;
+          text-align:center;
+          cursor:pointer;
+          transition:all 0.2s;
+          background:var(--bg);
+          margin-bottom:12px;
+        ">
+          <div id="questionImageDropContent">
+            <svg viewBox="0 0 24 24" style="width:48px;height:48px;stroke:var(--fg-4);stroke-width:1.5;fill:none;margin:0 auto 12px;stroke-linecap:round;stroke-linejoin:round">
+              <rect x="3" y="3" width="18" height="18" rx="2"/>
+              <circle cx="9" cy="9" r="2"/>
+              <path d="M21 15l-5-5L5 21"/>
+            </svg>
+            <div style="font-size:14px;color:var(--fg-2);font-weight:600;margin-bottom:4px">اضغط لاختيار صورة من جهازك</div>
+            <div style="font-size:12px;color:var(--fg-4)">JPG · PNG · WEBP — حد أقصى 5 MB</div>
+          </div>
+          <input type="file" id="questionImageFile" accept="image/*" style="display:none">
+        </div>
+
+        <div id="questionImagePreview" style="display:none;position:relative;text-align:center">
+          <img id="questionImagePreviewImg" style="max-width:100%;max-height:280px;border-radius:12px;border:1px solid var(--border-2);display:block;margin:0 auto">
+          <button type="button" id="removeQuestionImage" style="
+            margin-top:10px;
+            padding:6px 14px;border-radius:8px;
+            background:rgba(239,68,68,0.1);
+            color:#EF4444;border:1px solid rgba(239,68,68,0.3);
+            cursor:pointer;font-family:inherit;font-size:12.5px;font-weight:600;
+          ">🗑️ إزالة الصورة</button>
+        </div>
+
+        <div id="questionImageUploading" style="display:none;text-align:center;padding:10px;color:var(--fg-3);font-size:13px">
+          ⏳ جاري رفع الصورة...
+        </div>
+
+        <details style="margin-top:10px">
+          <summary style="cursor:pointer;font-size:12.5px;color:var(--fg-3);font-weight:500;padding:4px 0">💡 أو استخدم رابط صورة</summary>
+          <input type="text" id="questionImage" placeholder="https://..." style="margin-top:8px">
+        </details>
+      </div>
+
+      <div class="field">
+        <label style="font-size:13px;color:var(--fg-3)">نص السؤال (اختياري)</label>
+        <textarea id="questionText" placeholder="ممكن تسيبه فاضي لو الصورة فيها السؤال كامل" style="min-height:60px"></textarea>
+      </div>
+
+      <div style="padding:16px;background:var(--bg);border-radius:12px;margin-bottom:16px">
+        <div style="font-size:12px;color:var(--fg-3);font-weight:600;margin-bottom:12px;text-transform:uppercase;letter-spacing:0.04em">
+          ✍️ الخيارات
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <div class="field" style="margin-bottom:0">
+            <label style="font-size:12px">أ)</label>
+            <input type="text" id="qOptionA" placeholder="الخيار أ">
+          </div>
+          <div class="field" style="margin-bottom:0">
+            <label style="font-size:12px">ب)</label>
+            <input type="text" id="qOptionB" placeholder="الخيار ب">
+          </div>
+          <div class="field" style="margin-bottom:0">
+            <label style="font-size:12px">ج)</label>
+            <input type="text" id="qOptionC" placeholder="الخيار ج">
+          </div>
+          <div class="field" style="margin-bottom:0">
+            <label style="font-size:12px">د)</label>
+            <input type="text" id="qOptionD" placeholder="الخيار د">
+          </div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label style="font-size:13px;color:var(--fg-2);font-weight:600;margin-bottom:10px">✅ الإجابة الصحيحة</label>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">
+          <button type="button" class="answer-choice" data-answer="a">أ</button>
+          <button type="button" class="answer-choice" data-answer="b">ب</button>
+          <button type="button" class="answer-choice" data-answer="c">ج</button>
+          <button type="button" class="answer-choice" data-answer="d">د</button>
+        </div>
+        <input type="hidden" id="qCorrect" value="a">
+      </div>
+
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal('modalQuestion')">إلغاء</button>
+      <button class="btn btn-primary" id="saveQuestionBtn"><span>حفظ السؤال</span></button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: HOMEWORK -->
+<div class="modal-overlay" id="modalHomework">
+  <div class="modal">
+    <div class="modal-head">
+      <h3>إضافة واجب</h3>
+      <button class="modal-close" onclick="closeModal('modalHomework')"><svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <div class="alert alert-error" id="homeworkError"></div>
+      <div class="field"><label>الدرس</label><select id="homeworkLessonId"><option value="">جاري التحميل…</option></select></div>
+      <div class="field"><label>عنوان الواجب</label><input type="text" id="homeworkTitle"></div>
+      <div class="field"><label>الوصف (اختياري)</label><textarea id="homeworkDescription"></textarea></div>
+      <div class="field"><label>ملف PDF (اختياري)</label><input type="file" id="homeworkFile" accept=".pdf,application/pdf"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal('modalHomework')">إلغاء</button>
+      <button class="btn btn-primary" id="saveHomeworkBtn"><span>حفظ</span></button>
+    </div>
+  </div>
+</div>
+
+<a href="/chat.html" class="floating-chat-btn" aria-label="المساعد الذكي">
+  <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+  <span class="floating-chat-label">محتاج مساعدة؟</span>
+</a>
+
+<script type="module" src="/assets/js/admin.js"></script>
+
+</body>
+  </html>l" id="panel-subjects">
+        <div class="page-head">
+          <div><h1>المواد والمدرسين</h1><p>إدارة المواد الدراسية وإضافة المدرسين</p></div>
+        </div>
+        <div class="section-block">
+          <div class="section-block-head">
+            <h2 class="section-block-title">المواد</h2>
+          </div>
+          <div id="subjectsAdminGrid">
+            <div class="loading-inline">جاري التحميل…</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-panel" id="panel-chapters">
+        <div class="page-head">
+          <div><h1>الفصول والدروس</h1><p>إدارة فصول ودروس كل مادة</p></div>
+        </div>
+        <div class="section-block">
+          <div class="section-block-head">
+            <h2 class="section-block-title">اختر المادة</h2>
+          </div>
+          <div id="chaptersSubjectPicker">
+            <div class="loading-inline">جاري التحميل…</div>
+          </div>
+        </div>
+        <div class="section-block" id="chaptersContent" style="display:none">
+          <div class="section-block-head">
+            <h2 class="section-block-title" id="chaptersContentTitle">الفصول</h2>
+            <button class="btn btn-primary" onclick="openAddChapter()">+ إضافة فصل</button>
+          </div>
+          <div id="chaptersList"></div>
+        </div>
+      </div>
+
+      <div class="tab-panel" id="panel-videos">
+        <div class="page-head">
+          <div><h1>الفيديوهات</h1><p>إدارة فيديوهات الشرح لكل درس</p></div>
+          <button class="btn btn-primary" onclick="openAddVideo()">+ إضافة فيديو</button>
+        </div>
+        <div class="section-block">
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>العنوان</th>
+                  <th>المادة</th>
                   <th>الفصل · الدرس</th>
                   <th>YouTube ID</th>
                   <th style="text-align:left">إجراءات</th>
