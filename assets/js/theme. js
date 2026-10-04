@@ -1,120 +1,437 @@
 // ============================================
-// ASCEND · Theme Manager
-// Dark / Light Mode with localStorage
-// Created by Mohamed Hamouda
+// ASCEND · Theme Manager (Premium Edition)
+// Dark / Light Mode · Auto · Sync · Animated
+// Created by Mohamed Hamouda | محمد حموده
+// © 2026 ASCEND — All rights reserved
 // ============================================
 
 const THEME_KEY = 'ascend-theme';
-const THEMES = { DARK: 'dark', LIGHT: 'light' };
+const THEME_SOURCE_KEY = 'ascend-theme-source';
+const THEMES = {
+  DARK: 'dark',
+  LIGHT: 'light',
+  AUTO: 'auto'
+};
+const DEFAULT_THEME = THEMES.DARK;
+
+/* ============================================
+   STATE
+   ============================================ */
+const ThemeState = {
+  current: null,
+  source: null, // 'user' | 'system' | 'default'
+  isTransitioning: false
+};
 
 /* ============================================
    1) GET INITIAL THEME
    ============================================ */
-function getInitialTheme() {
-  // 1) Check localStorage
+function getSavedTheme() {
   try {
     const saved = localStorage.getItem(THEME_KEY);
     if (saved === THEMES.DARK || saved === THEMES.LIGHT) return saved;
   } catch (_) {}
+  return null;
+}
 
-  // 2) Check system preference
+function getSavedSource() {
+  try {
+    return localStorage.getItem(THEME_SOURCE_KEY) || null;
+  } catch (_) {
+    return null;
+  }
+}
+
+function getSystemTheme() {
   if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
     return THEMES.LIGHT;
   }
-
-  // 3) Default: dark (منصة تعليمية → مريح للعين)
   return THEMES.DARK;
 }
 
+function getInitialTheme() {
+  // 1) User's saved choice
+  const saved = getSavedTheme();
+  if (saved) {
+    ThemeState.source = getSavedSource() || 'user';
+    return saved;
+  }
+
+  // 2) System preference
+  ThemeState.source = 'system';
+  return getSystemTheme();
+}
+
 /* ============================================
-   2) APPLY THEME
+   2) UPDATE META THEME-COLOR
    ============================================ */
-function applyTheme(theme) {
-  const root = document.documentElement;
-  const body = document.body;
-
-  // Apply on html (عشان يعمل قبل load)
-  root.setAttribute('data-theme', theme);
-
-  // Apply on body (للـ CSS اللي بيعتمد على body)
-  if (body) body.setAttribute('data-theme', theme);
-
-  // Update theme-color meta
+function updateMetaThemeColor(theme) {
   const meta = document.querySelector('meta[name="theme-color"]');
   if (meta) {
     meta.setAttribute('content', theme === THEMES.DARK ? '#050506' : '#F7F8FC');
   }
 
-  // Update all toggles on the page
-  updateToggleIcons(theme);
+  // Update color-scheme meta
+  const colorScheme = document.querySelector('meta[name="color-scheme"]');
+  if (colorScheme) {
+    colorScheme.setAttribute('content', theme === THEMES.DARK ? 'dark light' : 'light dark');
+  }
 }
 
 /* ============================================
-   3) UPDATE TOGGLE ICONS
+   3) UPDATE THEME-COLOR ON MOBILE BROWSER
+   ============================================ */
+function updateBrowserUI(theme) {
+  // For iOS Safari
+  document.documentElement.style.colorScheme = theme;
+
+  // For Android Chrome
+  let meta = document.querySelector('meta[name="theme-color"]');
+  if (!meta) {
+    meta = document.createElement('meta');
+    meta.name = 'theme-color';
+    document.head.appendChild(meta);
+  }
+  meta.content = theme === THEMES.DARK ? '#050506' : '#F7F8FC';
+}
+
+/* ============================================
+   4) APPLY THEME (both html and body)
+   ============================================ */
+function applyTheme(theme, options = {}) {
+  const { silent = false, source = 'user' } = options;
+
+  if (!theme || (theme !== THEMES.DARK && theme !== THEMES.LIGHT)) {
+    theme = DEFAULT_THEME;
+  }
+
+  const root = document.documentElement;
+
+  // Prevent double-applying
+  if (ThemeState.current === theme && !options.force) {
+    return;
+  }
+
+  ThemeState.current = theme;
+  ThemeState.source = source;
+
+  // Apply on <html>
+  root.setAttribute('data-theme', theme);
+
+  // Apply on <body> if exists
+  if (document.body) {
+    document.body.setAttribute('data-theme', theme);
+  } else {
+    document.addEventListener('DOMContentLoaded', () => {
+      document.body.setAttribute('data-theme', theme);
+    }, { once: true });
+  }
+
+  // Update meta
+  updateMetaThemeColor(theme);
+  updateBrowserUI(theme);
+
+  // Update toggle icons
+  updateToggleIcons(theme);
+
+  // Update ARIA labels
+  updateAriaLabels(theme);
+
+  // Dispatch event
+  if (!silent) {
+    window.dispatchEvent(new CustomEvent('ascend:theme-change', {
+      detail: { theme, source: ThemeState.source }
+    }));
+  }
+}
+
+/* ============================================
+   5) UPDATE TOGGLE ICONS
    ============================================ */
 function updateToggleIcons(theme) {
   document.querySelectorAll('.theme-toggle').forEach(btn => {
-    btn.setAttribute('aria-label',
-      theme === THEMES.DARK ? 'التبديل إلى الوضع الفاتح' : 'التبديل إلى الوضع الداكن'
-    );
-    btn.setAttribute('title',
-      theme === THEMES.DARK ? 'الوضع الفاتح' : 'الوضع الداكن'
-    );
+    btn.setAttribute('data-current', theme);
+
+    // Update icon rotation
+    btn.classList.remove('is-dark', 'is-light');
+    btn.classList.add(theme === THEMES.DARK ? 'is-dark' : 'is-light');
   });
 }
 
 /* ============================================
-   4) TOGGLE THEME
+   6) UPDATE ARIA LABELS
    ============================================ */
-function toggleTheme() {
-  const current = document.documentElement.getAttribute('data-theme') || THEMES.DARK;
-  const next = current === THEMES.DARK ? THEMES.LIGHT : THEMES.DARK;
+function updateAriaLabels(theme) {
+  const nextLabel = theme === THEMES.DARK ? 'الوضع الفاتح' : 'الوضع الداكن';
 
-  applyTheme(next);
-
-  try {
-    localStorage.setItem(THEME_KEY, next);
-  } catch (_) {}
-
-  // Dispatch event for other scripts
-  window.dispatchEvent(new CustomEvent('ascend:theme-change', {
-    detail: { theme: next }
-  }));
+  document.querySelectorAll('.theme-toggle').forEach(btn => {
+    btn.setAttribute('aria-label', `التبديل إلى ${nextLabel}`);
+    btn.setAttribute('title', nextLabel);
+    btn.setAttribute('aria-pressed', theme === THEMES.LIGHT ? 'true' : 'false');
+  });
 }
 
 /* ============================================
-   5) INIT ON LOAD (فوراً قبل أي حاجة)
+   7) TOGGLE THEME (user click)
    ============================================ */
-const initialTheme = getInitialTheme();
-applyTheme(initialTheme);
+function toggleTheme() {
+  if (ThemeState.isTransitioning) return;
+  ThemeState.isTransitioning = true;
+
+  const current = document.documentElement.getAttribute('data-theme') || DEFAULT_THEME;
+  const next = current === THEMES.DARK ? THEMES.LIGHT : THEMES.DARK;
+
+  // Add transitioning class for smooth animation
+  document.documentElement.classList.add('theme-transitioning');
+
+  applyTheme(next, { source: 'user' });
+
+  // Save
+  saveTheme(next, 'user');
+
+  // Remove transitioning class after animation
+  setTimeout(() => {
+    document.documentElement.classList.remove('theme-transitioning');
+    ThemeState.isTransitioning = false;
+  }, 400);
+}
 
 /* ============================================
-   6) EXPORT + GLOBAL
+   8) SAVE THEME
+   ============================================ */
+function saveTheme(theme, source = 'user') {
+  try {
+    localStorage.setItem(THEME_KEY, theme);
+    localStorage.setItem(THEME_SOURCE_KEY, source);
+  } catch (_) {}
+}
+
+/* ============================================
+   9) RESET TO SYSTEM
+   ============================================ */
+function resetToSystem() {
+  try {
+    localStorage.removeItem(THEME_KEY);
+    localStorage.removeItem(THEME_SOURCE_KEY);
+  } catch (_) {}
+
+  const systemTheme = getSystemTheme();
+  applyTheme(systemTheme, { source: 'system' });
+}
+
+/* ============================================
+   10) GET CURRENT THEME
+   ============================================ */
+function getCurrentTheme() {
+  return document.documentElement.getAttribute('data-theme') || DEFAULT_THEME;
+}
+
+/* ============================================
+   11) WATCH SYSTEM PREFERENCE
+   ============================================ */
+function initSystemWatcher() {
+  if (!window.matchMedia) return;
+
+  const media = window.matchMedia('(prefers-color-scheme: dark)');
+
+  const handler = (e) => {
+    // Only auto-switch if user hasn't manually set a theme
+    const saved = getSavedTheme();
+    if (!saved) {
+      const newTheme = e.matches ? THEMES.DARK : THEMES.LIGHT;
+      applyTheme(newTheme, { source: 'system' });
+    }
+  };
+
+  // Modern browsers
+  if (media.addEventListener) {
+    media.addEventListener('change', handler);
+  } else if (media.addListener) {
+    // Legacy
+    media.addListener(handler);
+  }
+}
+
+/* ============================================
+   12) SYNC ACROSS TABS
+   ============================================ */
+function initCrossTabSync() {
+  window.addEventListener('storage', (e) => {
+    if (e.key === THEME_KEY && e.newValue) {
+      const newTheme = e.newValue;
+      if (newTheme === THEMES.DARK || newTheme === THEMES.LIGHT) {
+        applyTheme(newTheme, { source: 'sync' });
+      }
+    }
+  });
+}
+
+/* ============================================
+   13) KEYBOARD SHORTCUT
+   ============================================ */
+function initKeyboardShortcut() {
+  document.addEventListener('keydown', (e) => {
+    // Ctrl/Cmd + Shift + L  → toggle theme
+    if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toLowerCase() === 'l') {
+      e.preventDefault();
+      toggleTheme();
+    }
+
+    // Ctrl/Cmd + Shift + D  → toggle theme (alternative)
+    if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toLowerCase() === 'd') {
+      e.preventDefault();
+      resetToSystem();
+    }
+  });
+}
+
+/* ============================================
+   14) WATCH FOR DYNAMIC TOGGLES
+   ============================================ */
+function initMutationObserver() {
+  if (!window.MutationObserver) return;
+
+  const observer = new MutationObserver((mutations) => {
+    mutations.forEach(mutation => {
+      mutation.addedNodes.forEach(node => {
+        if (node.nodeType === 1) {
+          // Check if node itself is a toggle
+          if (node.classList?.contains('theme-toggle')) {
+            updateToggleIcons(getCurrentTheme());
+          }
+
+          // Check children
+          node.querySelectorAll?.('.theme-toggle').forEach(btn => {
+            updateToggleIcons(getCurrentTheme());
+            btn.addEventListener('click', toggleTheme);
+          });
+        }
+      });
+    });
+  });
+
+  observer.observe(document.body || document.documentElement, {
+    childList: true,
+    subtree: true
+  });
+}
+
+/* ============================================
+   15) BIND TOGGLE BUTTONS
+   ============================================ */
+function bindToggles() {
+  document.querySelectorAll('.theme-toggle').forEach(btn => {
+    if (btn.dataset.themeBound === 'true') return;
+    btn.dataset.themeBound = 'true';
+    btn.addEventListener('click', toggleTheme);
+  });
+}
+
+/* ============================================
+   16) PREVENT FOUC (Flash of Unstyled Content)
+   ============================================ */
+function preventFOUC() {
+  // Already handled by inline script in <head>
+  // This is a safety net
+  const theme = getCurrentTheme();
+  if (!document.documentElement.hasAttribute('data-theme')) {
+    applyTheme(theme, { silent: true });
+  }
+}
+
+/* ============================================
+   17) INITIALIZATION
+   ============================================ */
+function init() {
+  // 1) Apply initial theme ASAP
+  const initialTheme = getInitialTheme();
+  applyTheme(initialTheme, { silent: true, source: ThemeState.source });
+
+  // 2) Bind existing toggles
+  bindToggles();
+
+  // 3) Watch system preference
+  initSystemWatcher();
+
+  // 4) Cross-tab sync
+  initCrossTabSync();
+
+  // 5) Keyboard shortcuts
+  initKeyboardShortcut();
+
+  // 6) Watch for new toggles
+  if (document.body) {
+    initMutationObserver();
+  } else {
+    document.addEventListener('DOMContentLoaded', initMutationObserver, { once: true });
+  }
+
+  // 7) Rebind toggles on DOMContentLoaded
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', bindToggles, { once: true });
+  }
+
+  // 8) Prevent FOUC
+  preventFOUC();
+}
+
+// Run init immediately
+init();
+
+/* ============================================
+   18) GLOBAL API
    ============================================ */
 window.ASCEND_THEME = {
+  // Core methods
   toggle: toggleTheme,
   apply: applyTheme,
-  get: () => document.documentElement.getAttribute('data-theme'),
+  reset: resetToSystem,
+  get: getCurrentTheme,
+  getSource: () => ThemeState.source,
+
+  // Constants
+  THEMES,
+
+  // Advanced
+  save: saveTheme,
+  set: (theme) => {
+    if (theme === THEMES.DARK || theme === THEMES.LIGHT) {
+      applyTheme(theme, { source: 'user' });
+      saveTheme(theme, 'user');
+    }
+  },
+
+  // Debug
+  info: () => ({
+    current: getCurrentTheme(),
+    source: ThemeState.source,
+    system: getSystemTheme(),
+    saved: getSavedTheme(),
+    savedSource: getSavedSource()
+  })
+};
+
+/* ============================================
+   19) EXPORTS
+   ============================================ */
+export {
+  toggleTheme,
+  applyTheme,
+  getInitialTheme,
+  getCurrentTheme,
+  resetToSystem,
+  saveTheme,
   THEMES
 };
 
-export { toggleTheme, applyTheme, getInitialTheme, THEMES };
-
 /* ============================================
-   7) LISTEN TO SYSTEM CHANGES
+   20) CONSOLE BRANDING
    ============================================ */
-if (window.matchMedia) {
-  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
-    // Only auto-switch if user didn't manually set a theme
-    try {
-      if (!localStorage.getItem(THEME_KEY)) {
-        applyTheme(e.matches ? THEMES.DARK : THEMES.LIGHT);
-      }
-    } catch (_) {}
-  });
-}
+const _style1 = 'background:linear-gradient(135deg,#7C5CFF,#EC4899);color:#fff;padding:6px 14px;border-radius:8px;font-weight:700;font-size:12px;';
+const _style2 = 'background:#050506;color:#fff;padding:6px 14px;border-radius:8px;font-size:11px;';
+const _style3 = 'color:#7C5CFF;font-weight:600;font-size:11px;';
 
-/* ============================================
-   8) CONSOLE
-   ============================================ */
-console.log(`[ASCEND] Theme: ${initialTheme === THEMES.DARK ? '🌙 Dark' : '☀️ Light'}`);
+console.log('%c🌓 ASCEND Theme Manager', _style1);
+console.log('%cTheme: ' + getCurrentTheme() + ' · Source: ' + ThemeState.source, _style2);
+console.log('%cShortcuts: Ctrl+Shift+L (toggle) · Ctrl+Shift+D (reset)', _style3);
+console.log('%cAPI: window.ASCEND_THEME', _style3);
