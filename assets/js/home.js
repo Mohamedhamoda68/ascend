@@ -536,3 +536,37 @@ init();
    21) EXPORT (optional - for testing)
    ============================================ */
 export { loadSubjects, loadCounts, State };
+<script>
+/* FAQ Accordion */
+document.addEventListener('click', function(e) {
+  const btn = e.target.closest('.faq-btn');
+  if (!btn) return;
+  const item = btn.closest('.faq-item');
+  const content = item.querySelector('.faq-content');
+  const isOpen = item.getAttribute('aria-expanded') === 'true';
+
+  // اقفل كل الأسئلة التانية
+  document.querySelectorAll('.faq-item').forEach(other => {
+    if (other !== item) {
+      other.setAttribute('aria-expanded', 'false');
+      const c = other.querySelector('.faq-content');
+      if (c) c.style.maxHeight = '0';
+      const svg = other.querySelector('.faq-btn svg');
+      if (svg) svg.style.transform = 'rotate(0deg)';
+    }
+  });
+
+  // بدّل حالة السؤال الحالي
+  if (isOpen) {
+    item.setAttribute('aria-expanded', 'false');
+    content.style.maxHeight = '0';
+    const svg = btn.querySelector('svg');
+    if (svg) svg.style.transform = 'rotate(0deg)';
+  } else {
+    item.setAttribute('aria-expanded', 'true');
+    content.style.maxHeight = content.scrollHeight + 'px';
+    const svg = btn.querySelector('svg');
+    if (svg) svg.style.transform = 'rotate(180deg)';
+  }
+});
+</script>
