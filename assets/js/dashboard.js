@@ -273,10 +273,44 @@ function timeAgo(date) {
 }
 
 /* ============================================
-   SIDEBAR TOGGLE
+   SIDEBAR TOGGLE (محسّن)
    ============================================ */
-$('#menuToggle')?.addEventListener('click', () => {
-  $('#sidebar').classList.toggle('open');
+const sidebarEl = document.getElementById('sidebar');
+const menuBtn = document.getElementById('menuToggle');
+
+// 1) زر ☰ : يفتح ويقفل
+menuBtn?.addEventListener('click', (e) => {
+  e.stopPropagation();
+  sidebarEl?.classList.toggle('open');
+});
+
+// 2) الدوس خارج القائمة يقفلها
+document.addEventListener('click', (e) => {
+  if (!sidebarEl?.classList.contains('open')) return;
+  if (sidebarEl.contains(e.target)) return;
+  if (menuBtn?.contains(e.target)) return;
+  sidebarEl.classList.remove('open');
+});
+
+// 3) الدوس على أي رابط في القائمة يقفلها
+document.querySelectorAll('.sidebar-link').forEach(link => {
+  link.addEventListener('click', () => {
+    sidebarEl?.classList.remove('open');
+  });
+});
+
+// 4) تكبير الشاشة يقفل القائمة (للكمبيوتر)
+window.addEventListener('resize', () => {
+  if (window.innerWidth > 1024) {
+    sidebarEl?.classList.remove('open');
+  }
+});
+
+// 5) زر ESC يقفل القائمة
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    sidebarEl?.classList.remove('open');
+  }
 });
 
 /* ============================================
