@@ -123,3 +123,6 @@ export function initTheme() {
 
 /* ============ AUTO-INIT ============ */
 initTheme();
+<script type="module" src="/assets/js/theme.js"></script>
+<script type="module" src="/assets/js/admin.js"></script>
+</body>
