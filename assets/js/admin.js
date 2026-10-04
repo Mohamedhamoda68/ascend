@@ -61,6 +61,10 @@ $$('.sidebar-link[data-tab]').forEach(tab => {
     document.getElementById(`panel-${target}`)?.classList.add('active');
     document.getElementById('pageTitle').textContent = TAB_TITLES[target] || '';
 
+    // قفل القائمة الجانبية على الموبايل
+    const sidebarEl = document.getElementById('sidebar');
+    sidebarEl?.classList.remove('open', 'active', 'show');
+
     if (target === 'students') loadStudents();
     if (target === 'parents') loadParents();
     if (target === 'teachers') loadTeachers();
@@ -1448,15 +1452,46 @@ $$('.modal-overlay').forEach(overlay => {
 });
 
 /* ============================================
-   LOGOUT + MENU
+   LOGOUT + SIDEBAR TOGGLE (محسّن)
    ============================================ */
 document.getElementById('logoutBtn')?.addEventListener('click', async () => {
   await supabase.auth.signOut();
   location.href = '/';
 });
 
-document.getElementById('menuToggle')?.addEventListener('click', () => {
-  document.getElementById('sidebar').classList.toggle('open');
+const sidebarEl = document.getElementById('sidebar');
+const menuBtn = document.getElementById('menuToggle');
+
+menuBtn?.addEventListener('click', (e) => {
+  e.stopPropagation();
+  sidebarEl?.classList.toggle('open');
+  sidebarEl?.classList.toggle('active');
+  sidebarEl?.classList.toggle('show');
+});
+
+// إغلاق عند الدوس خارج القائمة
+document.addEventListener('click', (e) => {
+  const isOpen = sidebarEl?.classList.contains('open')
+              || sidebarEl?.classList.contains('active')
+              || sidebarEl?.classList.contains('show');
+  if (!isOpen) return;
+  if (sidebarEl.contains(e.target)) return;
+  if (menuBtn?.contains(e.target)) return;
+  sidebarEl.classList.remove('open', 'active', 'show');
+});
+
+// إغلاق عند الدوس على أي رابط
+document.querySelectorAll('.sidebar-link').forEach(link => {
+  link.addEventListener('click', () => {
+    sidebarEl?.classList.remove('open', 'active', 'show');
+  });
+});
+
+// إغلاق بزر ESC
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    sidebarEl?.classList.remove('open', 'active', 'show');
+  }
 });
 
 /* ============================================
