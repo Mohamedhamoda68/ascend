@@ -798,3 +798,406 @@ body[data-theme="light"] .cta h2{
 body[data-theme="light"] .cta p{
   color:#475569;
 }
+/* ============================================
+   ASCEND · Home Page Enhancements
+   Premium animations & interactions
+   ============================================ */
+
+/* ============================================
+   1) SKELETON LOADERS
+   ============================================ */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    rgba(124, 92, 255, 0.06) 0%,
+    rgba(124, 92, 255, 0.15) 50%,
+    rgba(124, 92, 255, 0.06) 100%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s ease-in-out infinite;
+  border-radius: 8px;
+}
+
+.skeleton-card {
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+.skeleton-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+
+.skeleton-line {
+  height: 12px;
+  border-radius: 6px;
+  margin-top: 8px;
+}
+
+@keyframes skeleton-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ============================================
+   2) SCROLL PROGRESS BAR
+   ============================================ */
+.scroll-progress-bar {
+  box-shadow: 0 0 12px rgba(124, 92, 255, 0.5);
+}
+
+/* ============================================
+   3) BACK TO TOP BUTTON
+   ============================================ */
+.back-to-top:hover {
+  background: rgba(124, 92, 255, 0.2) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 8px 20px rgba(124, 92, 255, 0.3) !important;
+}
+
+.back-to-top:active {
+  transform: translateY(0) !important;
+}
+
+/* ============================================
+   4) STICKY NAV
+   ============================================ */
+.nav {
+  transition: all 0.3s ease;
+}
+
+.nav.nav-scrolled {
+  background: rgba(247, 248, 252, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+[data-theme="dark"] .nav.nav-scrolled {
+  background: rgba(5, 5, 6, 0.85);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+/* ============================================
+   5) SCROLL REVEAL
+   ============================================ */
+.section.revealed,
+.cta.revealed,
+.bento-item.revealed {
+  opacity: 1 !important;
+  transform: translateY(0) !important;
+}
+
+/* ============================================
+   6) TYPING EFFECT
+   ============================================ */
+.hero h1 em {
+  display: inline-block;
+}
+
+.typing-cursor {
+  display: inline-block;
+  margin-right: 2px;
+  vertical-align: baseline;
+}
+
+/* ============================================
+   7) HERO CREATOR BOX
+   ============================================ */
+.hero-creator {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 20px;
+  margin: 24px auto 32px;
+  background: rgba(124, 92, 255, 0.06);
+  border: 1px solid rgba(124, 92, 255, 0.18);
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(124, 92, 255, 0.08);
+  animation: creator-fade-in 0.6s ease 0.3s both;
+}
+
+@keyframes creator-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hero-creator-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: var(--fg-2, #4A4A4A);
+}
+
+.hero-creator-label {
+  color: var(--fg-4, #888);
+  font-size: 13px;
+}
+
+.hero-creator-name {
+  color: var(--fg, #111);
+  font-weight: 700;
+}
+
+.hero-creator-sep {
+  color: var(--fg-4, #888);
+  opacity: 0.5;
+}
+
+.hero-creator-en {
+  color: var(--fg-3, #666);
+  font-size: 13px;
+  direction: ltr;
+  font-weight: 500;
+}
+
+.hero-whatsapp {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: linear-gradient(135deg, #25D366, #1DA851);
+  color: #fff !important;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.25s ease;
+  white-space: nowrap;
+  box-shadow: 0 4px 14px rgba(37, 211, 102, 0.25);
+}
+
+.hero-whatsapp:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(37, 211, 102, 0.4);
+  filter: brightness(1.05);
+}
+
+.hero-whatsapp:active {
+  transform: translateY(0);
+}
+
+/* ============================================
+   8) NAV CREATOR BADGE
+   ============================================ */
+.nav-brand-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.nav-creator {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11.5px;
+  color: var(--fg-4, #888);
+  padding: 4px 10px;
+  background: rgba(124, 92, 255, 0.08);
+  border: 1px solid rgba(124, 92, 255, 0.15);
+  border-radius: 8px;
+  white-space: nowrap;
+  transition: all 0.2s;
+}
+
+.nav-creator:hover {
+  background: rgba(124, 92, 255, 0.12);
+  border-color: rgba(124, 92, 255, 0.3);
+}
+
+.nav-creator-sep {
+  font-style: italic;
+  opacity: 0.6;
+}
+
+.nav-creator-name {
+  color: var(--fg-2, #4A4A4A);
+  font-weight: 600;
+  direction: ltr;
+}
+
+/* ============================================
+   9) FOOTER CREATOR + WHATSAPP
+   ============================================ */
+.footer-credit {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin: 20px 0 16px;
+  padding: 14px 16px;
+  background: rgba(124, 92, 255, 0.06);
+  border: 1px solid rgba(124, 92, 255, 0.15);
+  border-radius: 12px;
+  transition: all 0.25s;
+}
+
+.footer-credit:hover {
+  background: rgba(124, 92, 255, 0.09);
+  border-color: rgba(124, 92, 255, 0.25);
+}
+
+.footer-credit-icon {
+  color: #7C5CFF;
+  flex-shrink: 0;
+  margin-top: 3px;
+  filter: drop-shadow(0 2px 4px rgba(124, 92, 255, 0.3));
+}
+
+.footer-credit-label {
+  font-size: 11.5px;
+  color: var(--fg-4, #888);
+  margin-bottom: 3px;
+  letter-spacing: 0.02em;
+}
+
+.footer-credit-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--fg, #111);
+  margin-bottom: 2px;
+}
+
+.footer-credit-en {
+  font-size: 12px;
+  color: var(--fg-3, #666);
+  direction: ltr;
+  font-weight: 500;
+}
+
+.footer-whatsapp {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 14px;
+  padding: 9px 16px;
+  background: linear-gradient(135deg, rgba(37, 211, 102, 0.1), rgba(29, 168, 81, 0.1));
+  color: #1DA851 !important;
+  border: 1px solid rgba(37, 211, 102, 0.3);
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.25s;
+  direction: ltr;
+}
+
+.footer-whatsapp:hover {
+  background: linear-gradient(135deg, rgba(37, 211, 102, 0.2), rgba(29, 168, 81, 0.2));
+  border-color: rgba(37, 211, 102, 0.5);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(37, 211, 102, 0.2);
+}
+
+.footer-bottom-creator {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  color: var(--fg-3, #666);
+  flex-wrap: wrap;
+}
+
+.footer-bottom-creator strong {
+  color: var(--fg-2, #4A4A4A);
+  font-weight: 600;
+}
+
+/* ============================================
+   10) SUBJECT CARD HOVER
+   ============================================ */
+.subject {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform;
+}
+
+.subject:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
+}
+
+[data-theme="dark"] .subject:hover {
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+}
+
+/* ============================================
+   11) RESPONSIVE
+   ============================================ */
+@media (max-width: 768px) {
+  .hero-creator {
+    flex-direction: column;
+    text-align: center;
+    padding: 16px 18px;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .hero-creator-info {
+    justify-content: center;
+    flex-wrap: wrap;
+    text-align: center;
+  }
+
+  .hero-whatsapp {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 640px) {
+  .nav-creator {
+    display: none;
+  }
+
+  .footer-credit {
+    padding: 12px 14px;
+  }
+
+  .footer-whatsapp {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .back-to-top {
+    bottom: 80px !important;
+    left: 16px !important;
+    width: 40px !important;
+    height: 40px !important;
+  }
+}
+
+/* ============================================
+   12) PREFERS REDUCED MOTION
+   ============================================ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ============================================
+   13) ACCESSIBILITY
+   ============================================ */
+.hero-whatsapp:focus-visible,
+.footer-whatsapp:focus-visible,
+.back-to-top:focus-visible {
+  outline: 2px solid #7C5CFF;
+  outline-offset: 3px;
+}
