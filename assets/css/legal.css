@@ -1,0 +1,129 @@
+/* ============================================
+   ASCEND · Legal Pages (Privacy, Terms, Contact)
+   ============================================ */
+
+.legal-page {
+  padding: 120px 0 80px;
+  min-height: 100vh;
+}
+
+.legal-head {
+  max-width: 780px;
+  margin: 0 auto 48px;
+  text-align: center;
+}
+
+.legal-head h1 {
+  font-size: clamp(28px, 4vw, 40px);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  margin: 16px 0 8px;
+  color: var(--fg);
+}
+
+.legal-meta {
+  font-size: 13px;
+  color: var(--fg-3);
+}
+
+.legal-body {
+  max-width: 780px;
+  margin: 0 auto;
+  font-size: 15.5px;
+  line-height: 1.85;
+  color: var(--fg-1);
+}
+
+.legal-body section {
+  margin-bottom: 36px;
+}
+
+.legal-body h2 {
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  margin-bottom: 14px;
+  color: var(--fg);
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+
+.legal-body p {
+  margin-bottom: 14px;
+  color: var(--fg-1);
+}
+
+.legal-body ul {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 14px;
+}
+
+.legal-body ul li {
+  position: relative;
+  padding-right: 24px;
+  margin-bottom: 10px;
+  color: var(--fg-2);
+}
+
+.legal-body ul li::before {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 12px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  opacity: 0.7;
+}
+
+.legal-body strong {
+  color: var(--fg);
+  font-weight: 600;
+}
+
+.legal-body a {
+  color: var(--accent-fg);
+  text-decoration: underline;
+  text-decoration-color: rgba(124, 92, 255, 0.4);
+  text-underline-offset: 3px;
+  transition: color 150ms;
+}
+
+.legal-body a:hover {
+  color: var(--accent);
+  text-decoration-color: var(--accent);
+}
+
+.legal-body code {
+  background: var(--bg-3);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-size: 13px;
+  font-family: 'SF Mono', Monaco, 'Courier New', monospace;
+  color: var(--accent-fg);
+}
+
+.legal-back {
+  max-width: 780px;
+  margin: 60px auto 0;
+  text-align: center;
+}
+
+@media (max-width: 720px) {
+  .legal-page {
+    padding: 100px 0 60px;
+  }
+  .legal-head {
+    margin-bottom: 32px;
+  }
+  .legal-body {
+    font-size: 15px;
+    line-height: 1.8;
+  }
+  .legal-body h2 {
+    font-size: 18px;
+  }
+}
