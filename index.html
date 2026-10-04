@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#F7F8FC">
-<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#050506">
+<meta name="color-scheme" content="dark light">
 
 <title>ASCEND — منصة تعليمية للثانوية العامة | من إنشاء محمد حموده</title>
-<meta name="description" content="منصة تعليمية لطلاب الصف الثالث الثانوي — شعبة علمي علوم. شرح منظّم، اختبارات بتصحيح فوري، متابعة حقيقية. من إنشاء محمد حموده.">
-<meta name="keywords" content="الثانوية العامة, علمي علوم, منصة تعليمية, مصر, كيمياء, أحياء, فيزياء, عربي, إنجليزي, محمد حموده">
+<meta name="description" content="منصة تعليمية لطلاب الصف الثالث الثانوي — شعبة علمي علوم. شرح منظّم، اختبارات بتصحيح فوري، متابعة حقيقية. من إنشاء محمد حموده — 01227907756.">
+<meta name="keywords" content="الثانوية العامة, علمي علوم, منصة تعليمية, مصر, كيمياء, أحياء, فيزياء, عربي, إنجليزي, رياضيات, محمد حموده">
 <meta name="author" content="Mohamed Hamouda | محمد حموده">
 <meta name="creator" content="Mohamed Hamouda | محمد حموده">
 <meta name="robots" content="index, follow">
@@ -19,7 +19,7 @@
 <meta property="og:locale" content="ar_EG">
 <meta property="og:site_name" content="ASCEND">
 <meta property="og:title" content="ASCEND — منصة تعليمية للثانوية العامة">
-<meta property="og:description" content="كل ما تحتاجه للتفوق في مكان واحد. من إنشاء محمد حموده.">
+<meta property="og:description" content="كل ما تحتاجه للتفوق في مكان واحد. من إنشاء محمد حموده — 01227907756.">
 <meta property="og:url" content="https://ascend-platform.com/">
 <meta property="og:image" content="https://ascend-platform.com/assets/img/og-image.png">
 
@@ -28,6 +28,27 @@
 <meta name="twitter:title" content="ASCEND — منصة تعليمية للثانوية العامة">
 <meta name="twitter:description" content="كل ما تحتاجه للتفوق في مكان واحد. من إنشاء محمد حموده.">
 <meta name="twitter:creator" content="@mohamedhamouda">
+
+<!-- ═══════════════════════════════════════════
+     PREVENT FLASH OF WRONG THEME (FOUC)
+     يجب أن يكون قبل أي CSS
+     ═══════════════════════════════════════════ -->
+<script>
+(function() {
+  try {
+    var t = localStorage.getItem('ascend-theme');
+    if (!t) {
+      t = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+    }
+    document.documentElement.setAttribute('data-theme', t);
+    // Update theme-color meta
+    var meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.setAttribute('content', t === 'dark' ? '#050506' : '#F7F8FC');
+  } catch (e) {
+    document.documentElement.setAttribute('data-theme', 'dark');
+  }
+})();
+</script>
 
 <link rel="icon" type="image/svg+xml" href="/assets/img/favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -40,7 +61,7 @@
 <link rel="stylesheet" href="/assets/css/layout.css">
 <link rel="stylesheet" href="/assets/css/home.css">
 </head>
-<body data-theme="light">
+<body>
 
 <a href="#main" class="skip-link">تخطَّ إلى المحتوى الرئيسي</a>
 
@@ -66,6 +87,24 @@
       <p>
         شرح منظّم، اختبارات بتصحيح فوري، ومتابعة حقيقية لمستواك — بدون تشتت بين عشرات القنوات والملفات.
       </p>
+
+      <!-- ===== Creator + WhatsApp (Hero) ===== -->
+      <div class="hero-creator">
+        <div class="hero-creator-info">
+          <span class="hero-creator-label">من إنشاء</span>
+          <strong class="hero-creator-name">محمد حموده</strong>
+          <span class="hero-creator-sep">·</span>
+          <span class="hero-creator-en">Mohamed Hamouda</span>
+        </div>
+        <a href="https://wa.me/2012227907756?text=%D8%A7%D9%84%D8%B3%D9%84%D8%A7%D9%85%20%D8%B9%D9%84%D9%8A%D9%83%D9%85%D8%8C%20%D9%85%D8%AD%D8%AA%D8%A7%D8%AC%20%D9%85%D8%B3%D8%A7%D8%B9%D8%AF%D8%A9%20%D9%81%D9%8A%20%D9%85%D9%86%D8%B5%D8%A9%20ASCEND"
+           target="_blank" rel="noopener"
+           class="hero-whatsapp">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" style="width:16px;height:16px">
+            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+          </svg>
+          <span>للتواصل: 01227907756</span>
+        </a>
+      </div>
 
       <div class="hero-cta">
         <a href="/register.html" class="btn btn-primary btn-lg">إنشاء حساب مجاني</a>
@@ -151,6 +190,58 @@
     </div>
   </section>
 
+  <!-- ============ FAQ ============ -->
+  <section class="section" id="faq" aria-labelledby="faq-title" style="padding-top:0">
+    <div class="container">
+      <div class="section-head">
+        <div class="section-tag">الأسئلة الشائعة</div>
+        <h2 class="section-title" id="faq-title">عندك سؤال؟</h2>
+      </div>
+
+      <div class="faq-list" style="max-width:780px;margin:0 auto;display:flex;flex-direction:column;gap:10px">
+        <div class="faq-item" aria-expanded="false" style="background:var(--bg-2);border:1px solid var(--border);border-radius:14px;overflow:hidden">
+          <button class="faq-btn" style="width:100%;text-align:right;padding:20px 24px;display:flex;justify-content:space-between;align-items:center;gap:16px;font-size:15px;font-weight:600;color:var(--fg)">
+            <span>هل المنصة مجانية بالكامل؟</span>
+            <svg viewBox="0 0 24 24" style="width:20px;height:20px;stroke:var(--fg-3);fill:none;stroke-width:2;flex-shrink:0;transition:transform 0.3s"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          <div class="faq-content" style="max-height:0;overflow:hidden;transition:max-height 0.3s ease">
+            <p style="padding:0 24px 20px;color:var(--fg-2);line-height:1.7;font-size:14px">نعم، المنصة مجانية 100% لجميع الطلاب. كل الفيديوهات والمذكرات والاختبارات متاحة بدون أي رسوم.</p>
+          </div>
+        </div>
+
+        <div class="faq-item" aria-expanded="false" style="background:var(--bg-2);border:1px solid var(--border);border-radius:14px;overflow:hidden">
+          <button class="faq-btn" style="width:100%;text-align:right;padding:20px 24px;display:flex;justify-content:space-between;align-items:center;gap:16px;font-size:15px;font-weight:600;color:var(--fg)">
+            <span>إزاي أسجّل في المنصة؟</span>
+            <svg viewBox="0 0 24 24" style="width:20px;height:20px;stroke:var(--fg-3);fill:none;stroke-width:2;flex-shrink:0;transition:transform 0.3s"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          <div class="faq-content" style="max-height:0;overflow:hidden;transition:max-height 0.3s ease">
+            <p style="padding:0 24px 20px;color:var(--fg-2);line-height:1.7;font-size:14px">اضغط على "إنشاء حساب مجاني"، اكتب بياناتك، وبعدها تقدر تبدأ في استخدام المنصة مباشرة.</p>
+          </div>
+        </div>
+
+        <div class="faq-item" aria-expanded="false" style="background:var(--bg-2);border:1px solid var(--border);border-radius:14px;overflow:hidden">
+          <button class="faq-btn" style="width:100%;text-align:right;padding:20px 24px;display:flex;justify-content:space-between;align-items:center;gap:16px;font-size:15px;font-weight:600;color:var(--fg)">
+            <span>هل المحتوى يغطي المنهج كامل؟</span>
+            <svg viewBox="0 0 24 24" style="width:20px;height:20px;stroke:var(--fg-3);fill:none;stroke-width:2;flex-shrink:0;transition:transform 0.3s"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          <div class="faq-content" style="max-height:0;overflow:hidden;transition:max-height 0.3s ease">
+            <p style="padding:0 24px 20px;color:var(--fg-2);line-height:1.7;font-size:14px">بنضيف المناهج تدريجياً. حالياً عندنا 5 مواد رئيسية مع فصولهم ودروسهم الكاملة — وهيتم إضافة باقي المحتوى باستمرار.</p>
+          </div>
+        </div>
+
+        <div class="faq-item" aria-expanded="false" style="background:var(--bg-2);border:1px solid var(--border);border-radius:14px;overflow:hidden">
+          <button class="faq-btn" style="width:100%;text-align:right;padding:20px 24px;display:flex;justify-content:space-between;align-items:center;gap:16px;font-size:15px;font-weight:600;color:var(--fg)">
+            <span>مين اللي عمل المنصة؟</span>
+            <svg viewBox="0 0 24 24" style="width:20px;height:20px;stroke:var(--fg-3);fill:none;stroke-width:2;flex-shrink:0;transition:transform 0.3s"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          <div class="faq-content" style="max-height:0;overflow:hidden;transition:max-height 0.3s ease">
+            <p style="padding:0 24px 20px;color:var(--fg-2);line-height:1.7;font-size:14px">المنصة من إنشاء <strong>محمد حموده (Mohamed Hamouda)</strong>. للتواصل: <a href="https://wa.me/2012227907756" target="_blank" rel="noopener" style="color:var(--accent-fg);text-decoration:underline">01227907756</a></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- ============ CTA ============ -->
   <section class="cta" aria-labelledby="cta-title">
     <div class="container">
@@ -167,78 +258,8 @@
 
 </main>
 
-<!-- ============ FOOTER (Creator: محمد حموده) ============ -->
-<footer class="site-footer">
-  <div class="footer-container">
-
-    <div class="footer-top">
-      <div class="footer-brand-block">
-        <a href="/" class="footer-brand">
-          <span class="footer-brand-mark">
-            <svg viewBox="0 0 24 24"><path d="M7 17L17 7M17 7H9M17 7v8"/></svg>
-          </span>
-          <span>ASCEND</span>
-        </a>
-        <p class="footer-desc">
-          منصة تعليمية متكاملة لطلاب الصف الثالث الثانوي — شعبة علمي علوم. كل ما تحتاجه للتفوق في مكان واحد.
-        </p>
-
-        <div class="footer-creator">
-          <div class="footer-creator-icon">
-            <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z"/></svg>
-          </div>
-          <div>
-            <div class="footer-creator-label">من إنشاء</div>
-            <div class="footer-creator-name">محمد حموده</div>
-            <div class="footer-creator-en">Mohamed Hamouda</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="footer-links">
-        <div class="footer-col">
-          <h4>المنصة</h4>
-          <ul>
-            <li><a href="/#subjects">المواد</a></li>
-            <li><a href="/#features">المميزات</a></li>
-            <li><a href="/library.html">المكتبة</a></li>
-          </ul>
-        </div>
-
-        <div class="footer-col">
-          <h4>الحساب</h4>
-          <ul>
-            <li><a href="/login.html">تسجيل الدخول</a></li>
-            <li><a href="/register.html">إنشاء حساب</a></li>
-            <li><a href="/dashboard.html">لوحتي</a></li>
-          </ul>
-        </div>
-
-        <div class="footer-col">
-          <h4>المزيد</h4>
-          <ul>
-            <li><a href="/privacy.html">سياسة الخصوصية</a></li>
-            <li><a href="/terms.html">شروط الاستخدام</a></li>
-            <li><a href="/contact.html">تواصل معنا</a></li>
-          </ul>
-        </div>
-      </div>
-    </div>
-
-    <div class="footer-bottom">
-      <div class="footer-bottom-left">
-        © 2026 <strong>ASCEND</strong> · جميع الحقوق محفوظة
-      </div>
-      <div class="footer-bottom-right">
-        <span class="footer-crafted">صُنع بـ</span>
-        <span class="footer-heart">♥</span>
-        <span class="footer-crafted">بواسطة</span>
-        <strong>محمد حموده</strong>
-      </div>
-    </div>
-
-  </div>
-</footer>
+<!-- Footer (يتحمل ديناميكياً من components.js) -->
+<div id="site-footer"></div>
 
 <noscript>
   <div style="padding:40px 24px;text-align:center;background:#1a1a1a;color:#fff;margin:24px">
@@ -246,77 +267,12 @@
   </div>
 </noscript>
 
-<script type="module">
-import { supabase } from '/assets/js/supabase.js';
-import { renderNav, injectStructuredData } from '/assets/js/components.js';
-import { escapeHtml, withRetry } from '/assets/js/utils.js';
+<script type="module" src="/assets/js/home.js"></script>
 
-injectStructuredData();
-await renderNav();
-
-const grid = document.getElementById('subjectsGrid');
-const elSubjects = document.getElementById('heroStatSubjects');
-const elChapters = document.getElementById('heroStatChapters');
-const elLessons = document.getElementById('heroStatLessons');
-
-async function loadSubjects() {
-  try {
-    const data = await withRetry(async () => {
-      const { data, error } = await supabase
-        .from('subjects')
-        .select('id, name, slug, color, description, teachers(name)')
-        .order('id');
-      if (error) throw error;
-      return data;
-    });
-
-    if (!data || data.length === 0) {
-      grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:var(--fg-4);padding:48px 0;font-size:14px">لا توجد مواد متاحة حاليًا.</div>';
-      return;
-    }
-
-    grid.innerHTML = data.map(s => {
-      const teachers = (s.teachers || []).map(t => t.name).join(' · ');
-      const initial = (s.name || '?').trim().charAt(0);
-      return `
-        <a href="/register.html" class="subject" style="--subject-accent:${escapeHtml(s.color || '#8B5CF6')}">
-          <div class="subject-head">
-            <div class="subject-icon"><span>${escapeHtml(initial)}</span></div>
-            <div>
-              <h3>${escapeHtml(s.name)}</h3>
-              <div class="meta">${escapeHtml(teachers || 'قريبًا')}</div>
-            </div>
-          </div>
-          <p>${escapeHtml(s.description || '')}</p>
-        </a>
-      `;
-    }).join('');
-
-    elSubjects.textContent = data.length;
-  } catch (err) {
-    console.error('[ASCEND] Subjects failed:', err);
-    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:#F85149;padding:48px 0;font-size:14px">تعذّر تحميل المواد.</div>';
-  }
-}
-
-async function loadCounts() {
-  try {
-    const [ch, ls] = await Promise.all([
-      supabase.from('chapters').select('*', { count: 'exact', head: true }),
-      supabase.from('lessons').select('*', { count: 'exact', head: true })
-    ]);
-    elChapters.textContent = ch.count ?? 0;
-    elLessons.textContent = ls.count ?? 0;
-  } catch (err) {
-    console.error('[ASCEND] Counts failed:', err);
-  }
-}
-
-loadSubjects();
-loadCounts();
-</script>
-</body><a href="/chat.html" class="floating-chat-btn" aria-label="المساعد الذكي">
+<a href="/chat.html" class="floating-chat-btn" aria-label="المساعد الذكي">
   <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
   <span class="floating-chat-label">محتاج مساعدة؟</span>
 </a>
-</html>
+
+</body>
+  </html>
