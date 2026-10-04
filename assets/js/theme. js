@@ -1,0 +1,120 @@
+// ============================================
+// ASCEND · Theme Manager
+// Dark / Light Mode with localStorage
+// Created by Mohamed Hamouda
+// ============================================
+
+const THEME_KEY = 'ascend-theme';
+const THEMES = { DARK: 'dark', LIGHT: 'light' };
+
+/* ============================================
+   1) GET INITIAL THEME
+   ============================================ */
+function getInitialTheme() {
+  // 1) Check localStorage
+  try {
+    const saved = localStorage.getItem(THEME_KEY);
+    if (saved === THEMES.DARK || saved === THEMES.LIGHT) return saved;
+  } catch (_) {}
+
+  // 2) Check system preference
+  if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+    return THEMES.LIGHT;
+  }
+
+  // 3) Default: dark (منصة تعليمية → مريح للعين)
+  return THEMES.DARK;
+}
+
+/* ============================================
+   2) APPLY THEME
+   ============================================ */
+function applyTheme(theme) {
+  const root = document.documentElement;
+  const body = document.body;
+
+  // Apply on html (عشان يعمل قبل load)
+  root.setAttribute('data-theme', theme);
+
+  // Apply on body (للـ CSS اللي بيعتمد على body)
+  if (body) body.setAttribute('data-theme', theme);
+
+  // Update theme-color meta
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if (meta) {
+    meta.setAttribute('content', theme === THEMES.DARK ? '#050506' : '#F7F8FC');
+  }
+
+  // Update all toggles on the page
+  updateToggleIcons(theme);
+}
+
+/* ============================================
+   3) UPDATE TOGGLE ICONS
+   ============================================ */
+function updateToggleIcons(theme) {
+  document.querySelectorAll('.theme-toggle').forEach(btn => {
+    btn.setAttribute('aria-label',
+      theme === THEMES.DARK ? 'التبديل إلى الوضع الفاتح' : 'التبديل إلى الوضع الداكن'
+    );
+    btn.setAttribute('title',
+      theme === THEMES.DARK ? 'الوضع الفاتح' : 'الوضع الداكن'
+    );
+  });
+}
+
+/* ============================================
+   4) TOGGLE THEME
+   ============================================ */
+function toggleTheme() {
+  const current = document.documentElement.getAttribute('data-theme') || THEMES.DARK;
+  const next = current === THEMES.DARK ? THEMES.LIGHT : THEMES.DARK;
+
+  applyTheme(next);
+
+  try {
+    localStorage.setItem(THEME_KEY, next);
+  } catch (_) {}
+
+  // Dispatch event for other scripts
+  window.dispatchEvent(new CustomEvent('ascend:theme-change', {
+    detail: { theme: next }
+  }));
+}
+
+/* ============================================
+   5) INIT ON LOAD (فوراً قبل أي حاجة)
+   ============================================ */
+const initialTheme = getInitialTheme();
+applyTheme(initialTheme);
+
+/* ============================================
+   6) EXPORT + GLOBAL
+   ============================================ */
+window.ASCEND_THEME = {
+  toggle: toggleTheme,
+  apply: applyTheme,
+  get: () => document.documentElement.getAttribute('data-theme'),
+  THEMES
+};
+
+export { toggleTheme, applyTheme, getInitialTheme, THEMES };
+
+/* ============================================
+   7) LISTEN TO SYSTEM CHANGES
+   ============================================ */
+if (window.matchMedia) {
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+    // Only auto-switch if user didn't manually set a theme
+    try {
+      if (!localStorage.getItem(THEME_KEY)) {
+        applyTheme(e.matches ? THEMES.DARK : THEMES.LIGHT);
+      }
+    } catch (_) {}
+  });
+}
+
+/* ============================================
+   8) CONSOLE
+   ============================================ */
+console.log(`[ASCEND] Theme: ${initialTheme === THEMES.DARK ? '🌙 Dark' : '☀️ Light'}`);
