@@ -36,12 +36,11 @@
 <script>
 (function() {
   try {
-    var t = localStorage.getItem('ascend-theme');
-    if (!t) {
+    var t = localStorage.getItem('ascend:theme');
+    if (!t || (t !== 'light' && t !== 'dark')) {
       t = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
     }
     document.documentElement.setAttribute('data-theme', t);
-    // Update theme-color meta
     var meta = document.querySelector('meta[name="theme-color"]');
     if (meta) meta.setAttribute('content', t === 'dark' ? '#050506' : '#F7F8FC');
   } catch (e) {
@@ -267,12 +266,18 @@
   </div>
 </noscript>
 
+<!-- ═══════════════════════════════════════════
+     SCRIPTS
+     الترتيب مهم: home.js ثم theme.js
+     ═══════════════════════════════════════════ -->
 <script type="module" src="/assets/js/home.js"></script>
+<script type="module" src="/assets/js/theme.js"></script>
 
+<!-- ============ FLOATING CHAT BUTTON ============ -->
 <a href="/chat.html" class="floating-chat-btn" aria-label="المساعد الذكي">
   <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
   <span class="floating-chat-label">محتاج مساعدة؟</span>
 </a>
-<script type="module" src="/assets/js/theme.js"></script>
+
 </body>
-  </html>
+                        </html>
