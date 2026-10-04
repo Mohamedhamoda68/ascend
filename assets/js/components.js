@@ -33,7 +33,9 @@ const ICON_MOON = `
     <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
   </svg>`;
 
-/* ---------- Theme Manager ---------- */
+/* ============================================
+   Theme Manager (shared with theme.js)
+   ============================================ */
 const THEME_KEY = 'ascend:theme';
 
 function getTheme() {
@@ -44,31 +46,36 @@ function getTheme() {
   return 'dark';
 }
 
-function setTheme(theme) {
+function saveTheme(theme) {
   try {
     localStorage.setItem(THEME_KEY, theme);
   } catch (e) {}
-  applyTheme(theme);
 }
 
 function applyTheme(theme) {
   document.documentElement.setAttribute('data-theme', theme);
-  document.body.setAttribute('data-theme', theme);
+  if (document.body) document.body.setAttribute('data-theme', theme);
 
   const meta = document.querySelector('meta[name="theme-color"]');
   if (meta) {
     meta.setAttribute('content', theme === 'light' ? '#F7F8FC' : '#050506');
   }
 
+  /* Update every toggle button's icon */
   document.querySelectorAll('[data-theme-toggle]').forEach(btn => {
     btn.innerHTML = theme === 'light' ? ICON_MOON : ICON_SUN;
+    const label = theme === 'light' ? 'تبديل للوضع الداكن' : 'تبديل للوضع الفاتح';
+    btn.setAttribute('aria-label', label);
   });
 }
 
-function initTheme() {
-  applyTheme(getTheme());
+function toggleTheme() {
+  const next = getTheme() === 'dark' ? 'light' : 'dark';
+  saveTheme(next);
+  applyTheme(next);
 }
 
+/* ✅ زر الثيم مع listener حقيقي */
 function createThemeButton() {
   const btn = document.createElement('button');
   btn.type = 'button';
@@ -76,9 +83,10 @@ function createThemeButton() {
   btn.setAttribute('data-theme-toggle', 'true');
   btn.setAttribute('aria-label', 'تبديل الوضع الليلي');
 
-  btn.addEventListener('click', () => {
-    const next = getTheme() === 'dark' ? 'light' : 'dark';
-    setTheme(next);
+  btn.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    toggleTheme();
   });
 
   return btn;
@@ -115,6 +123,7 @@ export async function renderNav({ auth = true } = {}) {
     } catch (_) { /* silent */ }
   }
 
+  /* ✅ نبني الـ Nav */
   mount.innerHTML = `
     <nav class="nav" role="navigation" aria-label="التنقل الرئيسي">
       <div class="nav-inner">
@@ -124,14 +133,20 @@ export async function renderNav({ auth = true } = {}) {
         </a>
         <div class="nav-menu">
           ${links}
-          <button type="button" class="icon-btn theme-toggle" data-theme-toggle="true" aria-label="تبديل الوضع الليلي"></button>
+          <span class="theme-toggle-slot"></span>
           ${authBlock}
         </div>
       </div>
     </nav>
   `;
 
-  /* Update theme icons */
+  /* ✅ نحط زر الثيم بـ DOM API عشان الـ listener يشتغل */
+  const slot = mount.querySelector('.theme-toggle-slot');
+  if (slot) {
+    slot.replaceWith(createThemeButton());
+  }
+
+  /* ✅ نحدّث الأيقونة حسب الوضع الحالي */
   applyTheme(getTheme());
 }
 
@@ -208,6 +223,3 @@ export function injectStructuredData() {
   });
   document.head.appendChild(script);
 }
-
-/* ---------- Init Theme ---------- */
-initTheme();
