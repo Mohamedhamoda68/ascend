@@ -338,56 +338,6 @@
 }
 </style>
 
-<script>
-(function() {
-  'use strict';
-
-  function initFaq() {
-    var faqBtns = document.querySelectorAll('.faq-btn');
-    if (!faqBtns.length) return;
-
-    faqBtns.forEach(function(btn) {
-      btn.addEventListener('click', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-
-        var item = btn.closest('.faq-item');
-        if (!item) return;
-
-        var content = item.querySelector('.faq-content');
-        if (!content) return;
-
-        var isOpen = item.getAttribute('aria-expanded') === 'true';
-
-        // اقفل كل الأسئلة التانية
-        document.querySelectorAll('.faq-item').forEach(function(other) {
-          if (other !== item) {
-            other.setAttribute('aria-expanded', 'false');
-            var c = other.querySelector('.faq-content');
-            if (c) c.style.maxHeight = '0';
-          }
-        });
-
-        // بدّل حالة السؤال الحالي
-        if (isOpen) {
-          item.setAttribute('aria-expanded', 'false');
-          content.style.maxHeight = '0';
-        } else {
-          item.setAttribute('aria-expanded', 'true');
-          content.style.maxHeight = content.scrollHeight + 'px';
-        }
-      });
-    });
-  }
-
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initFaq);
-  } else {
-    initFaq();
-  }
-})();
-</script>
-
 <!-- ============ FLOATING CHAT BUTTON ============ -->
 <a href="/chat.html" class="floating-chat-btn" aria-label="المساعد الذكي">
   <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
@@ -399,4 +349,4 @@
 <script type="module" src="/assets/js/theme.js"></script>
 
 </body>
-                                                                       </html>
+             </html>
