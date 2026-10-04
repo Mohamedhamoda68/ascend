@@ -38,22 +38,23 @@ const WA_SVG = `
   </svg>`;
 
 /* ============================================
-   THEME TOGGLE — Premium Switch Design
+   THEME SWITCHER (Light/Dark Buttons)
+   نفس تصميم legend.css
    ============================================ */
-const THEME_TOGGLE_HTML = `
-  <button class="theme-toggle" aria-label="تبديل الوضع" type="button" aria-pressed="false">
-    <span class="theme-toggle-track">
-      <span class="theme-toggle-thumb">
-        <svg class="theme-icon theme-icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
-        </svg>
-        <svg class="theme-icon theme-icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="4"/>
-          <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
-        </svg>
-      </span>
-    </span>
-  </button>
+const THEME_SWITCHER_HTML = `
+  <div class="nav-theme" role="group" aria-label="تبديل الوضع">
+    <button type="button" data-theme-btn="light" aria-label="الوضع الفاتح" title="فاتح">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="4"/>
+        <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
+      </svg>
+    </button>
+    <button type="button" data-theme-btn="dark" aria-label="الوضع الداكن" title="داكن">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
+      </svg>
+    </button>
+  </div>
 `;
 
 /* ============================================
@@ -68,7 +69,7 @@ export async function renderNav({ auth = true } = {}) {
   ).join('');
 
   let authBlock = `
-    ${THEME_TOGGLE_HTML}
+    ${THEME_SWITCHER_HTML}
     <a href="/login.html" class="btn btn-ghost btn-sm">دخول</a>
     <a href="/register.html" class="btn btn-primary btn-sm">ابدأ مجانًا</a>
   `;
@@ -87,7 +88,7 @@ export async function renderNav({ auth = true } = {}) {
         const displayName = profile?.full_name || 'حسابي';
 
         authBlock = `
-          ${THEME_TOGGLE_HTML}
+          ${THEME_SWITCHER_HTML}
           <a href="/dashboard.html" class="user-chip" aria-label="حسابي">
             <span class="user-chip-avatar">${escapeHtml(initials)}</span>
             <span class="user-chip-name">${escapeHtml(displayName)}</span>
@@ -118,32 +119,52 @@ export async function renderNav({ auth = true } = {}) {
     </nav>
   `;
 
-  // Wire up theme toggles
-  bindThemeToggles(mount);
+  // Wire up theme switcher
+  bindThemeSwitcher(mount);
 }
 
 /* ============================================
-   BIND THEME TOGGLES
+   BIND THEME SWITCHER
    ============================================ */
-function bindThemeToggles(root = document) {
-  root.querySelectorAll('.theme-toggle').forEach(btn => {
+function bindThemeSwitcher(root = document) {
+  const switcher = root.querySelector('.nav-theme');
+  if (!switcher) return;
+
+  const buttons = switcher.querySelectorAll('[data-theme-btn]');
+
+  // Update active state
+  const updateActive = (theme) => {
+    buttons.forEach(btn => {
+      const isActive = btn.dataset.themeBtn === theme;
+      btn.classList.toggle('active', isActive);
+      btn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+    });
+  };
+
+  // Initial state
+  const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+  updateActive(currentTheme);
+
+  // Click handlers
+  buttons.forEach(btn => {
     if (btn.dataset.bound === 'true') return;
     btn.dataset.bound = 'true';
 
     btn.addEventListener('click', (e) => {
       e.preventDefault();
-      e.stopPropagation();
-      window.ASCEND_THEME?.toggle?.();
-    });
+      const target = btn.dataset.themeBtn;
 
-    // Keyboard support
-    btn.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        window.ASCEND_THEME?.toggle?.();
+      if (target === 'light' || target === 'dark') {
+        window.ASCEND_THEME?.set?.(target);
+        updateActive(target);
       }
     });
   });
+
+  // Listen for theme changes from elsewhere
+  window.addEventListener('ascend:theme-change', (e) => {
+    if (e.detail?.theme) updateActive(e.detail.theme);
+  }, { passive: true });
 }
 
 /* ============================================
@@ -263,6 +284,6 @@ export function injectStructuredData() {
 }
 
 /* ============================================
-   EXPORT THEME BINDING FOR OTHER PAGES
+   EXPORT
    ============================================ */
-export { bindThemeToggles };
+export { bindThemeSwitcher };
