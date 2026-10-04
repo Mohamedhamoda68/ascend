@@ -1,17 +1,15 @@
 // ============================================
-// ASCEND · Theme Manager
-// Created by Mohamed Hamouda
+// ASCEND · Theme Manager (Debug Version)
 // ============================================
 
 const THEME_KEY = 'ascend:theme';
 const DEFAULT_THEME = 'dark';
 
-/* ============ ICONS ============ */
-const ICON_SUN = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>`;
+console.log('🎨 [theme.js] Loaded');
 
+const ICON_SUN = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>`;
 const ICON_MOON = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>`;
 
-/* ============ GET CURRENT THEME ============ */
 function getCurrentTheme() {
   try {
     const saved = localStorage.getItem(THEME_KEY);
@@ -20,43 +18,32 @@ function getCurrentTheme() {
   return DEFAULT_THEME;
 }
 
-/* ============ APPLY THEME ============ */
 function applyTheme(theme) {
+  console.log('🎨 [theme.js] Applying theme:', theme);
   document.documentElement.setAttribute('data-theme', theme);
-  document.body.setAttribute('data-theme', theme);
+  if (document.body) document.body.setAttribute('data-theme', theme);
 
-  /* Update meta theme-color */
   const meta = document.querySelector('meta[name="theme-color"]');
-  if (meta) {
-    meta.setAttribute('content', theme === 'light' ? '#F7F8FC' : '#050506');
-  }
+  if (meta) meta.setAttribute('content', theme === 'light' ? '#F7F8FC' : '#050506');
 
-  /* Update all toggles on page */
   document.querySelectorAll('[data-theme-toggle]').forEach(btn => {
     updateToggleIcon(btn, theme);
   });
 }
 
-/* ============ SAVE THEME ============ */
 function saveTheme(theme) {
-  try {
-    localStorage.setItem(THEME_KEY, theme);
-  } catch (e) {}
+  try { localStorage.setItem(THEME_KEY, theme); } catch (e) {}
 }
 
-/* ============ UPDATE TOGGLE ICON ============ */
 function updateToggleIcon(btn, theme) {
+  if (!btn) return;
   const label = theme === 'light' ? 'تبديل للوضع الداكن' : 'تبديل للوضع الفاتح';
   btn.setAttribute('aria-label', label);
   btn.innerHTML = theme === 'light' ? ICON_MOON : ICON_SUN;
 }
 
-/* ============ CREATE TOGGLE BUTTON ============ */
 export function createThemeToggle(options = {}) {
-  const {
-    className = 'icon-btn theme-toggle',
-    style = ''
-  } = options;
+  const { className = 'icon-btn theme-toggle', style = '' } = options;
 
   const btn = document.createElement('button');
   btn.type = 'button';
@@ -64,56 +51,56 @@ export function createThemeToggle(options = {}) {
   btn.setAttribute('data-theme-toggle', 'true');
   if (style) btn.setAttribute('style', style);
 
-  /* Click handler */
-  btn.addEventListener('click', () => {
+  btn.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
     const current = getCurrentTheme();
     const next = current === 'dark' ? 'light' : 'dark';
+    console.log('🎨 [theme.js] Toggle clicked →', next);
     saveTheme(next);
     applyTheme(next);
   });
 
-  /* Set initial icon */
   updateToggleIcon(btn, getCurrentTheme());
-
   return btn;
 }
 
-/* ============ AUTO-INJECT ============ */
 export function autoInjectThemeToggle() {
-  /* Find the topbar actions or nav */
-  const targets = [
-    '.legend-topbar-actions',   /* Legend pages */
-    '.topbar-actions',           /* Dashboard/Admin */
-    '.nav-menu'                  /* Public pages */
-  ];
+  console.log('🎨 [theme.js] Auto-injecting toggle...');
+  
+  const targets = ['.legend-topbar-actions', '.topbar-actions', '.nav-menu'];
 
   for (const selector of targets) {
     const target = document.querySelector(selector);
     if (target) {
-      /* Check if already exists */
-      if (target.querySelector('[data-theme-toggle]')) return;
+      console.log('🎨 [theme.js] Found target:', selector);
+      
+      if (target.querySelector('[data-theme-toggle]')) {
+        console.log('🎨 [theme.js] Toggle already exists');
+        return;
+      }
 
       const toggle = createThemeToggle({
         className: target.closest('.legend-topbar') ? 'legend-icon-btn' : 'icon-btn'
       });
 
-      /* Insert before the avatar/last button */
       const lastBtn = target.querySelector('.legend-icon-btn.avatar, .user-chip, button:last-child');
       if (lastBtn && lastBtn.parentElement === target) {
         target.insertBefore(toggle, lastBtn);
       } else {
         target.appendChild(toggle);
       }
+      console.log('🎨 [theme.js] Toggle injected ✅');
       return;
     }
   }
+  console.warn('🎨 [theme.js] No target found for toggle');
 }
 
-/* ============ INIT ============ */
 export function initTheme() {
+  console.log('🎨 [theme.js] Init...');
   applyTheme(getCurrentTheme());
 
-  /* Auto-inject after DOM ready */
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', autoInjectThemeToggle);
   } else {
@@ -121,8 +108,4 @@ export function initTheme() {
   }
 }
 
-/* ============ AUTO-INIT ============ */
-initTheme();
-<script type="module" src="/assets/js/theme.js"></script>
-<script type="module" src="/assets/js/admin.js"></script>
-</body>
+initTheme(); 
