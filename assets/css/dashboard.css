@@ -64,11 +64,11 @@
   text-decoration:none;
 }
 .sidebar-link:hover{
-  background:rgba(255,255,255,0.04);
+  background:var(--bg-2);
   color:var(--fg);
 }
 .sidebar-link.active{
-  background:rgba(124,92,255,0.1);
+  background:var(--accent-bg);
   color:var(--fg);
   font-weight:500;
 }
@@ -91,7 +91,7 @@
   margin-right:auto;
   font-size:11px;
   padding:2px 6px;
-  background:rgba(255,255,255,0.06);
+  background:var(--bg-3);
   border-radius:var(--r-full);
   color:var(--fg-3);
 }
@@ -110,7 +110,7 @@
   cursor:pointer;
   transition:background 140ms;
 }
-.user-card:hover{background:rgba(255,255,255,0.04)}
+.user-card:hover{background:var(--bg-2)}
 .user-card-avatar{
   width:32px;
   height:32px;
@@ -153,8 +153,9 @@
   align-items:center;
   justify-content:space-between;
   padding:0 28px;
-  background:rgba(5,5,6,0.7);
+  background:color-mix(in srgb, var(--bg) 72%, transparent);
   backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
   position:sticky;
   top:0;
   z-index:10;
@@ -183,7 +184,7 @@
   border:none;
   cursor:pointer;
 }
-.icon-btn:hover{background:rgba(255,255,255,0.05);color:var(--fg)}
+.icon-btn:hover{background:var(--bg-2);color:var(--fg)}
 .icon-btn svg{
   width:16px;
   height:16px;
@@ -280,7 +281,7 @@
 }
 .stat-card-value.accent{color:var(--accent-fg)}
 .stat-card-value.gold{color:var(--gold)}
-.stat-card-value.success{color:#4ADE80}
+.stat-card-value.success{color:var(--success)}
 
 /* ============================================
    SECTION BLOCK
@@ -393,7 +394,7 @@
   height:100%;
   background:var(--subject-accent,var(--accent));
   border-radius:2px;
-  transition:width 600ms var(--ease);
+  transition:width 600ms var(--ease, cubic-bezier(0.32,0.72,0,1));
 }
 .subject-card-foot{
   display:flex;
@@ -446,7 +447,7 @@
   stroke-linejoin:round;
 }
 .activity-icon.watched{color:var(--accent-fg)}
-.activity-icon.tested{color:#4ADE80}
+.activity-icon.tested{color:var(--success)}
 .activity-icon.earned{color:var(--gold)}
 .activity-body{flex:1;min-width:0}
 .activity-text{
@@ -509,11 +510,11 @@
   gap:12px;
   padding:14px 18px;
   border-radius:var(--r-3);
-  background:rgba(210,153,34,0.08);
-  border:1px solid rgba(210,153,34,0.24);
+  background:var(--warning-bg);
+  border:1px solid var(--warning-border);
   margin-bottom:24px;
   font-size:13.5px;
-  color:#FCD34D;
+  color:var(--warning);
   line-height:1.6;
 }
 .pending-banner svg{
@@ -603,7 +604,7 @@
     right:0;
     width:260px;
     transform:translateX(100%);
-    transition:transform 250ms var(--ease);
+    transition:transform 250ms cubic-bezier(0.32,0.72,0,1);
     z-index:100;
     border-left:1px solid var(--border);
     border-right:none;
