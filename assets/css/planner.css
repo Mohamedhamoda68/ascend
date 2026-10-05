@@ -1,0 +1,553 @@
+/* ============================================
+   ASCEND · Planner
+   Created by Mohamed Hamouda
+   ============================================ */
+
+/* ============ TIMER BANNER ============ */
+.timer-banner {
+  position: sticky;
+  top: 60px;
+  z-index: 20;
+  background: linear-gradient(135deg, var(--accent), #EC4899);
+  border-radius: var(--r-4);
+  padding: 16px 20px;
+  margin-bottom: 24px;
+  box-shadow: 0 12px 40px -12px rgba(124, 92, 255, 0.6);
+  color: #fff;
+  animation: slideDown 0.4s ease;
+}
+
+@keyframes slideDown {
+  from { transform: translateY(-20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.timer-banner-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.timer-banner .tb-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  min-width: 180px;
+}
+
+.timer-banner .tb-icon {
+  font-size: 28px;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+.timer-banner .tb-title {
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 1.3;
+  color: #fff;
+}
+
+.timer-banner .tb-sub {
+  font-size: 12px;
+  opacity: 0.85;
+  color: #fff;
+}
+
+.timer-banner .tb-time {
+  font-size: 26px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  background: rgba(0, 0, 0, 0.25);
+  padding: 8px 18px;
+  border-radius: 12px;
+  letter-spacing: 1px;
+  min-width: 130px;
+  text-align: center;
+  color: #fff;
+}
+
+.timer-banner .tb-btns {
+  display: flex;
+  gap: 8px;
+}
+
+.timer-banner .tb-btns button {
+  background: rgba(0, 0, 0, 0.3);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  padding: 8px 14px;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 150ms;
+  font-family: inherit;
+}
+
+.timer-banner .tb-btns button:hover {
+  background: rgba(0, 0, 0, 0.5);
+  transform: translateY(-1px);
+}
+
+/* ============ NOTIFICATION BANNER ============ */
+.notif-banner {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px;
+  border-radius: var(--r-4);
+  margin-bottom: 16px;
+  border: 1px solid;
+  animation: slideDown 0.4s ease;
+  flex-wrap: wrap;
+}
+
+.notif-banner.upcoming {
+  background: var(--accent-bg);
+  border-color: var(--accent-border);
+  color: var(--accent-fg);
+}
+
+.notif-banner.overdue {
+  background: var(--danger-bg);
+  border-color: var(--danger-border);
+  color: var(--danger);
+}
+
+.notif-banner .nb-icon {
+  font-size: 22px;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.notif-banner .nb-content {
+  flex: 1;
+  min-width: 180px;
+}
+
+.notif-banner .nb-title {
+  font-weight: 700;
+  font-size: 14px;
+  margin-bottom: 2px;
+}
+
+.notif-banner .nb-sub {
+  font-size: 12.5px;
+  opacity: 0.9;
+}
+
+.notif-banner button {
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid currentColor;
+  color: inherit;
+  padding: 8px 14px;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 12.5px;
+  cursor: pointer;
+  transition: all 150ms;
+  font-family: inherit;
+}
+
+.notif-banner button:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* ============ PLANNER FORM ============ */
+.planner-form {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  background: var(--bg-1);
+  border: 1px solid var(--border);
+  border-radius: var(--r-4);
+  padding: 20px;
+}
+
+.pf-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.pf-field label {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--fg-3);
+  letter-spacing: -0.005em;
+}
+
+.pf-field select {
+  background: var(--bg-2);
+  border: 1px solid var(--border-2);
+  color: var(--fg-1);
+  padding: 10px 12px;
+  border-radius: var(--r-2);
+  font-size: 13.5px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 150ms;
+}
+
+.pf-field select:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: var(--focus);
+}
+
+.pf-field select:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pf-add {
+  grid-column: 1 / -1;
+  justify-self: stretch;
+  padding: 12px;
+  font-size: 14px;
+}
+
+/* ============ PENDING LIST ============ */
+.pending-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pending-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: var(--warning-bg);
+  border: 1px solid var(--warning-border);
+  border-radius: var(--r-3);
+  font-size: 13.5px;
+}
+
+.pending-item-text {
+  flex: 1;
+  color: var(--fg-1);
+}
+
+.pending-item button {
+  background: var(--warning);
+  color: #fff;
+  border: none;
+  padding: 7px 13px;
+  border-radius: var(--r-2);
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 150ms;
+  font-family: inherit;
+}
+
+.pending-item button:hover {
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+}
+
+/* ============ WEEK GRID ============ */
+.week-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+}
+
+.day-block {
+  background: var(--bg-1);
+  border: 1px solid var(--border);
+  border-radius: var(--r-4);
+  overflow: hidden;
+  transition: border-color 200ms;
+}
+
+.day-block.today {
+  border-color: var(--accent-border);
+  box-shadow: 0 0 0 1px var(--accent-border), 0 8px 24px -12px rgba(124, 92, 255, 0.4);
+}
+
+.day-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 18px;
+  background: var(--bg-2);
+  border-bottom: 1px solid var(--border);
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--fg-1);
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.day-block.today .day-head {
+  background: var(--accent-bg);
+  color: var(--accent-fg);
+}
+
+.day-head .today-badge {
+  background: var(--accent);
+  color: #fff;
+  padding: 3px 10px;
+  border-radius: var(--r-full);
+  font-size: 11px;
+  font-weight: 600;
+  margin-right: 8px;
+}
+
+.day-head .count-badge {
+  background: var(--bg-3);
+  color: var(--fg-3);
+  padding: 3px 10px;
+  border-radius: var(--r-full);
+  font-size: 11.5px;
+  font-weight: 500;
+}
+
+.day-block.today .count-badge {
+  background: rgba(255, 255, 255, 0.15);
+  color: var(--accent-fg);
+}
+
+.day-body {
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.day-body-empty {
+  text-align: center;
+  color: var(--fg-4);
+  font-size: 13px;
+  padding: 20px;
+}
+
+/* ============ LESSON CARD ============ */
+.lesson-card {
+  display: flex;
+  align-items: stretch;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: var(--r-3);
+  overflow: hidden;
+  transition: all 200ms;
+}
+
+.lesson-card:hover {
+  border-color: var(--border-3);
+  transform: translateY(-1px);
+}
+
+.lesson-card.done {
+  opacity: 0.6;
+  border-color: var(--success-border);
+}
+
+.lesson-card.active {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent), 0 8px 24px -12px rgba(124, 92, 255, 0.5);
+}
+
+.lesson-time {
+  background: linear-gradient(180deg, var(--accent), #6366F1);
+  color: #fff;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-width: 100px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.lesson-card.done .lesson-time {
+  background: linear-gradient(180deg, var(--success), #16A34A);
+}
+
+.lesson-card.active .lesson-time {
+  background: linear-gradient(180deg, var(--accent), #EC4899);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.lesson-time .time-main {
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.lesson-time .time-dur {
+  font-size: 11px;
+  opacity: 0.9;
+  margin-top: 2px;
+}
+
+.lesson-body {
+  flex: 1;
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.lesson-title {
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--fg-1);
+  line-height: 1.4;
+  word-wrap: break-word;
+}
+
+.lesson-card.done .lesson-title {
+  text-decoration: line-through;
+  color: var(--fg-3);
+}
+
+.lesson-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  font-size: 11.5px;
+  color: var(--fg-4);
+}
+
+.lesson-meta .subject-pill {
+  background: var(--accent-bg);
+  color: var(--accent-fg);
+  padding: 2px 8px;
+  border-radius: var(--r-full);
+  font-weight: 500;
+}
+
+.lesson-meta .grade-pill {
+  background: var(--success-bg);
+  color: var(--success);
+  padding: 2px 8px;
+  border-radius: var(--r-full);
+  font-weight: 600;
+}
+
+.lesson-actions {
+  display: flex;
+  gap: 6px;
+  padding: 8px 16px 12px;
+  flex-wrap: wrap;
+}
+
+.lesson-actions button {
+  background: var(--bg-3);
+  color: var(--fg-2);
+  border: 1px solid var(--border);
+  padding: 6px 11px;
+  border-radius: var(--r-2);
+  font-size: 11.5px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 150ms;
+  font-family: inherit;
+}
+
+.lesson-actions button:hover {
+  background: var(--bg-4);
+  color: var(--fg);
+  transform: translateY(-1px);
+}
+
+.lesson-actions button.btn-start {
+  background: linear-gradient(135deg, var(--accent), #EC4899);
+  color: #fff;
+  border-color: transparent;
+  font-weight: 600;
+}
+
+.lesson-actions button.btn-complete {
+  background: var(--success-bg);
+  color: var(--success);
+  border-color: var(--success-border);
+}
+
+.lesson-actions button.btn-delete:hover {
+  background: var(--danger-bg);
+  color: var(--danger);
+  border-color: var(--danger-border);
+}
+
+/* ============ EMPTY ============ */
+.planner-empty {
+  text-align: center;
+  padding: 32px 20px;
+  color: var(--fg-3);
+  font-size: 13.5px;
+  background: var(--bg-1);
+  border: 1px dashed var(--border-2);
+  border-radius: var(--r-4);
+}
+
+.planner-empty svg {
+  width: 36px;
+  height: 36px;
+  stroke: var(--fg-4);
+  stroke-width: 1.5;
+  fill: none;
+  margin: 0 auto 12px;
+}
+
+/* ============ RESPONSIVE ============ */
+@media (max-width: 900px) {
+  .planner-form {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 720px) {
+  .planner-form {
+    grid-template-columns: 1fr;
+    padding: 16px;
+  }
+
+  .planner-stats {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  .timer-banner-inner {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .timer-banner .tb-time {
+    font-size: 22px;
+    min-width: auto;
+    text-align: center;
+  }
+
+  .timer-banner .tb-btns {
+    justify-content: stretch;
+  }
+
+  .timer-banner .tb-btns button {
+    flex: 1;
+  }
+
+  .lesson-card {
+    flex-direction: column;
+  }
+
+  .lesson-time {
+    min-width: auto;
+    flex-direction: row;
+    gap: 10px;
+    padding: 10px 14px;
+  }
+    }
