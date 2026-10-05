@@ -1,727 +1,301 @@
-// ============================================
-// ASCEND · Planner Logic
-// Created by Mohamed Hamouda
-// ============================================
-import { supabase } from './supabase.js';
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#050506">
+<meta name="color-scheme" content="dark light">
 
-/* ============================================
-   CONSTANTS
-   ============================================ */
-const STORAGE_KEY = 'ascend:planner';
+<title>خططي — ASCEND</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" type="image/svg+xml" href="/assets/img/favicon.svg">
 
-const AR_DAYS = [
-  { id: 'saturday',  name: 'السبت',    idx: 6, emoji: '🌅' },
-  { id: 'sunday',    name: 'الأحد',    idx: 0, emoji: '🌞' },
-  { id: 'monday',    name: 'الاثنين',  idx: 1, emoji: '🌙' },
-  { id: 'tuesday',   name: 'الثلاثاء', idx: 2, emoji: '⭐' },
-  { id: 'wednesday', name: 'الأربعاء', idx: 3, emoji: '☀️' },
-  { id: 'thursday',  name: 'الخميس',   idx: 4, emoji: '🌤️' },
-  { id: 'friday',    name: 'الجمعة',   idx: 5, emoji: '🎉' }
-];
-
-/* ============================================
-   STATE
-   ============================================ */
-let Data = {
-  plans: {},      // { lessonId: { day, startHour, hours, completedAt, grade } }
-  picked: {},     // { lessonId: true }
-  timer: null,    // { lessonId, lessonTitle, subjectName, totalSeconds, remainingSeconds, paused }
-  streak: 0,
-  lastActive: null,
-  totalMinutes: 0
-};
-
-let Subjects = [];   // من Supabase
-
-/* ============================================
-   LOCAL STORAGE
-   ============================================ */
-function loadData() {
+<script>
+(function(){
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) {
-      const p = JSON.parse(raw);
-      Data = { ...Data, ...p };
-    }
-  } catch (e) { console.warn('[planner] loadData err', e); }
-}
+    var t = localStorage.getItem('ascend:theme');
+    if (t !== 'light' && t !== 'dark') t = 'dark';
+    document.documentElement.setAttribute('data-theme', t);
+  } catch(e){}
+})();
+</script>
 
-function saveData() {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(Data));
-  } catch (e) { console.warn('[planner] saveData err', e); }
-}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap">
 
-/* ============================================
-   TOAST (بديل لو utils.js مش متاح)
-   ============================================ */
-function showToast(msg, type = 'info') {
-  const t = document.getElementById('toast');
-  if (!t) { console.log('[planner]', msg); return; }
+<link rel="stylesheet" href="/assets/css/base.css">
+<link rel="stylesheet" href="/assets/css/components.css">
+<link rel="stylesheet" href="/assets/css/dashboard.css">
+<link rel="stylesheet" href="/assets/css/planner.css">
+</head>
+<body>
 
-  const colors = {
-    success: 'linear-gradient(135deg, var(--success), #16A34A)',
-    error:   'linear-gradient(135deg, var(--danger), #DC2626)',
-    info:    'linear-gradient(135deg, var(--accent), #6366F1)'
-  };
+<div class="app">
 
-  t.textContent = msg;
-  t.style.background = colors[type] || colors.info;
-  t.classList.add('show');
+  <!-- ============ SIDEBAR ============ -->
+  <aside class="sidebar" id="sidebar">
 
-  clearTimeout(t._timer);
-  t._timer = setTimeout(() => t.classList.remove('show'), 3000);
-}
+    <a href="/" class="sidebar-brand">
+      <span class="brand-mark">
+        <svg viewBox="0 0 24 24"><path d="M7 17L17 7M17 7H9M17 7v8"/></svg>
+      </span>
+      ASCEND
+    </a>
 
-/* ============================================
-   LOAD SUBJECTS / CHAPTERS / LESSONS
-   ✅ 3 استعلامات منفصلة — مضمونة
-   ============================================ */
-async function loadSubjects() {
-  console.log('[planner] 🔄 Loading subjects/chapters/lessons...');
-
-  try {
-    /* 1) المواد */
-    const { data: subs, error: subsErr } = await supabase
-      .from('subjects')
-      .select('id, name, slug, color, icon, description')
-      .order('id');
-
-    if (subsErr) throw new Error('subjects: ' + subsErr.message);
-    console.log('[planner] ✅ Subjects loaded:', subs?.length || 0);
-
-    /* 2) الفصول */
-    const { data: chapters, error: chErr } = await supabase
-      .from('chapters')
-      .select('id, subject_id, title, order')
-      .order('order');
-
-    if (chErr) throw new Error('chapters: ' + chErr.message);
-    console.log('[planner] ✅ Chapters loaded:', chapters?.length || 0);
-
-    /* 3) الدروس */
-    const { data: lessons, error: lesErr } = await supabase
-      .from('lessons')
-      .select('id, chapter_id, title, order')
-      .order('order');
-
-    if (lesErr) throw new Error('lessons: ' + lesErr.message);
-    console.log('[planner] ✅ Lessons loaded:', lessons?.length || 0);
-
-    /* 4) تجميع */
-    const lessonsByChapter = {};
-    (lessons || []).forEach(l => {
-      if (!lessonsByChapter[l.chapter_id]) lessonsByChapter[l.chapter_id] = [];
-      lessonsByChapter[l.chapter_id].push({
-        id: l.id,
-        title: l.title
-      });
-    });
-
-    const chaptersBySubject = {};
-    (chapters || []).forEach(ch => {
-      if (!chaptersBySubject[ch.subject_id]) chaptersBySubject[ch.subject_id] = [];
-      chaptersBySubject[ch.subject_id].push({
-        id: ch.id,
-        title: ch.title
-      });
-    });
-
-    Subjects = (subs || []).map(s => {
-      const myChapters = chaptersBySubject[s.id] || [];
-      const lessonsOut = [];
-      myChapters.forEach(ch => {
-        (lessonsByChapter[ch.id] || []).forEach(l => {
-          lessonsOut.push({
-            id: l.id,
-            title: l.title,
-            chapter: ch.title,
-            subjectId: s.id,
-            subjectName: s.name,
-            color: s.color
-          });
-        });
-      });
-      return { ...s, lessons: lessonsOut };
-    });
-
-    console.log('[planner] 🎯 Subjects ready:', Subjects.map(s => ({
-      name: s.name,
-      lessons: s.lessons.length
-    })));
-
-    if (!Subjects.length) {
-      console.warn('[planner] ⚠️ No subjects loaded — check RLS or login');
-    }
-
-  } catch (e) {
-    console.error('[planner] ❌ loadSubjects err:', e);
-    Subjects = [];
-    showToast('⚠️ فشل تحميل المواد — افتح Console', 'error');
-  }
-}
-
-/* ============================================
-   RENDER FORM
-   ============================================ */
-function renderSubjectOptions() {
-  const sel = document.getElementById('pfSubject');
-  if (!sel) return;
-
-  sel.innerHTML = '<option value="">-- اختر المادة --</option>' +
-    Subjects.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
-}
-
-function renderLessonOptions(subjectId) {
-  const sel = document.getElementById('pfLesson');
-  if (!sel) return;
-
-  if (!subjectId) {
-    sel.innerHTML = '<option value="">-- اختر المادة أولاً --</option>';
-    sel.disabled = true;
-    return;
-  }
-
-  const sub = Subjects.find(s => String(s.id) === String(subjectId));
-  if (!sub || !sub.lessons.length) {
-    sel.innerHTML = '<option value="">-- لا توجد دروس --</option>';
-    sel.disabled = true;
-    return;
-  }
-
-  sel.disabled = false;
-  sel.innerHTML = '<option value="">-- اختر الدرس --</option>' +
-    sub.lessons.map(l => {
-      const scheduled = Data.plans[l.id] ? ' 📅' : '';
-      return `<option value="${l.id}">${l.title}${scheduled}</option>`;
-    }).join('');
-}
-
-/* ============================================
-   ADD PLAN
-   ============================================ */
-function addPlan() {
-  const lessonId = document.getElementById('pfLesson').value;
-  const day = document.getElementById('pfDay').value;
-  const startHour = parseInt(document.getElementById('pfHour').value, 10);
-  const hours = parseInt(document.getElementById('pfDuration').value, 10);
-
-  if (!lessonId) {
-    showToast('⚠️ اختر الدرس الأول', 'error');
-    return;
-  }
-
-  if (Data.plans[lessonId]) {
-    showToast('⚠️ الدرس موجود في الجدول بالفعل', 'error');
-    return;
-  }
-
-  Data.plans[lessonId] = {
-    day,
-    startHour,
-    hours,
-    addedAt: Date.now()
-  };
-  delete Data.picked[lessonId];
-
-  saveData();
-  renderAll();
-  showToast('✅ تمت الإضافة للجدول', 'success');
-}
-
-/* ============================================
-   RENDER PENDING
-   ============================================ */
-function renderPending() {
-  const block = document.getElementById('pendingBlock');
-  const list = document.getElementById('pendingList');
-  if (!block || !list) return;
-
-  const pending = [];
-  Object.keys(Data.picked).forEach(lessonId => {
-    if (Data.plans[lessonId]) return;
-    const sub = Subjects.find(s => s.lessons.some(l => String(l.id) === String(lessonId)));
-    if (!sub) return;
-    const lesson = sub.lessons.find(l => String(l.id) === String(lessonId));
-    pending.push({ lesson, subject: sub });
-  });
-
-  if (!pending.length) {
-    block.style.display = 'none';
-    return;
-  }
-
-  block.style.display = '';
-  list.innerHTML = pending.map(p => `
-    <div class="pending-item">
-      <span class="pending-item-text">${p.lesson.title}</span>
-      <button data-pending="${p.lesson.id}">📅 حدد موعد</button>
+    <div class="sidebar-section">
+      <div class="sidebar-label">القائمة الرئيسية</div>
+      <nav class="sidebar-nav">
+        <a class="sidebar-link" href="/dashboard.html">
+          <svg viewBox="0 0 24 24"><path d="M3 12l9-9 9 9M5 10v10h14V10"/></svg>
+          الرئيسية
+        </a>
+        <a class="sidebar-link" href="/dashboard.html#subjects">
+          <svg viewBox="0 0 24 24"><path d="M4 4h6a2 2 0 012 2v14a2 2 0 00-2-2H4z"/><path d="M20 4h-6a2 2 0 00-2 2v14a2 2 0 012-2h6z"/></svg>
+          المواد
+        </a>
+        <a class="sidebar-link active" href="/planner.html">
+          <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01"/></svg>
+          خططي
+        </a>
+        <a class="sidebar-link" href="/library.html">
+          <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>
+          المكتبة
+        </a>
+        <a class="sidebar-link" href="/mistakes.html">
+          <svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
+          غلطاتي
+          <span class="count" id="mistakesCount">0</span>
+        </a>
+      </nav>
     </div>
-  `).join('');
 
-  list.querySelectorAll('[data-pending]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const lessonId = btn.getAttribute('data-pending');
-      const sub = Subjects.find(s => s.lessons.some(l => String(l.id) === String(lessonId)));
-      if (!sub) return;
-      document.getElementById('pfSubject').value = sub.id;
-      renderLessonOptions(sub.id);
-      setTimeout(() => {
-        document.getElementById('pfLesson').value = lessonId;
-        document.querySelector('.planner-form')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }, 100);
-    });
-  });
-}
+    <div class="sidebar-section">
+      <div class="sidebar-label">حسابي</div>
+      <nav class="sidebar-nav">
+        <a class="sidebar-link" href="/certificate.html?all=1">
+          <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z"/></svg>
+          شهاداتي
+        </a>
+        <a class="sidebar-link" href="/notifications.html">
+          <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/></svg>
+          الإشعارات
+          <span class="count" id="notifSidebarCount">0</span>
+        </a>
+        <a class="sidebar-link" href="/chat.html">
+          <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+          المساعد الذكي
+        </a>
+      </nav>
+    </div>
 
-/* ============================================
-   RENDER WEEK GRID
-   ============================================ */
-function renderWeekGrid() {
-  const grid = document.getElementById('weekGrid');
-  if (!grid) return;
-
-  const todayIdx = new Date().getDay();
-  let totalLessons = 0;
-  let totalHours = 0;
-
-  grid.innerHTML = AR_DAYS.map(day => {
-    const dayLessons = [];
-
-    Object.keys(Data.plans).forEach(lessonId => {
-      const plan = Data.plans[lessonId];
-      if (plan.day !== day.id) return;
-
-      const sub = Subjects.find(s => s.lessons.some(l => String(l.id) === String(lessonId)));
-      if (!sub) return;
-      const lesson = sub.lessons.find(l => String(l.id) === String(lessonId));
-      dayLessons.push({ lesson, plan, subject: sub });
-    });
-
-    dayLessons.sort((a, b) => a.plan.startHour - b.plan.startHour);
-
-    const isToday = day.idx === todayIdx;
-    const dayHours = dayLessons.reduce((a, x) => a + (x.plan.hours || 2), 0);
-    totalLessons += dayLessons.length;
-    totalHours += dayHours;
-
-    const lessonsHTML = dayLessons.length
-      ? dayLessons.map(item => renderLessonCard(item)).join('')
-      : '<div class="day-body-empty">فاضي — استرح 🌴</div>';
-
-    return `
-      <div class="day-block ${isToday ? 'today' : ''}">
-        <div class="day-head">
-          <span>${day.emoji} ${day.name} ${isToday ? '<span class="today-badge">اليوم</span>' : ''}</span>
-          <span class="count-badge">${dayLessons.length} درس • ${dayHours}س</span>
-        </div>
-        <div class="day-body">${lessonsHTML}</div>
-      </div>
-    `;
-  }).join('');
-
-  const totalEl = document.getElementById('weekTotal');
-  if (totalEl) totalEl.textContent = `${totalLessons} درس • ${totalHours} ساعة`;
-
-  /* Attach events */
-  grid.querySelectorAll('[data-action]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const action = btn.getAttribute('data-action');
-      const lessonId = btn.getAttribute('data-lesson');
-      if (action === 'start') startTimer(lessonId);
-      else if (action === 'complete') markComplete(lessonId);
-      else if (action === 'delete') deletePlan(lessonId);
-      else if (action === 'edit') editPlan(lessonId);
-    });
-  });
-}
-
-/* ============================================
-   RENDER LESSON CARD
-   ============================================ */
-function renderLessonCard({ lesson, plan, subject }) {
-  const done = !!plan.completedAt;
-  const isActive = Data.timer && String(Data.timer.lessonId) === String(lesson.id);
-  const startH = plan.startHour;
-  const endH = startH + plan.hours;
-
-  const fmt = h => {
-    const period = h < 12 ? 'ص' : 'م';
-    const h12 = h === 0 ? 12 : (h > 12 ? h - 12 : h);
-    return h12 + ':00 ' + period;
-  };
-
-  const gradeHTML = plan.grade != null
-    ? `<span class="grade-pill">✓ ${plan.grade}/100</span>`
-    : '';
-
-  return `
-    <div class="lesson-card ${done ? 'done' : ''} ${isActive ? 'active' : ''}">
-      <div class="lesson-time">
-        <div class="time-main">${fmt(startH)} — ${fmt(endH)}</div>
-        <div class="time-dur">${plan.hours} ${plan.hours === 1 ? 'ساعة' : 'ساعات'}</div>
-      </div>
-      <div class="lesson-body">
-        <div class="lesson-title">${lesson.title}</div>
-        <div class="lesson-meta">
-          <span class="subject-pill">${subject.name}</span>
-          ${lesson.chapter ? `<span>${lesson.chapter}</span>` : ''}
-          ${gradeHTML}
+    <div class="sidebar-bottom">
+      <div class="user-card">
+        <div class="user-card-avatar" id="userAvatar">?</div>
+        <div class="user-card-info">
+          <div class="user-card-name" id="userName">جاري التحميل…</div>
+          <div class="user-card-role" id="userRole">طالب</div>
         </div>
       </div>
-      <div class="lesson-actions">
-        ${done
-          ? `<button data-action="delete" data-lesson="${lesson.id}">🗑️ إزالة</button>`
-          : `<button class="btn-start" data-action="start" data-lesson="${lesson.id}">🚀 ابدأ</button>
-             <button class="btn-complete" data-action="complete" data-lesson="${lesson.id}">✅ خلّصت</button>
-             <button data-action="edit" data-lesson="${lesson.id}">✏️</button>
-             <button data-action="delete" data-lesson="${lesson.id}">🗑️</button>`}
-      </div>
     </div>
-  `;
-}
 
-/* ============================================
-   TIMER
-   ============================================ */
-let timerInterval = null;
+  </aside>
 
-function startTimer(lessonId) {
-  if (Data.timer) {
-    if (!confirm('في درس تاني بيتذاكر. توقفه؟')) return;
-    stopTimer(false);
-  }
+  <!-- ============ MAIN ============ -->
+  <div class="main">
 
-  const plan = Data.plans[lessonId];
-  if (!plan) return;
-
-  const sub = Subjects.find(s => s.lessons.some(l => String(l.id) === String(lessonId)));
-  if (!sub) return;
-  const lesson = sub.lessons.find(l => String(l.id) === String(lessonId));
-
-  const totalSeconds = (plan.hours || 2) * 3600;
-
-  Data.timer = {
-    lessonId,
-    lessonTitle: lesson.title,
-    subjectName: sub.name,
-    totalSeconds,
-    remainingSeconds: totalSeconds,
-    paused: false
-  };
-
-  saveData();
-  updateTimerBanner();
-  startTimerLoop();
-  renderAll();
-  showToast('⏱️ بدأ المؤقت — ركّز 💪', 'success');
-}
-
-function startTimerLoop() {
-  if (timerInterval) clearInterval(timerInterval);
-  timerInterval = setInterval(() => {
-    if (!Data.timer || Data.timer.paused) return;
-    Data.timer.remainingSeconds--;
-    if (Data.timer.remainingSeconds <= 0) {
-      Data.timer.remainingSeconds = 0;
-      updateTimerBanner();
-      clearInterval(timerInterval);
-      onTimerComplete();
-      return;
-    }
-    updateTimerBanner();
-  }, 1000);
-}
-
-function updateTimerBanner() {
-  const banner = document.getElementById('timerBanner');
-  if (!banner) return;
-
-  if (!Data.timer) {
-    banner.style.display = 'none';
-    return;
-  }
-
-  banner.style.display = '';
-  document.getElementById('tbTitle').textContent = Data.timer.lessonTitle;
-  document.getElementById('tbSub').textContent = Data.timer.subjectName;
-
-  const h = Math.floor(Data.timer.remainingSeconds / 3600);
-  const m = Math.floor((Data.timer.remainingSeconds % 3600) / 60);
-  const s = Data.timer.remainingSeconds % 60;
-  document.getElementById('tbTime').textContent =
-    String(h).padStart(2, '0') + ':' +
-    String(m).padStart(2, '0') + ':' +
-    String(s).padStart(2, '0');
-
-  const pauseBtn = document.getElementById('tbPause');
-  if (pauseBtn) pauseBtn.textContent = Data.timer.paused ? '▶️ استمر' : '⏸️ إيقاف';
-}
-
-function togglePauseTimer() {
-  if (!Data.timer) return;
-  Data.timer.paused = !Data.timer.paused;
-  updateTimerBanner();
-}
-
-function onTimerComplete() {
-  /* صوت */
-  try {
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-    osc.frequency.value = 880;
-    osc.type = 'sine';
-    gain.gain.setValueAtTime(0.3, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 1.5);
-    osc.start();
-    osc.stop(ctx.currentTime + 1.5);
-  } catch (e) {}
-
-  const lessonId = Data.timer?.lessonId;
-  if (!lessonId) return;
-
-  const total = Data.timer.totalSeconds;
-  const remaining = Data.timer.remainingSeconds;
-  const minutes = Math.round((total - remaining) / 60);
-  Data.totalMinutes = (Data.totalMinutes || 0) + minutes;
-
-  const plan = Data.plans[lessonId];
-  if (plan) plan.completedAt = Date.now();
-
-  Data.timer = null;
-  saveData();
-  updateTimerBanner();
-  renderAll();
-
-  /* اسأل عن الدرجة */
-  const grade = prompt('🎉 خلّصت! اكتب درجتك من 100 (اتركها فاضية لو مش امتحنت)');
-  if (grade && !isNaN(parseFloat(grade))) {
-    const g = parseFloat(grade);
-    if (g >= 0 && g <= 100) {
-      Data.plans[lessonId].grade = g;
-      saveData();
-      renderAll();
-      showToast(`✅ تم تسجيل ${g}/100`, 'success');
-    }
-  } else {
-    showToast('🎉 أحسنت! تم تسجيل الدرس', 'success');
-  }
-}
-
-function stopTimer(save = true) {
-  if (!Data.timer) return;
-
-  if (save) {
-    const total = Data.timer.totalSeconds;
-    const remaining = Data.timer.remainingSeconds;
-    const minutes = Math.round((total - remaining) / 60);
-    Data.totalMinutes = (Data.totalMinutes || 0) + minutes;
-    saveData();
-  }
-
-  Data.timer = null;
-  if (timerInterval) clearInterval(timerInterval);
-  updateTimerBanner();
-  renderAll();
-}
-
-/* ============================================
-   COMPLETE / DELETE / EDIT
-   ============================================ */
-function markComplete(lessonId) {
-  const plan = Data.plans[lessonId];
-  if (!plan) return;
-
-  plan.completedAt = Date.now();
-  saveData();
-  renderAll();
-  showToast('✅ أحسنت!', 'success');
-}
-
-function deletePlan(lessonId) {
-  if (!confirm('حذف الدرس من الجدول؟')) return;
-  delete Data.plans[lessonId];
-  saveData();
-  renderAll();
-  showToast('🗑️ تم الحذف', 'success');
-}
-
-function editPlan(lessonId) {
-  const plan = Data.plans[lessonId];
-  if (!plan) return;
-
-  const sub = Subjects.find(s => s.lessons.some(l => String(l.id) === String(lessonId)));
-  if (!sub) return;
-
-  document.getElementById('pfSubject').value = sub.id;
-  renderLessonOptions(sub.id);
-
-  setTimeout(() => {
-    document.getElementById('pfLesson').value = lessonId;
-    document.getElementById('pfDay').value = plan.day;
-    document.getElementById('pfHour').value = plan.startHour;
-    document.getElementById('pfDuration').value = plan.hours;
-    document.querySelector('.planner-form')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    showToast('✏️ عدّل واضغط أضف', 'info');
-  }, 100);
-}
-
-/* ============================================
-   STATS
-   ============================================ */
-function renderStats() {
-  const totalPlans = Object.keys(Data.plans).length;
-  const donePlans = Object.values(Data.plans).filter(p => p.completedAt).length;
-  const hours = Math.round((Data.totalMinutes || 0) / 60 * 10) / 10;
-
-  const set = (id, v) => { const e = document.getElementById(id); if (e) e.textContent = v; };
-  set('pstatDone', donePlans);
-  set('pstatScheduled', totalPlans);
-  set('pstatHours', hours);
-  set('pstatStreak', Data.streak || 0);
-}
-
-/* ============================================
-   CHECK UPCOMING
-   ============================================ */
-function checkUpcoming() {
-  const area = document.getElementById('notifArea');
-  if (!area) return;
-  area.innerHTML = '';
-
-  const now = new Date();
-  const todayDay = AR_DAYS.find(d => d.idx === now.getDay());
-  if (!todayDay) return;
-
-  const currentHour = now.getHours() + now.getMinutes() / 60;
-  const upcoming = [];
-  const overdue = [];
-
-  Object.keys(Data.plans).forEach(lessonId => {
-    const plan = Data.plans[lessonId];
-    if (plan.day !== todayDay.id || plan.completedAt) return;
-
-    const sub = Subjects.find(s => s.lessons.some(l => String(l.id) === String(lessonId)));
-    if (!sub) return;
-    const lesson = sub.lessons.find(l => String(l.id) === String(lessonId));
-
-    const start = plan.startHour;
-    const end = start + plan.hours;
-
-    if (start - currentHour <= 1 && end > currentHour) {
-      upcoming.push({ lesson, plan });
-    } else if (end <= currentHour) {
-      overdue.push({ lesson, plan });
-    }
-  });
-
-  upcoming.forEach(({ lesson, plan }) => {
-    const h12 = plan.startHour === 0 ? 12 : (plan.startHour > 12 ? plan.startHour - 12 : plan.startHour);
-    const period = plan.startHour < 12 ? 'ص' : 'م';
-    const banner = document.createElement('div');
-    banner.className = 'notif-banner upcoming';
-    banner.innerHTML = `
-      <div class="nb-icon">🔔</div>
-      <div class="nb-content">
-        <div class="nb-title">موعدك جاي حالاً!</div>
-        <div class="nb-sub">${lesson.title} • ${h12}:00 ${period}</div>
+    <header class="topbar">
+      <div style="display:flex;align-items:center;gap:12px">
+        <button class="icon-btn menu-toggle" id="menuToggle" aria-label="القائمة">
+          <svg viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+        </button>
+        <div class="topbar-title">خططي — نظّم مذاكرتك</div>
       </div>
-      <button data-notif-start="${lesson.id}">🚀 ابدأ</button>
-    `;
-    area.appendChild(banner);
-  });
-
-  if (overdue.length) {
-    const banner = document.createElement('div');
-    banner.className = 'notif-banner overdue';
-    banner.innerHTML = `
-      <div class="nb-icon">⚠️</div>
-      <div class="nb-content">
-        <div class="nb-title">فايتك ${overdue.length} درس النهاردة</div>
-        <div class="nb-sub">${overdue.map(x => x.lesson.title).join(' • ')}</div>
+      <div class="topbar-actions">
+        <button class="icon-btn" id="statsBtn" aria-label="الإحصائيات">
+          <svg viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M7 14l4-4 4 4 5-5"/></svg>
+        </button>
+        <button class="icon-btn" aria-label="الإشعارات" id="notifBtn">
+          <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/></svg>
+        </button>
+        <button class="icon-btn" aria-label="تسجيل الخروج" id="logoutBtn">
+          <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+        </button>
       </div>
-    `;
-    area.appendChild(banner);
-  }
+    </header>
 
-  area.querySelectorAll('[data-notif-start]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      startTimer(btn.getAttribute('data-notif-start'));
-    });
-  });
-}
+    <main class="content">
 
-/* ============================================
-   RENDER ALL
-   ============================================ */
-function renderAll() {
-  renderStats();
-  renderPending();
-  renderWeekGrid();
-  checkUpcoming();
-}
+      <!-- شريط المؤقت النشط -->
+      <div class="timer-banner" id="timerBanner" style="display:none">
+        <div class="timer-banner-inner">
+          <div class="tb-info">
+            <div class="tb-icon">⏱️</div>
+            <div>
+              <div class="tb-title" id="tbTitle">الدرس</div>
+              <div class="tb-sub" id="tbSub">المادة</div>
+            </div>
+          </div>
+          <div class="tb-time" id="tbTime">00:00:00</div>
+          <div class="tb-btns">
+            <button id="tbPause">⏸️ إيقاف</button>
+            <button id="tbFinish">✅ خلّصت</button>
+          </div>
+        </div>
+      </div>
 
-/* ============================================
-   INIT
-   ============================================ */
-async function init() {
-  console.log('%c📅 ASCEND Planner v1.0', 'color:#7C5CFF;font-weight:bold;font-size:14px');
+      <!-- تنبيهات المواعيد -->
+      <div id="notifArea"></div>
 
-  loadData();
+      <!-- Page Head -->
+      <div class="page-head">
+        <h1>📅 خططي الأسبوعية</h1>
+        <p>نظّم دروسك، حدد مواعيدها، وذاكر بمؤقت تفاعلي.</p>
+      </div>
 
-  /* تحميل المواد من Supabase */
-  await loadSubjects();
-  renderSubjectOptions();
+      <!-- Quick Stats -->
+      <div class="stats-grid planner-stats">
+        <div class="stat-card">
+          <div class="stat-card-head">
+            <div class="stat-card-label">دروس مكتملة</div>
+            <div class="stat-card-icon"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg></div>
+          </div>
+          <div class="stat-card-value success" id="pstatDone">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-head">
+            <div class="stat-card-label">دروس مجدولة</div>
+            <div class="stat-card-icon"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></div>
+          </div>
+          <div class="stat-card-value accent" id="pstatScheduled">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-head">
+            <div class="stat-card-label">ساعات مذاكرة</div>
+            <div class="stat-card-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></div>
+          </div>
+          <div class="stat-card-value gold" id="pstatHours">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-head">
+            <div class="stat-card-label">أيام متتالية</div>
+            <div class="stat-card-icon"><svg viewBox="0 0 24 24"><path d="M12 2s4 4 4 8a4 4 0 11-8 0c0-4 4-8 4-8z"/></svg></div>
+          </div>
+          <div class="stat-card-value gold" id="pstatStreak">0</div>
+        </div>
+      </div>
 
-  /* Form listeners */
-  const pfSubject = document.getElementById('pfSubject');
-  if (pfSubject) {
-    pfSubject.addEventListener('change', e => {
-      renderLessonOptions(e.target.value);
-    });
-  }
+      <!-- Form: Add new lesson -->
+      <section class="section-block">
+        <div class="section-block-head">
+          <h2 class="section-block-title">✏️ جدول درس جديد</h2>
+        </div>
 
-  const pfAdd = document.getElementById('pfAdd');
-  if (pfAdd) pfAdd.addEventListener('click', addPlan);
+        <div class="planner-form">
+          <div class="pf-field">
+            <label>📖 المادة</label>
+            <select id="pfSubject">
+              <option value="">-- اختر المادة --</option>
+            </select>
+          </div>
 
-  /* Timer controls */
-  const tbPause = document.getElementById('tbPause');
-  if (tbPause) tbPause.addEventListener('click', togglePauseTimer);
+          <div class="pf-field">
+            <label>📚 الدرس</label>
+            <select id="pfLesson">
+              <option value="">-- اختر الدرس --</option>
+            </select>
+          </div>
 
-  const tbFinish = document.getElementById('tbFinish');
-  if (tbFinish) {
-    tbFinish.addEventListener('click', () => {
-      if (Data.timer) {
-        Data.timer.remainingSeconds = 0;
-        onTimerComplete();
-      }
-    });
-  }
+          <div class="pf-field">
+            <label>📅 اليوم</label>
+            <select id="pfDay">
+              <option value="saturday">السبت</option>
+              <option value="sunday">الأحد</option>
+              <option value="monday">الاثنين</option>
+              <option value="tuesday">الثلاثاء</option>
+              <option value="wednesday">الأربعاء</option>
+              <option value="thursday">الخميس</option>
+              <option value="friday">الجمعة</option>
+            </select>
+          </div>
 
-  /* Sidebar toggle (mobile) */
-  const menuToggle = document.getElementById('menuToggle');
-  const sidebar = document.getElementById('sidebar');
-  if (menuToggle && sidebar) {
-    menuToggle.addEventListener('click', () => sidebar.classList.toggle('open'));
-  }
+          <div class="pf-field">
+            <label>🕐 يبدأ الساعة</label>
+            <select id="pfHour">
+              <option value="0">12:00 ص</option>
+              <option value="1">1:00 ص</option>
+              <option value="2">2:00 ص</option>
+              <option value="3">3:00 ص</option>
+              <option value="4">4:00 ص</option>
+              <option value="5">5:00 ص</option>
+              <option value="6">6:00 ص</option>
+              <option value="7">7:00 ص</option>
+              <option value="8">8:00 ص</option>
+              <option value="9">9:00 ص</option>
+              <option value="10">10:00 ص</option>
+              <option value="11">11:00 ص</option>
+              <option value="12">12:00 م</option>
+              <option value="13">1:00 م</option>
+              <option value="14">2:00 م</option>
+              <option value="15">3:00 م</option>
+              <option value="16">4:00 م</option>
+              <option value="17">5:00 م</option>
+              <option value="18">6:00 م</option>
+              <option value="19">7:00 م</option>
+              <option value="20">8:00 م</option>
+              <option value="21">9:00 م</option>
+              <option value="22">10:00 م</option>
+              <option value="23">11:00 م</option>
+            </select>
+          </div>
 
-  /* Resume timer if active */
-  if (Data.timer && !Data.timer.paused) {
-    startTimerLoop();
-  }
-  updateTimerBanner();
+          <div class="pf-field">
+            <label>⏱️ المدة (ساعات)</label>
+            <select id="pfDuration">
+              <option value="1">ساعة واحدة</option>
+              <option value="2" selected>ساعتين</option>
+              <option value="3">3 ساعات</option>
+              <option value="4">4 ساعات</option>
+            </select>
+          </div>
 
-  renderAll();
+          <button class="btn btn-primary pf-add" id="pfAdd">➕ أضف للجدول</button>
+        </div>
+      </section>
 
-  /* فحص المواعيد كل دقيقة */
-  setInterval(checkUpcoming, 60000);
-}
+      <!-- Pending Lessons -->
+      <section class="section-block" id="pendingBlock" style="display:none">
+        <div class="section-block-head">
+          <h2 class="section-block-title">⏳ دروس مختارة بدون موعد</h2>
+        </div>
+        <div class="pending-list" id="pendingList"></div>
+      </section>
 
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', init);
-} else {
-  init();
-}
+      <!-- Weekly Plan -->
+      <section class="section-block">
+        <div class="section-block-head">
+          <h2 class="section-block-title">📆 جدول الأسبوع</h2>
+          <span class="section-block-link" id="weekTotal">0 درس • 0 ساعة</span>
+        </div>
+        <div class="week-grid" id="weekGrid"></div>
+      </section>
+
+    </main>
+  </div>
+
+</div>
+
+<!-- ============ FLOATING CHAT ============ -->
+<a href="/chat.html" class="floating-chat-btn" aria-label="المساعد الذكي">
+  <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+  <span class="floating-chat-label">محتاج مساعدة؟</span>
+</a>
+
+<!-- ============ TOAST ============ -->
+<div class="toast" id="toast"></div>
+
+<script type="module" src="/assets/js/theme.js"></script>
+<script type="module" src="/assets/js/planner.js"></script>
+</body>
+</html>
