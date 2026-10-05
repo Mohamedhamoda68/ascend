@@ -3,12 +3,12 @@
 // Created by Mohamed Hamouda
 // ============================================
 import { supabase } from './supabase.js';
-import { toast } from './utils.js';
 
 /* ============================================
    CONSTANTS
    ============================================ */
 const STORAGE_KEY = 'ascend:planner';
+
 const AR_DAYS = [
   { id: 'saturday',  name: 'السبت',    idx: 6, emoji: '🌅' },
   { id: 'sunday',    name: 'الأحد',    idx: 0, emoji: '🌞' },
@@ -24,8 +24,8 @@ const AR_DAYS = [
    ============================================ */
 let Data = {
   plans: {},      // { lessonId: { day, startHour, hours, completedAt, grade } }
-  picked: {},     // { lessonId: true } - دروس مختارة بدون موعد
-  timer: null,    // { lessonId, remainingSeconds, totalSeconds, paused }
+  picked: {},     // { lessonId: true }
+  timer: null,    // { lessonId, lessonTitle, subjectName, totalSeconds, remainingSeconds, paused }
   streak: 0,
   lastActive: null,
   totalMinutes: 0
@@ -43,32 +43,96 @@ function loadData() {
       const p = JSON.parse(raw);
       Data = { ...Data, ...p };
     }
-  } catch (e) { console.warn('loadData err', e); }
+  } catch (e) { console.warn('[planner] loadData err', e); }
 }
 
 function saveData() {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(Data));
-  } catch (e) { console.warn('saveData err', e); }
+  } catch (e) { console.warn('[planner] saveData err', e); }
 }
 
 /* ============================================
-   LOAD SUBJECTS FROM SUPABASE
+   TOAST (بديل لو utils.js مش متاح)
+   ============================================ */
+function showToast(msg, type = 'info') {
+  const t = document.getElementById('toast');
+  if (!t) { console.log('[planner]', msg); return; }
+
+  const colors = {
+    success: 'linear-gradient(135deg, var(--success), #16A34A)',
+    error:   'linear-gradient(135deg, var(--danger), #DC2626)',
+    info:    'linear-gradient(135deg, var(--accent), #6366F1)'
+  };
+
+  t.textContent = msg;
+  t.style.background = colors[type] || colors.info;
+  t.classList.add('show');
+
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+/* ============================================
+   LOAD SUBJECTS / CHAPTERS / LESSONS
+   ✅ 3 استعلامات منفصلة — مضمونة
    ============================================ */
 async function loadSubjects() {
+  console.log('[planner] 🔄 Loading subjects/chapters/lessons...');
+
   try {
-    const { data, error } = await supabase
+    /* 1) المواد */
+    const { data: subs, error: subsErr } = await supabase
       .from('subjects')
-      .select('id, name, color, chapters(id, title, lessons(id, title, order))')
-      .order('name');
+      .select('id, name, slug, color, icon, description')
+      .order('id');
 
-    if (error) throw error;
+    if (subsErr) throw new Error('subjects: ' + subsErr.message);
+    console.log('[planner] ✅ Subjects loaded:', subs?.length || 0);
 
-    Subjects = (data || []).map(s => {
-      const lessons = [];
-      (s.chapters || []).forEach(ch => {
-        (ch.lessons || []).forEach(l => {
-          lessons.push({
+    /* 2) الفصول */
+    const { data: chapters, error: chErr } = await supabase
+      .from('chapters')
+      .select('id, subject_id, title, order')
+      .order('order');
+
+    if (chErr) throw new Error('chapters: ' + chErr.message);
+    console.log('[planner] ✅ Chapters loaded:', chapters?.length || 0);
+
+    /* 3) الدروس */
+    const { data: lessons, error: lesErr } = await supabase
+      .from('lessons')
+      .select('id, chapter_id, title, order')
+      .order('order');
+
+    if (lesErr) throw new Error('lessons: ' + lesErr.message);
+    console.log('[planner] ✅ Lessons loaded:', lessons?.length || 0);
+
+    /* 4) تجميع */
+    const lessonsByChapter = {};
+    (lessons || []).forEach(l => {
+      if (!lessonsByChapter[l.chapter_id]) lessonsByChapter[l.chapter_id] = [];
+      lessonsByChapter[l.chapter_id].push({
+        id: l.id,
+        title: l.title
+      });
+    });
+
+    const chaptersBySubject = {};
+    (chapters || []).forEach(ch => {
+      if (!chaptersBySubject[ch.subject_id]) chaptersBySubject[ch.subject_id] = [];
+      chaptersBySubject[ch.subject_id].push({
+        id: ch.id,
+        title: ch.title
+      });
+    });
+
+    Subjects = (subs || []).map(s => {
+      const myChapters = chaptersBySubject[s.id] || [];
+      const lessonsOut = [];
+      myChapters.forEach(ch => {
+        (lessonsByChapter[ch.id] || []).forEach(l => {
+          lessonsOut.push({
             id: l.id,
             title: l.title,
             chapter: ch.title,
@@ -78,22 +142,32 @@ async function loadSubjects() {
           });
         });
       });
-      return { ...s, lessons };
+      return { ...s, lessons: lessonsOut };
     });
 
-    console.log('[planner] Loaded subjects:', Subjects.length);
+    console.log('[planner] 🎯 Subjects ready:', Subjects.map(s => ({
+      name: s.name,
+      lessons: s.lessons.length
+    })));
+
+    if (!Subjects.length) {
+      console.warn('[planner] ⚠️ No subjects loaded — check RLS or login');
+    }
+
   } catch (e) {
-    console.error('[planner] loadSubjects err', e);
+    console.error('[planner] ❌ loadSubjects err:', e);
     Subjects = [];
+    showToast('⚠️ فشل تحميل المواد — افتح Console', 'error');
   }
 }
 
 /* ============================================
-   RENDER FORM OPTIONS
+   RENDER FORM
    ============================================ */
 function renderSubjectOptions() {
   const sel = document.getElementById('pfSubject');
   if (!sel) return;
+
   sel.innerHTML = '<option value="">-- اختر المادة --</option>' +
     Subjects.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
 }
@@ -103,12 +177,12 @@ function renderLessonOptions(subjectId) {
   if (!sel) return;
 
   if (!subjectId) {
-    sel.innerHTML = '<option value="">-- اختر المادة أولا --</option>';
+    sel.innerHTML = '<option value="">-- اختر المادة أولاً --</option>';
     sel.disabled = true;
     return;
   }
 
-  const sub = Subjects.find(s => s.id === subjectId);
+  const sub = Subjects.find(s => String(s.id) === String(subjectId));
   if (!sub || !sub.lessons.length) {
     sel.innerHTML = '<option value="">-- لا توجد دروس --</option>';
     sel.disabled = true;
@@ -124,22 +198,21 @@ function renderLessonOptions(subjectId) {
 }
 
 /* ============================================
-   ADD LESSON TO PLAN
+   ADD PLAN
    ============================================ */
 function addPlan() {
-  const subjectId = document.getElementById('pfSubject').value;
   const lessonId = document.getElementById('pfLesson').value;
   const day = document.getElementById('pfDay').value;
   const startHour = parseInt(document.getElementById('pfHour').value, 10);
   const hours = parseInt(document.getElementById('pfDuration').value, 10);
 
   if (!lessonId) {
-    toast('⚠️ اختر الدرس الأول', 'error');
+    showToast('⚠️ اختر الدرس الأول', 'error');
     return;
   }
 
   if (Data.plans[lessonId]) {
-    toast('⚠️ الدرس موجود في الجدول بالفعل', 'error');
+    showToast('⚠️ الدرس موجود في الجدول بالفعل', 'error');
     return;
   }
 
@@ -153,7 +226,7 @@ function addPlan() {
 
   saveData();
   renderAll();
-  toast('✅ تمت الإضافة للجدول', 'success');
+  showToast('✅ تمت الإضافة للجدول', 'success');
 }
 
 /* ============================================
@@ -167,9 +240,9 @@ function renderPending() {
   const pending = [];
   Object.keys(Data.picked).forEach(lessonId => {
     if (Data.plans[lessonId]) return;
-    const sub = Subjects.find(s => s.lessons.some(l => l.id === lessonId));
+    const sub = Subjects.find(s => s.lessons.some(l => String(l.id) === String(lessonId)));
     if (!sub) return;
-    const lesson = sub.lessons.find(l => l.id === lessonId);
+    const lesson = sub.lessons.find(l => String(l.id) === String(lessonId));
     pending.push({ lesson, subject: sub });
   });
 
@@ -189,13 +262,13 @@ function renderPending() {
   list.querySelectorAll('[data-pending]').forEach(btn => {
     btn.addEventListener('click', () => {
       const lessonId = btn.getAttribute('data-pending');
-      const sub = Subjects.find(s => s.lessons.some(l => l.id === lessonId));
+      const sub = Subjects.find(s => s.lessons.some(l => String(l.id) === String(lessonId)));
       if (!sub) return;
       document.getElementById('pfSubject').value = sub.id;
       renderLessonOptions(sub.id);
       setTimeout(() => {
         document.getElementById('pfLesson').value = lessonId;
-        document.getElementById('planner-form')?.scrollIntoView({ behavior: 'smooth' });
+        document.querySelector('.planner-form')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }, 100);
     });
   });
@@ -214,16 +287,19 @@ function renderWeekGrid() {
 
   grid.innerHTML = AR_DAYS.map(day => {
     const dayLessons = [];
+
     Object.keys(Data.plans).forEach(lessonId => {
       const plan = Data.plans[lessonId];
       if (plan.day !== day.id) return;
-      const sub = Subjects.find(s => s.lessons.some(l => l.id === lessonId));
+
+      const sub = Subjects.find(s => s.lessons.some(l => String(l.id) === String(lessonId)));
       if (!sub) return;
-      const lesson = sub.lessons.find(l => l.id === lessonId);
+      const lesson = sub.lessons.find(l => String(l.id) === String(lessonId));
       dayLessons.push({ lesson, plan, subject: sub });
     });
 
     dayLessons.sort((a, b) => a.plan.startHour - b.plan.startHour);
+
     const isToday = day.idx === todayIdx;
     const dayHours = dayLessons.reduce((a, x) => a + (x.plan.hours || 2), 0);
     totalLessons += dayLessons.length;
@@ -247,7 +323,7 @@ function renderWeekGrid() {
   const totalEl = document.getElementById('weekTotal');
   if (totalEl) totalEl.textContent = `${totalLessons} درس • ${totalHours} ساعة`;
 
-  // Attach events
+  /* Attach events */
   grid.querySelectorAll('[data-action]').forEach(btn => {
     btn.addEventListener('click', () => {
       const action = btn.getAttribute('data-action');
@@ -255,6 +331,7 @@ function renderWeekGrid() {
       if (action === 'start') startTimer(lessonId);
       else if (action === 'complete') markComplete(lessonId);
       else if (action === 'delete') deletePlan(lessonId);
+      else if (action === 'edit') editPlan(lessonId);
     });
   });
 }
@@ -264,7 +341,7 @@ function renderWeekGrid() {
    ============================================ */
 function renderLessonCard({ lesson, plan, subject }) {
   const done = !!plan.completedAt;
-  const isActive = Data.timer && Data.timer.lessonId === lesson.id;
+  const isActive = Data.timer && String(Data.timer.lessonId) === String(lesson.id);
   const startH = plan.startHour;
   const endH = startH + plan.hours;
 
@@ -297,6 +374,7 @@ function renderLessonCard({ lesson, plan, subject }) {
           ? `<button data-action="delete" data-lesson="${lesson.id}">🗑️ إزالة</button>`
           : `<button class="btn-start" data-action="start" data-lesson="${lesson.id}">🚀 ابدأ</button>
              <button class="btn-complete" data-action="complete" data-lesson="${lesson.id}">✅ خلّصت</button>
+             <button data-action="edit" data-lesson="${lesson.id}">✏️</button>
              <button data-action="delete" data-lesson="${lesson.id}">🗑️</button>`}
       </div>
     </div>
@@ -317,9 +395,9 @@ function startTimer(lessonId) {
   const plan = Data.plans[lessonId];
   if (!plan) return;
 
-  const sub = Subjects.find(s => s.lessons.some(l => l.id === lessonId));
+  const sub = Subjects.find(s => s.lessons.some(l => String(l.id) === String(lessonId)));
   if (!sub) return;
-  const lesson = sub.lessons.find(l => l.id === lessonId);
+  const lesson = sub.lessons.find(l => String(l.id) === String(lessonId));
 
   const totalSeconds = (plan.hours || 2) * 3600;
 
@@ -336,7 +414,7 @@ function startTimer(lessonId) {
   updateTimerBanner();
   startTimerLoop();
   renderAll();
-  toast('⏱️ بدأ المؤقت — ركّز 💪', 'success');
+  showToast('⏱️ بدأ المؤقت — ركّز 💪', 'success');
 }
 
 function startTimerLoop() {
@@ -387,7 +465,7 @@ function togglePauseTimer() {
 }
 
 function onTimerComplete() {
-  // صوت
+  /* صوت */
   try {
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
     const osc = ctx.createOscillator();
@@ -411,16 +489,14 @@ function onTimerComplete() {
   Data.totalMinutes = (Data.totalMinutes || 0) + minutes;
 
   const plan = Data.plans[lessonId];
-  if (plan) {
-    plan.completedAt = Date.now();
-  }
+  if (plan) plan.completedAt = Date.now();
 
   Data.timer = null;
   saveData();
   updateTimerBanner();
   renderAll();
 
-  // اسأل عن الدرجة
+  /* اسأل عن الدرجة */
   const grade = prompt('🎉 خلّصت! اكتب درجتك من 100 (اتركها فاضية لو مش امتحنت)');
   if (grade && !isNaN(parseFloat(grade))) {
     const g = parseFloat(grade);
@@ -428,10 +504,10 @@ function onTimerComplete() {
       Data.plans[lessonId].grade = g;
       saveData();
       renderAll();
-      toast(`✅ تم تسجيل ${g}/100`, 'success');
+      showToast(`✅ تم تسجيل ${g}/100`, 'success');
     }
   } else {
-    toast('🎉 أحسنت! تم تسجيل الدرس', 'success');
+    showToast('🎉 أحسنت! تم تسجيل الدرس', 'success');
   }
 }
 
@@ -453,7 +529,7 @@ function stopTimer(save = true) {
 }
 
 /* ============================================
-   MARK COMPLETE / DELETE
+   COMPLETE / DELETE / EDIT
    ============================================ */
 function markComplete(lessonId) {
   const plan = Data.plans[lessonId];
@@ -462,7 +538,7 @@ function markComplete(lessonId) {
   plan.completedAt = Date.now();
   saveData();
   renderAll();
-  toast('✅ أحسنت!', 'success');
+  showToast('✅ أحسنت!', 'success');
 }
 
 function deletePlan(lessonId) {
@@ -470,7 +546,27 @@ function deletePlan(lessonId) {
   delete Data.plans[lessonId];
   saveData();
   renderAll();
-  toast('🗑️ تم الحذف', 'success');
+  showToast('🗑️ تم الحذف', 'success');
+}
+
+function editPlan(lessonId) {
+  const plan = Data.plans[lessonId];
+  if (!plan) return;
+
+  const sub = Subjects.find(s => s.lessons.some(l => String(l.id) === String(lessonId)));
+  if (!sub) return;
+
+  document.getElementById('pfSubject').value = sub.id;
+  renderLessonOptions(sub.id);
+
+  setTimeout(() => {
+    document.getElementById('pfLesson').value = lessonId;
+    document.getElementById('pfDay').value = plan.day;
+    document.getElementById('pfHour').value = plan.startHour;
+    document.getElementById('pfDuration').value = plan.hours;
+    document.querySelector('.planner-form')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    showToast('✏️ عدّل واضغط أضف', 'info');
+  }, 100);
 }
 
 /* ============================================
@@ -481,10 +577,11 @@ function renderStats() {
   const donePlans = Object.values(Data.plans).filter(p => p.completedAt).length;
   const hours = Math.round((Data.totalMinutes || 0) / 60 * 10) / 10;
 
-  document.getElementById('pstatDone').textContent = donePlans;
-  document.getElementById('pstatScheduled').textContent = totalPlans;
-  document.getElementById('pstatHours').textContent = hours;
-  document.getElementById('pstatStreak').textContent = Data.streak || 0;
+  const set = (id, v) => { const e = document.getElementById(id); if (e) e.textContent = v; };
+  set('pstatDone', donePlans);
+  set('pstatScheduled', totalPlans);
+  set('pstatHours', hours);
+  set('pstatStreak', Data.streak || 0);
 }
 
 /* ============================================
@@ -507,9 +604,9 @@ function checkUpcoming() {
     const plan = Data.plans[lessonId];
     if (plan.day !== todayDay.id || plan.completedAt) return;
 
-    const sub = Subjects.find(s => s.lessons.some(l => l.id === lessonId));
+    const sub = Subjects.find(s => s.lessons.some(l => String(l.id) === String(lessonId)));
     if (!sub) return;
-    const lesson = sub.lessons.find(l => l.id === lessonId);
+    const lesson = sub.lessons.find(l => String(l.id) === String(lessonId));
 
     const start = plan.startHour;
     const end = start + plan.hours;
@@ -571,44 +668,55 @@ function renderAll() {
    INIT
    ============================================ */
 async function init() {
-  console.log('%c📅 ASCEND Planner', 'color:#7C5CFF;font-weight:bold;font-size:14px');
+  console.log('%c📅 ASCEND Planner v1.0', 'color:#7C5CFF;font-weight:bold;font-size:14px');
 
   loadData();
 
-  // Load subjects from Supabase
+  /* تحميل المواد من Supabase */
   await loadSubjects();
   renderSubjectOptions();
 
-  // Form listeners
-  document.getElementById('pfSubject')?.addEventListener('change', e => {
-    renderLessonOptions(e.target.value);
-  });
+  /* Form listeners */
+  const pfSubject = document.getElementById('pfSubject');
+  if (pfSubject) {
+    pfSubject.addEventListener('change', e => {
+      renderLessonOptions(e.target.value);
+    });
+  }
 
-  document.getElementById('pfAdd')?.addEventListener('click', addPlan);
+  const pfAdd = document.getElementById('pfAdd');
+  if (pfAdd) pfAdd.addEventListener('click', addPlan);
 
-  // Timer controls
-  document.getElementById('tbPause')?.addEventListener('click', togglePauseTimer);
-  document.getElementById('tbFinish')?.addEventListener('click', () => {
-    if (Data.timer) {
-      Data.timer.remainingSeconds = 0;
-      onTimerComplete();
-    }
-  });
+  /* Timer controls */
+  const tbPause = document.getElementById('tbPause');
+  if (tbPause) tbPause.addEventListener('click', togglePauseTimer);
 
-  // Sidebar toggle
+  const tbFinish = document.getElementById('tbFinish');
+  if (tbFinish) {
+    tbFinish.addEventListener('click', () => {
+      if (Data.timer) {
+        Data.timer.remainingSeconds = 0;
+        onTimerComplete();
+      }
+    });
+  }
+
+  /* Sidebar toggle (mobile) */
   const menuToggle = document.getElementById('menuToggle');
   const sidebar = document.getElementById('sidebar');
   if (menuToggle && sidebar) {
     menuToggle.addEventListener('click', () => sidebar.classList.toggle('open'));
   }
 
-  // Resume timer if active
+  /* Resume timer if active */
   if (Data.timer && !Data.timer.paused) {
     startTimerLoop();
   }
   updateTimerBanner();
 
   renderAll();
+
+  /* فحص المواعيد كل دقيقة */
   setInterval(checkUpcoming, 60000);
 }
 
