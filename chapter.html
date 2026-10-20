@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>الدروس — ASCEND</title>
+<title>محتوى الباب — ASCEND</title>
 <link rel="icon" type="image/svg+xml" href="/assets/img/favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -29,7 +29,7 @@
     </div>
   </aside>
 
-  <!-- المحتوى الرئيسي -->
+  <!-- المحتوى -->
   <div class="main">
     <header class="topbar">
       <div class="topbar-left">
@@ -40,19 +40,23 @@
 
     <main class="content">
       
-      <!-- مشغل الفيديو (يظهر ويختفي حسب الضغط) -->
+      <!-- بانر الغلاف -->
+      <div id="chapterCover" class="chapter-cover">
+        <div class="cover-overlay">
+          <h1 id="coverTitle">اسم الباب</h1>
+        </div>
+      </div>
+
+      <!-- مشغل الفيديو (مخفي في البداية) -->
       <div id="videoSection" class="video-section" style="display: none;">
         <div class="video-wrapper">
           <div id="videoContainer"></div>
         </div>
-        <div class="video-actions">
-          <button id="markCompleteBtn" class="btn btn-primary">تحديد كمكتمل ✓</button>
-        </div>
       </div>
 
-      <!-- قائمة الدروس (الأكورديون) -->
+      <!-- قائمة الدروس -->
       <div class="lessons-section">
-        <h2 class="section-title" id="chapterTitle">...</h2>
+        <h3 class="section-title">الدروس والملفات</h3>
         <div id="lessonsList" class="lessons-list">
           <div class="loading-inline">جاري التحميل…</div>
         </div>
@@ -64,4 +68,4 @@
 
 <script type="module" src="/assets/js/chapter.js"></script>
 </body>
-</html>
+  </html>
