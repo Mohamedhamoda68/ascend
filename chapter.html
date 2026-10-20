@@ -15,25 +15,28 @@
 <body>
 
 <div class="app">
-  <!-- Topbar -->
-  <header class="topbar" style="display:flex; justify-content:space-between; padding:15px 20px; background:#fff; border-bottom:1px solid #e2e8f0;">
-    <div style="font-weight:bold; font-size:18px;">ASCEND</div>
-    <a href="javascript:history.back()" style="color:#64748b; text-decoration:none;">رجوع</a>
+  <!-- Topbar بسيط -->
+  <header class="topbar" style="display:flex; justify-content:space-between; align-items:center; padding:15px 20px; background:#fff; border-bottom:1px solid #e2e8f0; position:sticky; top:0; z-index:100;">
+    <div style="font-weight:800; font-size:20px; color:#0f172a;">ASCEND</div>
+    <a href="javascript:history.back()" style="color:#64748b; text-decoration:none; font-weight:600; font-size:14px; display:flex; align-items:center; gap:5px;">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      رجوع
+    </a>
   </header>
 
-  <main class="content" style="padding: 20px; max-width: 900px; margin: 0 auto; background: #fff; min-height: 100vh;">
+  <main class="content" style="padding: 20px; max-width: 900px; margin: 0 auto; min-height: 80vh;">
 
     <!-- 1. صورة الغلاف -->
     <div class="cover-image-wrapper">
       <div class="cover-bg" id="chapterCover"></div>
     </div>
 
-    <!-- 2. الدروس -->
+    <!-- 2. قائمة الدروس -->
     <div class="lessons-section">
       <h2 class="section-title">الدروس</h2>
+      
       <div class="lessons-list" id="lessonsList">
-        <!-- الكروت هتتولد هنا بالـ JS -->
-        <div class="loading-inline">جاري التحميل...</div>
+        <div class="loading-inline">جاري تحميل المحتوى...</div>
       </div>
     </div>
 
@@ -57,4 +60,4 @@
 
 <script type="module" src="/assets/js/chapter.js"></script>
 </body>
-</html> 
+</html>
