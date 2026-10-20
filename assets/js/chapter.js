@@ -1,175 +1,155 @@
-// ============================================
-// ASCEND · Chapter Content Logic
-// ============================================
 import { supabase } from './supabase.js';
 import { escapeHtml, getYouTubeId } from './utils.js';
 
 const { data: { session } } = await supabase.auth.getSession();
-if (!session) { location.href = '/login.html'; throw new Error('No session'); }
-const user = session.user;
+if (!session) location.href = '/login.html';
 
-const params = new URLSearchParams(location.search);
-const chapterId = params.get('id');
+const urlParams = new URLSearchParams(location.search);
+const chapterId = urlParams.get('id');
 
-if (!chapterId) { location.href = '/dashboard.html'; throw new Error('No chapter id'); }
+if (!chapterId) location.href = '/dashboard.html';
 
-// Load Profile
-async function loadProfile() {
-  const { data } = await supabase.from('profiles').select('full_name').eq('id', user.id).single();
-  if (data) {
-    document.querySelector('#userName').textContent = data.full_name;
-    document.querySelector('#userAvatar').textContent = data.full_name.charAt(0);
+let allContents = [];
+let activeVideoId = null;
+
+async function init() {
+  // جلب بيانات الباب
+  const { data: chapter } = await supabase.from('chapters').select('*').eq('id', chapterId).single();
+  if (chapter) {
+    document.getElementById('pageTitle').textContent = chapter.title;
+    document.getElementById('chapterTitle').textContent = `محتوى الباب: ${chapter.title}`;
   }
-}
-loadProfile();
 
-// Load Chapter Content
-async function loadChapter() {
-  const container = document.querySelector('#chapterContentList');
-  
-  try {
-    // 1. جلب بيانات الباب والمادة
-    const { data: chapter, error: chErr } = await supabase
-      .from('chapters')
-      .select('*, subjects(name, slug, color)')
-      .eq('id', chapterId)
-      .single();
+  // جلب المحتوى (فيديوهات، ملفات، إلخ)
+  const { data: contents } = await supabase
+    .from('chapter_contents')
+    .select('*')
+    .eq('chapter_id', chapterId)
+    .order('id');
 
-    if (chErr || !chapter) throw new Error('Chapter not found');
-
-    // تحديث العناوين
-    document.title = `${chapter.title} — ASCEND`;
-    document.querySelector('#chapterTitle').textContent = chapter.title;
-    document.querySelector('#breadcrumbSubject').textContent = chapter.subjects?.name || 'المادة';
-    document.querySelector('#breadcrumbSubject').href = `/subject.html?slug=${chapter.subjects?.slug}`;
-    document.querySelector('#breadcrumbChapter').textContent = chapter.title;
-    document.body.style.setProperty('--subject-accent', chapter.subjects?.color || '#7C5CFF');
-
-    // رسم الهيدر
-    document.querySelector('#chapterHeader').innerHTML = `
-      <div class="chapter-hero-banner">
-        <div class="chapter-hero-icon">
-          <svg viewBox="0 0 24 24"><path d="M4 4h6a2 2 0 012 2v14a2 2 0 00-2-2H4z"/><path d="M20 4h-6a2 2 0 00-2 2v14a2 2 0 012-2h6z"/></svg>
-        </div>
-        <div class="chapter-hero-info">
-          <h1>${escapeHtml(chapter.title)}</h1>
-          <p>محتوى الباب: فيديوهات، واجبات، امتحانات، وملفات PDF.</p>
-        </div>
-      </div>
-    `;
-
-    // 2. جلب المحتوى الخاص بالباب (من الجدول الجديد اللي إحنا عملناه)
-    const { data: contents, error: contentErr } = await supabase
-      .from('chapter_contents')
-      .select('*')
-      .eq('chapter_id', chapterId)
-      .order('id');
-
-    if (contentErr) throw contentErr;
-
-    // 3. جلب تقدم الطالب (شاف إيه)
-    const { data: progress } = await supabase
-      .from('content_progress')
-      .select('content_id')
-      .eq('user_id', user.id);
-
-    const completedIds = new Set((progress || []).map(p => p.content_id));
-
-    if (!contents || contents.length === 0) {
-      container.innerHTML = `<div class="empty-state">لم يتم إضافة محتوى لهذا الباب بعد. الأدمن هيضيفه قريباً.</div>`;
-      return;
-    }
-
-    // 4. رسم القائمة (التنسيق المنظم اللي زي الصور)
-    container.innerHTML = `
-      <div class="lessons-list">
-        ${contents.map((item, idx) => {
-          const isCompleted = completedIds.has(item.id);
-          
-          let iconSvg = '';
-          let actionBtn = '';
-          let extraBadge = isCompleted ? `<span class="badge-completed">✓ تم</span>` : '';
-
-          if (item.type === 'video') {
-            iconSvg = `<svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>`;
-            actionBtn = `<button class="lesson-action-btn btn-watch" onclick="openVideo('${item.video_url}', ${item.id})">مشاهدة</button>`;
-          } else if (item.type === 'quiz') {
-            iconSvg = `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>`;
-            actionBtn = `<a href="/quiz.html?id=${item.quiz_id}" class="lesson-action-btn btn-start">ابدأ الامتحان</a>`;
-          } else if (item.type === 'homework') {
-            iconSvg = `<svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>`;
-            actionBtn = `<a href="${item.homework_desc || '#'}" target="_blank" class="lesson-action-btn btn-download">فتح الواجب</a>`;
-          } else if (item.type === 'pdf') {
-            iconSvg = `<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>`;
-            actionBtn = `<a href="${item.pdf_url}" target="_blank" class="lesson-action-btn btn-download">تحميل PDF</a>`;
-          }
-
-          const isYouAreHere = (idx === 0 && !isCompleted && item.type === 'video') ? `<span class="badge-you-are-here">أنت هنا</span>` : '';
-
-          return `
-            <div class="lesson-row type-${item.type} ${isYouAreHere ? 'active' : ''}">
-              ${isYouAreHere}
-              <div class="lesson-icon-box">${iconSvg}</div>
-              <div class="lesson-content-text">${escapeHtml(item.title)}</div>
-              <div style="display:flex; align-items:center; gap:15px;">
-                ${extraBadge}
-                ${actionBtn}
-              </div>
-            </div>
-          `;
-        }).join('')}
-      </div>
-      
-      <!-- نافذة الفيديو المنبثقة -->
-      <div class="video-modal-overlay" id="videoModal" onclick="closeVideo(event)">
-        <div class="video-modal-content" onclick="event.stopPropagation()">
-          <button class="video-modal-close" onclick="closeVideo(event)">✕</button>
-          <div id="videoIframeContainer" style="width:100%;height:100%;"></div>
-        </div>
-      </div>
-    `;
-
-  } catch (err) {
-    console.error(err);
-    container.innerHTML = `<div class="empty-state" style="color:#F85149">حدث خطأ أثناء تحميل الباب.</div>`;
-  }
-}
-
-// دوال فتح وقفل الفيديو
-window.openVideo = async (url, contentId) => {
-  const videoId = getYouTubeId(url); 
-  
-  if (!videoId) {
-    alert('رابط الفيديو غير صالح. تأكد من الرابط.');
+  if (!contents || contents.length === 0) {
+    document.getElementById('lessonsList').innerHTML = '<div class="empty-state">لا يوجد محتوى في هذا الباب.</div>';
     return;
   }
 
-  const iframeContainer = document.getElementById('videoIframeContainer');
-  iframeContainer.innerHTML = `<iframe width="100%" height="100%" src="https://www.youtube.com/embed/${videoId}?autoplay=1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+  allContents = contents;
+  renderLessons();
+}
+
+function renderLessons() {
+  const list = document.getElementById('lessonsList');
   
-  document.getElementById('videoModal').classList.add('open');
+  // تجميع المحتوى حسب العنوان (عشان نعمل الأكورديون)
+  // لو إنت مسجل كل فيديو وملف بنفس الاسم، هنعتبرهم درس واحد
+  const grouped = {};
+  allContents.forEach(item => {
+    if (!grouped[item.title]) grouped[item.title] = [];
+    grouped[item.title].push(item);
+  });
 
-  // تسجيل إن الطالب شاف الفيديو
-  try {
-    await supabase.from('content_progress').upsert({
-      user_id: user.id,
-      content_id: contentId,
-      status: 'completed'
-    }, { onConflict: 'user_id,content_id' });
-  } catch (err) {
-    console.error('Error saving progress:', err);
+  let html = '';
+  let isFirst = true;
+
+  for (const [title, items] of Object.entries(grouped)) {
+    const isActive = isFirst ? 'active' : ''; // أول درس يفتح تلقائياً
+    if (isFirst && items.length > 0) {
+      const firstVideo = items.find(i => i.type === 'video');
+      if (firstVideo) openVideo(firstVideo.video_url);
+      isFirst = false;
+    }
+
+    html += `
+      <div class="lesson-accordion ${isActive}">
+        <div class="lesson-header" onclick="toggleAccordion(this)">
+          <div class="lesson-title-wrap">
+            <div class="lesson-icon">
+              <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" fill="none" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+            </div>
+            <div class="lesson-title-text">
+              <h4>${escapeHtml(title)}</h4>
+              <span>${items.length} عناصر</span>
+            </div>
+          </div>
+          <div class="lesson-arrow">
+            <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" fill="none" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <div class="lesson-content-list">
+            ${items.map(item => renderContentItem(item)).join('')}
+          </div>
+        </div>
+      </div>
+    `;
   }
+
+  list.innerHTML = html;
+}
+
+function renderContentItem(item) {
+  let icon = '';
+  let btn = '';
+
+  if (item.type === 'video') {
+    icon = `<svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>`;
+    btn = `<button onclick="playVideo('${item.video_url}')" class="btn btn-primary btn-sm">مشاهدة</button>`;
+  } else if (item.type === 'pdf') {
+    icon = `<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>`;
+    btn = `<a href="${item.pdf_url}" target="_blank" class="btn btn-ghost btn-sm">فتح الملف</a>`;
+  } else if (item.type === 'homework') {
+    icon = `<svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>`;
+    btn = `<a href="${item.homework_desc}" target="_blank" class="btn btn-ghost btn-sm">فتح الواجب</a>`;
+  } else if (item.type === 'quiz') {
+    icon = `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>`;
+    btn = `<a href="/quiz.html?id=${item.quiz_id}" class="btn btn-ghost btn-sm">أمتحن</a>`;
+  }
+
+  return `
+    <div class="content-item-row">
+      <div class="content-item-info">
+        ${icon}
+        <span>${escapeHtml(item.title)}</span>
+      </div>
+      ${btn}
+    </div>
+  `;
+}
+
+window.toggleAccordion = (header) => {
+  const accordion = header.parentElement;
+  // إغلاق الباقي (اختياري)
+  document.querySelectorAll('.lesson-accordion').forEach(acc => {
+    if (acc !== accordion) acc.classList.remove('active');
+  });
+  // فتح/قفل اللي إنت دوست عليه
+  accordion.classList.toggle('active');
 };
 
-window.closeVideo = (e) => {
-  if (e) e.preventDefault();
-  document.getElementById('videoModal').classList.remove('open');
-  document.getElementById('videoIframeContainer').innerHTML = ''; 
+window.playVideo = (url) => {
+  openVideo(url);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 };
 
-// Sidebar
-document.querySelector('#menuToggle')?.addEventListener('click', () => {
-  document.querySelector('#sidebar')?.classList.toggle('open');
+function openVideo(url) {
+  const videoId = getYouTubeId(url);
+  if (!videoId) return;
+
+  const videoSection = document.getElementById('videoSection');
+  videoSection.style.display = 'block';
+  
+  document.getElementById('videoContainer').innerHTML = `
+    <iframe src="https://www.youtube.com/embed/${videoId}?autoplay=1" allowfullscreen allow="autoplay"></iframe>
+  `;
+
+  activeVideoId = videoId;
+}
+
+// زرار "تحديد كمكتمل"
+document.getElementById('markCompleteBtn').addEventListener('click', async () => {
+  // هنا ممكن نسجل إنه خلص الفيديو في الداتابيز
+  alert('تم تحديد الدرس كمكتمل! (هنربطها بالداتابيز في الخطوة الجاية)');
+  document.getElementById('markCompleteBtn').innerHTML = '✓ تم';
+  document.getElementById('markCompleteBtn').style.background = '#10B981';
 });
 
-loadChapter();
+init();
