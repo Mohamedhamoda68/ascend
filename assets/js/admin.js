@@ -76,6 +76,7 @@ $$('.sidebar-link[data-tab]').forEach(tab => {
     if (target === 'notifications') loadSentNotifications();
     if (target === 'certificates') loadCertificatesAdmin();
     if (target === 'overview') loadStats();
+     if (target === 'content-management') loadContentManagement();
   });
 });
 
