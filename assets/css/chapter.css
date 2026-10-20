@@ -1,0 +1,161 @@
+/* =========================================
+   ASCEND · Chapter Content Styles
+   ========================================= */
+
+.chapter-hero-banner {
+  background: var(--surface-1);
+  border: 1px solid var(--border-1);
+  border-radius: 20px;
+  padding: 30px;
+  margin-bottom: 30px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.04);
+}
+
+.chapter-hero-banner::before {
+  content: '';
+  position: absolute;
+  top: 0; right: 0; width: 4px; height: 100%;
+  background: var(--subject-accent, #7C5CFF);
+}
+
+.chapter-hero-icon {
+  width: 60px; height: 60px;
+  background: var(--surface-2);
+  border-radius: 16px;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--subject-accent, #7C5CFF);
+}
+.chapter-hero-icon svg { width: 30px; height: 30px; stroke: currentColor; fill: none; stroke-width: 2; }
+
+.chapter-hero-info h1 { margin: 0 0 8px 0; font-size: 24px; color: var(--text-1); }
+.chapter-hero-info p { margin: 0; color: var(--text-2); font-size: 14px; }
+
+/* ---- Timeline List ---- */
+.lessons-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.lesson-row {
+  display: flex;
+  align-items: center;
+  background: var(--surface-1);
+  border: 1px solid var(--border-1);
+  border-radius: 16px;
+  padding: 16px 20px;
+  transition: all 0.2s ease;
+  position: relative;
+  gap: 16px;
+}
+
+.lesson-row:hover {
+  background: var(--surface-2);
+  transform: translateX(-4px);
+}
+
+.lesson-row.active {
+  border-color: var(--subject-accent, #7C5CFF);
+  box-shadow: 0 4px 12px rgba(124, 92, 255, 0.15);
+  background: var(--surface-2);
+}
+
+.lesson-icon-box {
+  width: 45px; height: 45px;
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.lesson-icon-box svg { width: 20px; height: 20px; stroke: #fff; fill: none; stroke-width: 2.5; }
+
+/* ألوان حسب النوع */
+.type-video .lesson-icon-box { background: #7C5CFF; }
+.type-quiz .lesson-icon-box { background: #F59E0B; }
+.type-homework .lesson-icon-box { background: #10B981; }
+.type-pdf .lesson-icon-box { background: #EF4444; }
+
+.lesson-content-text {
+  flex: 1;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-1);
+}
+
+.lesson-action-btn {
+  padding: 8px 16px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s;
+  font-family: inherit;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-watch { background: rgba(124, 92, 255, 0.1); color: #7C5CFF; }
+.btn-watch:hover { background: #7C5CFF; color: #fff; }
+
+.btn-start { background: rgba(245, 158, 11, 0.1); color: #F59E0B; }
+.btn-start:hover { background: #F59E0B; color: #fff; }
+
+.btn-download { background: rgba(16, 185, 129, 0.1); color: #10B981; }
+.btn-download:hover { background: #10B981; color: #fff; }
+
+.badge-you-are-here {
+  position: absolute;
+  top: -10px;
+  right: 20px;
+  background: #EF4444;
+  color: white;
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-weight: 700;
+}
+
+.badge-completed {
+  color: #10B981;
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* ---- Video Modal ---- */
+.video-modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.8);
+  backdrop-filter: blur(5px);
+  z-index: 1000;
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none; transition: opacity 0.3s;
+}
+.video-modal-overlay.open { opacity: 1; pointer-events: auto; }
+
+.video-modal-content {
+  width: 90%; max-width: 900px;
+  background: #000; border-radius: 16px;
+  overflow: hidden; position: relative;
+  aspect-ratio: 16/9;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+  transform: scale(0.95); transition: transform 0.3s;
+}
+.video-modal-overlay.open .video-modal-content { transform: scale(1); }
+
+.video-modal-close {
+  position: absolute; top: 15px; right: 15px;
+  background: rgba(255,255,255,0.2); border: none;
+  color: white; width: 35px; height: 35px; border-radius: 50%;
+  cursor: pointer; z-index: 10; font-size: 18px;
+}
+.video-modal-close:hover { background: #EF4444; }
