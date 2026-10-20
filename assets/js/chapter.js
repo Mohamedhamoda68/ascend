@@ -58,12 +58,14 @@ async function loadChapter() {
       </div>
     `;
 
-    // 2. جلب المحتوى الخاص بالباب (من الجدول اللي عملناه)
+    // 2. جلب المحتوى الخاص بالباب (من الجدول الجديد اللي إحنا عملناه)
     const { data: contents, error: contentErr } = await supabase
       .from('chapter_contents')
       .select('*')
       .eq('chapter_id', chapterId)
-      .order('order');
+      .order('id');
+
+    if (contentErr) throw contentErr;
 
     // 3. جلب تقدم الطالب (شاف إيه)
     const { data: progress } = await supabase
@@ -74,17 +76,16 @@ async function loadChapter() {
     const completedIds = new Set((progress || []).map(p => p.content_id));
 
     if (!contents || contents.length === 0) {
-      container.innerHTML = `<div class="empty-state">لم يتم إضافة محتوى لهذا الباب بعد.</div>`;
+      container.innerHTML = `<div class="empty-state">لم يتم إضافة محتوى لهذا الباب بعد. الأدمن هيضيفه قريباً.</div>`;
       return;
     }
 
-    // 4. رسم القائمة
+    // 4. رسم القائمة (التنسيق المنظم اللي زي الصور)
     container.innerHTML = `
       <div class="lessons-list">
         ${contents.map((item, idx) => {
           const isCompleted = completedIds.has(item.id);
           
-          // تحديد الأيقونة والزر حسب النوع
           let iconSvg = '';
           let actionBtn = '';
           let extraBadge = isCompleted ? `<span class="badge-completed">✓ تم</span>` : '';
@@ -97,13 +98,12 @@ async function loadChapter() {
             actionBtn = `<a href="/quiz.html?id=${item.quiz_id}" class="lesson-action-btn btn-start">ابدأ الامتحان</a>`;
           } else if (item.type === 'homework') {
             iconSvg = `<svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>`;
-            actionBtn = `<button class="lesson-action-btn btn-download" onclick="alert('سيتم فتح الواجب قريباً')">فتح الواجب</button>`;
+            actionBtn = `<a href="${item.homework_desc || '#'}" target="_blank" class="lesson-action-btn btn-download">فتح الواجب</a>`;
           } else if (item.type === 'pdf') {
             iconSvg = `<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>`;
             actionBtn = `<a href="${item.pdf_url}" target="_blank" class="lesson-action-btn btn-download">تحميل PDF</a>`;
           }
 
-          // "أنت هنا" لأول فيديو مش متشاف
           const isYouAreHere = (idx === 0 && !isCompleted && item.type === 'video') ? `<span class="badge-you-are-here">أنت هنا</span>` : '';
 
           return `
@@ -137,7 +137,7 @@ async function loadChapter() {
 
 // دوال فتح وقفل الفيديو
 window.openVideo = async (url, contentId) => {
-  const videoId = getYouTubeId(url); // استخدام الدالة الذكية
+  const videoId = getYouTubeId(url); 
   
   if (!videoId) {
     alert('رابط الفيديو غير صالح. تأكد من الرابط.');
@@ -164,7 +164,7 @@ window.openVideo = async (url, contentId) => {
 window.closeVideo = (e) => {
   if (e) e.preventDefault();
   document.getElementById('videoModal').classList.remove('open');
-  document.getElementById('videoIframeContainer').innerHTML = ''; // إيقاف الفيديو
+  document.getElementById('videoIframeContainer').innerHTML = ''; 
 };
 
 // Sidebar
