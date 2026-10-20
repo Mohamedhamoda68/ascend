@@ -1,6 +1,5 @@
 // ============================================
 // ASCEND · Admin Panel (Complete & Updated)
-// Students + Parents + Photo Questions + Chapters Content
 // Created by Mohamed Hamouda
 // ============================================
 import { supabase } from './supabase.js';
@@ -562,22 +561,20 @@ window.deleteChapter = async (id) => {
   if (currentChapterSubject) loadChaptersForSubject(currentChapterSubject.id);
 };
 
-// ============================================
-// NEW: EDIT CHAPTER MODAL (Cover & Teacher)
-// ============================================
+/* ============================================
+   NEW: EDIT CHAPTER MODAL (Cover & Teacher)
+   ============================================ */
 window.openEditChapter = async (chapterId) => {
   document.getElementById('editChapterId').value = chapterId;
   document.getElementById('editChapterError').classList.remove('show');
   document.getElementById('editChapterImagePreview').style.display = 'none';
   document.getElementById('editChapterImage').value = '';
   
-  // Fetch chapter data
   const { data: chapter } = await supabase.from('chapters').select('*').eq('id', chapterId).single();
   if (!chapter) return;
 
   document.getElementById('editChapterTitle').value = chapter.title;
   
-  // Load teachers for subject
   const teacherSelect = document.getElementById('editChapterTeacher');
   teacherSelect.innerHTML = '<option value="">— بدون مدرس —</option>';
   
@@ -591,7 +588,6 @@ window.openEditChapter = async (chapterId) => {
   
   if (chapter.teacher_id) teacherSelect.value = chapter.teacher_id;
   
-  // Show current image if exists
   if (chapter.cover_image_url) {
     document.getElementById('editChapterImageImg').src = chapter.cover_image_url;
     document.getElementById('editChapterImagePreview').style.display = 'block';
@@ -661,9 +657,9 @@ document.getElementById('saveEditChapterBtn')?.addEventListener('click', async (
   if (currentChapterSubject) loadChaptersForSubject(currentChapterSubject.id);
 });
 
-// ============================================
-// NEW: MANAGE CHAPTER CONTENT
-// ============================================
+/* ============================================
+   NEW: MANAGE CHAPTER CONTENT
+   ============================================ */
 window.openManageContent = async (chapterId, chapterTitle) => {
   document.getElementById('contentChapterId').value = chapterId;
   document.getElementById('contentTitle').value = '';
@@ -672,20 +668,18 @@ window.openManageContent = async (chapterId, chapterTitle) => {
   document.getElementById('contentPdfUrl').value = '';
   document.getElementById('contentType').value = 'video';
   
-  // Switch fields to default (video)
   document.getElementById('contentFieldVideo').style.display = 'block';
   document.getElementById('contentFieldQuiz').style.display = 'none';
   document.getElementById('contentFieldHomework').style.display = 'none';
   document.getElementById('contentFieldPdf').style.display = 'none';
 
-  // Load Quizzes for select
   const quizSelect = document.getElementById('contentQuizId');
   quizSelect.innerHTML = '<option value="">جاري التحميل...</option>';
   const { data: quizzes } = await supabase.from('quizzes').select('id, title').order('created_at', { ascending: false });
   if (quizzes && quizzes.length > 0) {
     quizSelect.innerHTML = '<option value="">— اختر اختبار —</option>' + quizzes.map(q => `<option value="${q.id}">${escapeHtml(q.title)}</option>`).join('');
   } else {
-    quizSelect.innerHTML = '<option value="">لا يوجد اختبارات (أضف من قسم الاختبارات)</option>';
+    quizSelect.innerHTML = '<option value="">لا يوجد اختبارات</option>';
   }
 
   document.getElementById('modalChapterContent').classList.add('open');
@@ -710,12 +704,7 @@ document.getElementById('saveChapterContentBtn')?.addEventListener('click', asyn
   btn.disabled = true;
   btn.innerHTML = '<span class="spinner"></span><span>جارٍ الحفظ…</span>';
 
-  let payload = {
-    chapter_id: chapterId,
-    type: type,
-    title: title,
-    order: 0 // ممكن نطوره بعدين
-  };
+  let payload = { chapter_id: chapterId, type: type, title: title, order: 0 };
 
   if (type === 'video') {
     const url = document.getElementById('contentVideoUrl').value.trim();
