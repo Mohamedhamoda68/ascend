@@ -1755,3 +1755,65 @@ document.getElementById('saveQuickPdfBtn')?.addEventListener('click', async () =
   closeModal('modalQuickPdf');
 });
 loadStats();
+// ============================================
+// CONTENT MANAGEMENT (عرض وحذف المحتوى من لوحة التحكم)
+// ============================================
+async function loadContentManagement() {
+  const tbody = document.getElementById('contentManagementBody');
+  tbody.innerHTML = '<tr><td colspan="4" class="loading-inline">جاري التحميل…</td></tr>';
+
+  try {
+    // بنجيب كل المحتوى من جدول chapter_contents ومعاه اسم الباب
+    const { data, error } = await supabase
+      .from('chapter_contents')
+      .select('id, type, title, chapter_id, chapters(title)')
+      .order('id', { ascending: false });
+
+    if (error) throw error;
+
+    if (!data || data.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="4" class="empty-state">لا يوجد محتوى مضاف حتى الآن.</td></tr>';
+      return;
+    }
+
+    const typeLabels = {
+      video: '<span class="pill pill-accent">فيديو</span>',
+      pdf: '<span class="pill pill-danger">PDF</span>',
+      homework: '<span class="pill pill-warning">واجب</span>',
+      quiz: '<span class="pill pill-success">امتحان</span>'
+    };
+
+    tbody.innerHTML = data.map(item => `
+      <tr>
+        <td>${typeLabels[item.type] || item.type}</td>
+        <td class="cell-name">${escapeHtml(item.title)}</td>
+        <td class="cell-muted">${escapeHtml(item.chapters?.title || '—')}</td>
+        <td>
+          <div class="row-actions">
+            <button class="row-btn danger" onclick="deleteContentItem(${item.id})" title="حذف">
+              <svg viewBox="0 0 24 24"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg>
+            </button>
+          </div>
+        </td>
+      </tr>
+    `).join('');
+  } catch (err) {
+    console.error(err);
+    tbody.innerHTML = '<tr><td colspan="4" class="empty-state" style="color:red">حدث خطأ أثناء تحميل المحتوى.</td></tr>';
+  }
+}
+
+window.deleteContentItem = async (id) => {
+  if (!confirm('متأكد إنك عايز تمسح العنصر ده نهائياً؟')) return;
+  
+  try {
+    const { error } = await supabase.from('chapter_contents').delete().eq('id', id);
+    if (error) throw error;
+    
+    toast('تم حذف العنصر بنجاح ✅', 'success');
+    loadContentManagement(); // تحديث الجدول
+  } catch (err) {
+    console.error(err);
+    toast('تعذّر الحذف: ' + err.message, 'error');
+  }
+};
