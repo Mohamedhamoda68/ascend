@@ -1678,4 +1678,80 @@ document.addEventListener('keydown', (e) => {
 /* ============================================
    INIT
    ============================================ */
+/* ============================================
+   QUICK ACTIONS LOGIC (الإجراءات السريعة)
+   ============================================ */
+async function loadQuickSubjects() {
+  const { data } = await supabase.from('subjects').select('id, name');
+  const opts = '<option value="">— اختر مادة —</option>' + (data || []).map(s => `<option value="${s.id}">${s.name}</option>`).join('');
+  document.getElementById('quickVideoSubject').innerHTML = opts;
+  document.getElementById('quickPdfSubject').innerHTML = opts;
+}
+
+window.loadQuickChapters = async (subjectId, targetSelectId) => {
+  const select = document.getElementById(targetSelectId);
+  if (!subjectId) {
+    select.innerHTML = '<option value="">— اختر مادة أولاً —</option>';
+    return;
+  }
+  select.innerHTML = '<option value="">جاري التحميل...</option>';
+  const { data } = await supabase.from('chapters').select('id, title').eq('subject_id', subjectId).order('order');
+  select.innerHTML = '<option value="">— اختر الباب —</option>' + (data || []).map(c => `<option value="${c.id}">${c.title}</option>`).join('');
+};
+
+window.openQuickVideo = () => {
+  loadQuickSubjects();
+  document.getElementById('quickVideoTitle').value = '';
+  document.getElementById('quickVideoUrl').value = '';
+  document.getElementById('modalQuickVideo').classList.add('open');
+};
+
+document.getElementById('saveQuickVideoBtn')?.addEventListener('click', async () => {
+  const chapterId = parseInt(document.getElementById('quickVideoChapter').value, 10);
+  const title = document.getElementById('quickVideoTitle').value.trim();
+  const url = document.getElementById('quickVideoUrl').value.trim();
+
+  if (!chapterId) return toast('اختر الباب', 'error');
+  if (!title) return toast('العنوان مطلوب', 'error');
+  if (!url) return toast('الرابط مطلوب', 'error');
+
+  const btn = document.getElementById('saveQuickVideoBtn');
+  btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> جاري الحفظ...';
+
+  await supabase.from('chapter_contents').insert({
+    chapter_id: chapterId, type: 'video', title: title, video_url: url
+  });
+
+  btn.disabled = false; btn.innerHTML = '<span>حفظ</span>';
+  toast('تم إضافة الفيديو للباب ✅', 'success');
+  closeModal('modalQuickVideo');
+});
+
+window.openQuickPdf = () => {
+  loadQuickSubjects();
+  document.getElementById('quickPdfTitle').value = '';
+  document.getElementById('quickPdfUrl').value = '';
+  document.getElementById('modalQuickPdf').classList.add('open');
+};
+
+document.getElementById('saveQuickPdfBtn')?.addEventListener('click', async () => {
+  const chapterId = parseInt(document.getElementById('quickPdfChapter').value, 10);
+  const title = document.getElementById('quickPdfTitle').value.trim();
+  const url = document.getElementById('quickPdfUrl').value.trim();
+
+  if (!chapterId) return toast('اختر الباب', 'error');
+  if (!title) return toast('العنوان مطلوب', 'error');
+  if (!url) return toast('الرابط مطلوب', 'error');
+
+  const btn = document.getElementById('saveQuickPdfBtn');
+  btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> جاري الحفظ...';
+
+  await supabase.from('chapter_contents').insert({
+    chapter_id: chapterId, type: 'pdf', title: title, pdf_url: url
+  });
+
+  btn.disabled = false; btn.innerHTML = '<span>حفظ</span>';
+  toast('تم إضافة ملف الـ PDF للباب ✅', 'success');
+  closeModal('modalQuickPdf');
+});
 loadStats();
