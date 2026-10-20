@@ -15,7 +15,6 @@ async function init() {
   if (chapter) {
     document.getElementById('pageTitle').textContent = chapter.title;
     document.getElementById('coverTitle').textContent = chapter.title;
-    document.title = chapter.title;
     
     if (chapter.cover_image_url) {
       document.getElementById('chapterCover').style.backgroundImage = `url('${chapter.cover_image_url}')`;
@@ -40,7 +39,7 @@ async function init() {
 function renderLessons(contents) {
   const list = document.getElementById('lessonsList');
   
-  // تجميع المحتوى بالعنوان (مثلاً كل الفيديوهات والملفات اللي اسمها "المحاضرة الأولى" تبقى في كارت واحد)
+  // تجميع المحتوى بالعنوان
   const grouped = {};
   contents.forEach(item => {
     if (!grouped[item.title]) grouped[item.title] = [];
@@ -50,14 +49,14 @@ function renderLessons(contents) {
   let html = '';
 
   for (const [title, items] of Object.entries(grouped)) {
-    // محتوى الكارت
+    // تجهيز محتوى الكارت
     const contentHtml = items.map(item => {
       let icon = '';
       let btn = '';
 
       if (item.type === 'video') {
         icon = `<svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>`;
-        btn = `<button onclick="playVideo('${item.video_url}')" class="btn-action">مشاهدة</button>`;
+        btn = `<button onclick="event.stopPropagation(); openVideoModal('${item.video_url}')" class="btn-action">مشاهدة</button>`;
       } else if (item.type === 'pdf') {
         icon = `<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>`;
         btn = `<a href="${item.pdf_url}" target="_blank" class="btn-action secondary">فتح الملف</a>`;
@@ -77,7 +76,6 @@ function renderLessons(contents) {
       `;
     }).join('');
 
-    // الكارت نفسه
     html += `
       <div class="lesson-card">
         <div class="lesson-header" onclick="toggleLesson(this)">
@@ -109,26 +107,44 @@ function renderLessons(contents) {
 // فتح وقفل الكارت
 window.toggleLesson = (header) => {
   const card = header.parentElement;
+  // إغلاق الباقي (اختياري)
+  document.querySelectorAll('.lesson-card').forEach(c => {
+    if (c !== card) c.classList.remove('open');
+  });
   card.classList.toggle('open');
 };
 
-// تشغيل الفيديو لما تدوس "مشاهدة"
-window.playVideo = (url) => {
+// نافذة الفيديو
+window.openVideoModal = (url) => {
   const videoId = getYouTubeId(url);
-  if (!videoId) {
-    alert('رابط الفيديو غير صالح');
-    return;
+  if (!videoId) return alert('رابط الفيديو غير صالح');
+
+  // نضيف المودال للصفحة لو مش موجود
+  let modal = document.getElementById('videoModal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'videoModal';
+    modal.className = 'video-modal';
+    modal.innerHTML = `
+      <div style="position:relative; width:100%; max-width:900px; display:flex; flex-direction:column;">
+        <button class="video-modal-close" onclick="document.getElementById('videoModal').classList.remove('open'); document.getElementById('videoModalContent').innerHTML='';">✕ إغلاق</button>
+        <div class="video-modal-content" id="videoModalContent"></div>
+      </div>
+    `;
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        modal.classList.remove('open');
+        document.getElementById('videoModalContent').innerHTML = '';
+      }
+    });
+    document.body.appendChild(modal);
   }
 
-  const videoSection = document.getElementById('videoSection');
-  videoSection.style.display = 'block';
-  
-  document.getElementById('videoContainer').innerHTML = `
+  document.getElementById('videoModalContent').innerHTML = `
     <iframe src="https://www.youtube.com/embed/${videoId}?autoplay=1" allowfullscreen allow="autoplay"></iframe>
   `;
-
-  // نسكرل لأعلى عشان الفيديو يبان
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  
+  modal.classList.add('open');
 };
 
 init();
