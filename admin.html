@@ -756,7 +756,102 @@
     </div>
   </div>
 </div>
+<!-- MODAL: EDIT CHAPTER (Cover Image & Teacher) -->
+<div class="modal-overlay" id="modalEditChapter">
+  <div class="modal">
+    <div class="modal-head">
+      <h3>تعديل بيانات الباب</h3>
+      <button class="modal-close" onclick="closeModal('modalEditChapter')"><svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <div class="alert alert-error" id="editChapterError"></div>
+      <input type="hidden" id="editChapterId">
+      
+      <div class="field">
+        <label>اسم الباب</label>
+        <input type="text" id="editChapterTitle">
+      </div>
+      
+      <div class="field">
+        <label>المدرس (اختياري)</label>
+        <select id="editChapterTeacher">
+          <option value="">— بدون مدرس —</option>
+        </select>
+      </div>
+      
+      <div class="field">
+        <label>صورة الباب (Cover)</label>
+        <input type="file" id="editChapterImage" accept="image/*" style="margin-bottom:10px">
+        <div id="editChapterImagePreview" style="display:none; text-align:center;">
+          <img id="editChapterImageImg" style="max-width:100%; max-height:150px; border-radius:8px;">
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal('modalEditChapter')">إلغاء</button>
+      <button class="btn btn-primary" id="saveEditChapterBtn"><span>حفظ التعديلات</span></button>
+    </div>
+  </div>
+</div>
 
+<!-- MODAL: MANAGE CHAPTER CONTENT -->
+<div class="modal-overlay" id="modalChapterContent">
+  <div class="modal" style="max-width:600px">
+    <div class="modal-head">
+      <h3>إدارة محتوى الباب</h3>
+      <button class="modal-close" onclick="closeModal('modalChapterContent')"><svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="contentChapterId">
+      
+      <div class="field">
+        <label>نوع المحتوى</label>
+        <select id="contentType">
+          <option value="video">فيديو (مشاهدة)</option>
+          <option value="quiz">امتحان (يتم ربطه باختبار)</option>
+          <option value="homework">واجب</option>
+          <option value="pdf">ملف PDF</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>العنوان الذي سيظهر للطالب</label>
+        <input type="text" id="contentTitle" placeholder="مثال: شرح درس الحركة">
+      </div>
+
+      <!-- حقول الفيديو -->
+      <div class="field" id="contentFieldVideo">
+        <label>رابط اليوتيوب (أي شكل من الرابط)</label>
+        <input type="text" id="contentVideoUrl" placeholder="https://youtu.be/... أو https://youtube.com/watch?v=...">
+      </div>
+
+      <!-- حقول الامتحان -->
+      <div class="field" id="contentFieldQuiz" style="display:none">
+        <label>اختر الامتحان</label>
+        <select id="contentQuizId">
+          <option value="">جاري التحميل...</option>
+        </select>
+      </div>
+
+      <!-- حقول الواجب -->
+      <div class="field" id="contentFieldHomework" style="display:none">
+        <label>رابط ملف الواجب (اختياري)</label>
+        <input type="text" id="contentHomeworkUrl" placeholder="https://...">
+      </div>
+
+      <!-- حقول PDF -->
+      <div class="field" id="contentFieldPdf" style="display:none">
+        <label>رابط ملف الـ PDF</label>
+        <input type="text" id="contentPdfUrl" placeholder="https://...">
+      </div>
+
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal('modalChapterContent')">إلغاء</button>
+      <button class="btn btn-primary" id="saveChapterContentBtn"><span>إضافة المحتوى</span></button>
+    </div>
+  </div>
+</div>
 <a href="/chat.html" class="floating-chat-btn" aria-label="المساعد الذكي">
   <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
   <span class="floating-chat-label">محتاج مساعدة؟</span>
