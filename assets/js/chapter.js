@@ -1,45 +1,27 @@
 import { supabase } from './supabase.js';
-import { escapeHtml, getYouTubeId } from './utils.js';
-
-const { data: { session } } = await supabase.auth.getSession();
-if (!session) location.href = '/login.html';
+import { escapeHtml } from './utils.js';
 
 const urlParams = new URLSearchParams(location.search);
 const chapterId = urlParams.get('id');
 
-if (!chapterId) location.href = '/dashboard.html';
-
 async function init() {
-  // جلب بيانات الباب
+  // 1. جلب بيانات الباب (الغلاف)
   const { data: chapter } = await supabase.from('chapters').select('*').eq('id', chapterId).single();
-  if (chapter) {
-    document.getElementById('pageTitle').textContent = chapter.title;
-    document.getElementById('coverTitle').textContent = chapter.title;
-    
-    if (chapter.cover_image_url) {
-      document.getElementById('chapterCover').style.backgroundImage = `url('${chapter.cover_image_url}')`;
-    }
+  if (chapter && chapter.cover_image_url) {
+    document.getElementById('chapterCover').style.backgroundImage = `url('${chapter.cover_image_url}')`;
   }
 
-  // جلب محتوى الباب
-  const { data: contents } = await supabase
-    .from('chapter_contents')
-    .select('*')
-    .eq('chapter_id', chapterId)
-    .order('id');
+  // 2. جلب المحتوى
+  const { data: contents } = await supabase.from('chapter_contents').select('*').eq('chapter_id', chapterId).order('id');
 
+  const list = document.getElementById('lessonsList');
+  
   if (!contents || contents.length === 0) {
-    document.getElementById('lessonsList').innerHTML = '<div class="empty-state">لا يوجد محتوى في هذا الباب.</div>';
+    list.innerHTML = '<div class="loading-inline">لا يوجد محتوى في هذا الباب.</div>';
     return;
   }
 
-  renderLessons(contents);
-}
-
-function renderLessons(contents) {
-  const list = document.getElementById('lessonsList');
-  
-  // تجميع المحتوى بالعنوان
+  // تجميع بالعنوان
   const grouped = {};
   contents.forEach(item => {
     if (!grouped[item.title]) grouped[item.title] = [];
@@ -47,54 +29,21 @@ function renderLessons(contents) {
   });
 
   let html = '';
-
   for (const [title, items] of Object.entries(grouped)) {
-    // تجهيز محتوى الكارت
-    const contentHtml = items.map(item => {
-      let icon = '';
-      let btn = '';
-
-      if (item.type === 'video') {
-        icon = `<svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>`;
-        btn = `<button onclick="event.stopPropagation(); openVideoModal('${item.video_url}')" class="btn-action">مشاهدة</button>`;
-      } else if (item.type === 'pdf') {
-        icon = `<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>`;
-        btn = `<a href="${item.pdf_url}" target="_blank" class="btn-action secondary">فتح الملف</a>`;
-      } else if (item.type === 'homework') {
-        icon = `<svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path></svg>`;
-        btn = `<a href="${item.homework_desc}" target="_blank" class="btn-action secondary">فتح الواجب</a>`;
-      } else if (item.type === 'quiz') {
-        icon = `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path></svg>`;
-        btn = `<a href="/quiz.html?id=${item.quiz_id}" class="btn-action secondary">أمتحن</a>`;
-      }
-
-      return `
-        <div class="content-row">
-          <div class="content-name">${icon} ${item.type === 'video' ? 'فيديو الشرح' : item.type === 'pdf' ? 'ملف مذكرة' : item.type === 'quiz' ? 'امتحان' : 'واجب'}</div>
-          ${btn}
-        </div>
-      `;
-    }).join('');
+    // استخراج عنوان فرعي (لو فيه فيديو أو ملف)
+    let subTitle = 'محتوى الباب';
+    if (items.some(i => i.type === 'video')) subTitle = 'مشاهدة الفيديو';
+    else if (items.some(i => i.type === 'pdf')) subTitle = 'ملفات وملخصات';
 
     html += `
       <div class="lesson-card">
-        <div class="lesson-header" onclick="toggleLesson(this)">
+        <div class="lesson-header" onclick="window.location.href='/lesson.html?id=${items[0].id}'">
           <div class="lesson-info">
-            <div class="lesson-icon">
-              <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" fill="none" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
-            </div>
-            <div class="lesson-title">
-              <h4>${escapeHtml(title)}</h4>
-              <span>${items.length} عناصر</span>
-            </div>
+            <span class="lesson-title">${escapeHtml(title)}</span>
+            <span class="lesson-subtitle">${subTitle}</span>
           </div>
           <div class="lesson-arrow">
-            <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" fill="none" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
-          </div>
-        </div>
-        <div class="lesson-body">
-          <div class="lesson-content">
-            ${contentHtml}
+            <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 15l-6-6-6 6"/></svg>
           </div>
         </div>
       </div>
@@ -103,48 +52,5 @@ function renderLessons(contents) {
 
   list.innerHTML = html;
 }
-
-// فتح وقفل الكارت
-window.toggleLesson = (header) => {
-  const card = header.parentElement;
-  // إغلاق الباقي (اختياري)
-  document.querySelectorAll('.lesson-card').forEach(c => {
-    if (c !== card) c.classList.remove('open');
-  });
-  card.classList.toggle('open');
-};
-
-// نافذة الفيديو
-window.openVideoModal = (url) => {
-  const videoId = getYouTubeId(url);
-  if (!videoId) return alert('رابط الفيديو غير صالح');
-
-  // نضيف المودال للصفحة لو مش موجود
-  let modal = document.getElementById('videoModal');
-  if (!modal) {
-    modal = document.createElement('div');
-    modal.id = 'videoModal';
-    modal.className = 'video-modal';
-    modal.innerHTML = `
-      <div style="position:relative; width:100%; max-width:900px; display:flex; flex-direction:column;">
-        <button class="video-modal-close" onclick="document.getElementById('videoModal').classList.remove('open'); document.getElementById('videoModalContent').innerHTML='';">✕ إغلاق</button>
-        <div class="video-modal-content" id="videoModalContent"></div>
-      </div>
-    `;
-    modal.addEventListener('click', (e) => {
-      if (e.target === modal) {
-        modal.classList.remove('open');
-        document.getElementById('videoModalContent').innerHTML = '';
-      }
-    });
-    document.body.appendChild(modal);
-  }
-
-  document.getElementById('videoModalContent').innerHTML = `
-    <iframe src="https://www.youtube.com/embed/${videoId}?autoplay=1" allowfullscreen allow="autoplay"></iframe>
-  `;
-  
-  modal.classList.add('open');
-};
 
 init();
