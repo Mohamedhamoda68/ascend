@@ -15,54 +15,46 @@
 <body>
 
 <div class="app">
-  <!-- المحتوى الرئيسي -->
-  <div class="main">
-    <main class="content">
+  <!-- Topbar -->
+  <header class="topbar" style="display:flex; justify-content:space-between; padding:15px 20px; background:#fff; border-bottom:1px solid #e2e8f0;">
+    <div style="font-weight:bold; font-size:18px;">ASCEND</div>
+    <a href="javascript:history.back()" style="color:#64748b; text-decoration:none;">رجوع</a>
+  </header>
 
-      <!-- 1. صورة الغلاف الكبيرة (زي الصورة الأولى) -->
-      <div class="cover-image-wrapper">
-        <div class="cover-bg" id="chapterCover"></div>
+  <main class="content" style="padding: 20px; max-width: 900px; margin: 0 auto; background: #fff; min-height: 100vh;">
+
+    <!-- 1. صورة الغلاف -->
+    <div class="cover-image-wrapper">
+      <div class="cover-bg" id="chapterCover"></div>
+    </div>
+
+    <!-- 2. الدروس -->
+    <div class="lessons-section">
+      <h2 class="section-title">الدروس</h2>
+      <div class="lessons-list" id="lessonsList">
+        <!-- الكروت هتتولد هنا بالـ JS -->
+        <div class="loading-inline">جاري التحميل...</div>
       </div>
+    </div>
 
-      <!-- 2. قسم الدروس (زي الصورة التانية) -->
-      <div class="lessons-section">
-        <h2 class="section-title">الدروس</h2>
-        
-        <div class="lessons-list" id="lessonsList">
-          <!-- الكروت هتتولد هنا بالـ JS، بس ده شكلها -->
-          <div class="lesson-card">
-            <div class="lesson-header">
-              <div class="lesson-info">
-                <span class="lesson-title">الاسبوع الاول</span>
-                <span class="lesson-subtitle">مقدمه عن العناصر الانتقالية</span>
-              </div>
-              <div class="lesson-arrow">
-                <svg viewBox="0 0 24 24"><path d="M18 15l-6-6-6 6"/></svg>
-              </div>
-            </div>
-          </div>
-        </div>
+    <!-- 3. الفوتر -->
+    <footer class="site-footer">
+      <div class="footer-logo">
+        <svg viewBox="0 0 24 24"><path d="M7 17L17 7M17 7H9M17 7v8"/></svg>
+        ASCEND
       </div>
+      <div class="footer-text">
+        جميع الحقوق محفوظة © 2024
+      </div>
+      <div class="footer-links">
+        <a href="#">الشروط والأحكام</a>
+        <a href="#">سياسة الخصوصية</a>
+      </div>
+    </footer>
 
-      <!-- 3. الفوتر (زي الصورة الثالثة) -->
-      <footer class="site-footer">
-        <div class="footer-logo">
-          <svg viewBox="0 0 24 24"><path d="M7 17L17 7M17 7H9M17 7v8"/></svg>
-          ASCEND
-        </div>
-        <div class="footer-text">
-          جميع الحقوق محفوظة © 2024
-        </div>
-        <div class="footer-links">
-          <a href="#">الشروط والأحكام</a>
-          <a href="#">سياسة الخصوصية</a>
-        </div>
-      </footer>
-
-    </main>
-  </div>
+  </main>
 </div>
 
 <script type="module" src="/assets/js/chapter.js"></script>
 </body>
-</html>
+</html> 
