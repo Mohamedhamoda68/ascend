@@ -1,107 +1,109 @@
+/* ============ Banner / Cover ============ */
+.chapter-cover {
+  width: 100%;
+  height: 280px;
+  border-radius: 20px;
+  background-color: var(--surface-2);
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 24px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.cover-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+  display: flex;
+  align-items: flex-end;
+  padding: 32px;
+}
+
+.cover-overlay h1 {
+  color: #fff;
+  font-size: 32px;
+  font-weight: 800;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+  margin: 0;
+}
+
 /* ============ Video Section ============ */
 .video-section {
-  background: var(--bg-1);
-  border: 1px solid var(--border-1);
-  border-radius: 16px;
-  padding: 20px;
-  margin-bottom: 24px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-}
-
-.video-wrapper {
-  width: 100%;
-  aspect-ratio: 16/9;
   background: #000;
-  border-radius: 12px;
+  border-radius: 16px;
   overflow: hidden;
-  margin-bottom: 16px;
+  margin-bottom: 32px;
+  aspect-ratio: 16/9;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
 }
 
-.video-wrapper iframe {
-  width: 100%;
-  height: 100%;
-  border: none;
-}
+.video-wrapper { width: 100%; height: 100%; }
+.video-wrapper iframe { width: 100%; height: 100%; border: none; }
 
-.video-actions {
-  display: flex;
-  justify-content: flex-end;
-}
-
-/* ============ Lessons Accordion ============ */
+/* ============ Lessons List ============ */
 .section-title {
   font-size: 22px;
   font-weight: 800;
   margin-bottom: 20px;
   color: var(--fg);
+  border-bottom: 2px solid var(--border-1);
+  padding-bottom: 10px;
 }
 
 .lessons-list {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 16px;
 }
 
-.lesson-accordion {
+/* الكارت الأساسي */
+.lesson-card {
   background: var(--bg-1);
   border: 1px solid var(--border-1);
-  border-radius: 12px;
+  border-radius: 16px;
   overflow: hidden;
-  transition: all 0.3s ease;
+  transition: all 0.3s;
 }
 
-/* حالة الدرس النشط (مفتوح) */
-.lesson-accordion.active {
-  border-color: var(--accent);
-  box-shadow: 0 4px 12px rgba(124, 92, 255, 0.15);
-}
+.lesson-card:hover { border-color: var(--accent); }
 
-/* رأس الدرس (اللي بيتدوس عليه) */
 .lesson-header {
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  padding: 16px 20px;
+  align-items: center;
+  padding: 20px;
   cursor: pointer;
   background: var(--bg-1);
-  transition: background 0.2s;
 }
 
-.lesson-header:hover {
-  background: var(--surface-2);
-}
-
-.lesson-title-wrap {
+.lesson-info {
   display: flex;
   align-items: center;
   gap: 16px;
 }
 
 .lesson-icon {
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
-  background: var(--surface-2);
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: rgba(124, 92, 255, 0.1);
+  color: var(--accent);
   display: grid;
   place-items: center;
-  color: var(--accent);
+  font-size: 20px;
+}
+
+.lesson-title h4 {
   font-size: 18px;
-}
-
-.lesson-accordion.active .lesson-icon {
-  background: var(--accent);
-  color: #fff;
-}
-
-.lesson-title-text h4 {
-  font-size: 16px;
   font-weight: 700;
   color: var(--fg);
   margin-bottom: 4px;
 }
 
-.lesson-title-text span {
-  font-size: 13px;
+.lesson-title span {
+  font-size: 14px;
   color: var(--fg-3);
 }
 
@@ -109,67 +111,81 @@
   color: var(--fg-3);
   transition: transform 0.3s;
 }
-.lesson-accordion.active .lesson-arrow {
+
+.lesson-card.open .lesson-arrow {
   transform: rotate(180deg);
-  color: var(--accent);
 }
 
-/* جسم الدرس (المحتوى اللي جوه) */
+/* جسم الكارت (المحتوى) */
 .lesson-body {
   max-height: 0;
   overflow: hidden;
-  transition: max-height 0.3s ease-out;
-  background: var(--bg-1);
+  transition: max-height 0.4s ease;
+  background: var(--surface-2);
 }
 
-.lesson-accordion.active .lesson-body {
-  max-height: 500px; /* كفاية لعرض الأزرار */
+.lesson-card.open .lesson-body {
+  max-height: 800px;
 }
 
-.lesson-content-list {
-  padding: 0 20px 20px 20px;
+.lesson-content {
+  padding: 20px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  border-top: 1px dashed var(--border-1);
-  margin-top: 4px;
-  padding-top: 16px;
+  gap: 12px;
+  border-top: 1px solid var(--border-1);
 }
 
-.content-item-row {
+/* صف المحتوى (فيديو/ملف) */
+.content-row {
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  padding: 12px 16px;
-  background: var(--surface-2);
-  border-radius: 8px;
+  align-items: center;
+  background: var(--bg-1);
+  padding: 14px 20px;
+  border-radius: 12px;
+  border: 1px solid var(--border-1);
 }
 
-.content-item-info {
+.content-name {
   display: flex;
   align-items: center;
   gap: 12px;
-  font-size: 14px;
   font-weight: 600;
-  color: var(--fg);
+  color: var(--fg-2);
+  font-size: 15px;
 }
 
-.content-item-info svg {
-  width: 18px;
-  height: 18px;
-  stroke: var(--fg-3);
+.content-name svg {
+  width: 20px;
+  height: 20px;
+  stroke: var(--accent);
   fill: none;
   stroke-width: 2;
 }
 
 /* أزرار المحتوى */
-.btn-sm {
-  padding: 6px 16px;
-  font-size: 13px;
-  border-radius: 6px;
+.btn-action {
+  padding: 8px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 700;
   text-decoration: none;
-  font-weight: 600;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-   }
+  border: none;
+  cursor: pointer;
+  background: var(--accent);
+  color: #fff;
+  transition: 0.2s;
+}
+
+.btn-action:hover { opacity: 0.9; }
+
+.btn-action.secondary {
+  background: transparent;
+  color: var(--accent);
+  border: 1px solid var(--accent);
+}
+.btn-action.secondary:hover {
+  background: var(--accent);
+  color: #fff;
+  }
