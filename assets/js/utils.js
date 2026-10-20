@@ -107,4 +107,15 @@ export function debounce(fn, wait = 300) {
     clearTimeout(t);
     t = setTimeout(() => fn(...args), wait);
   };
+}/* ---------- دالة استخراج ID اليوتيوب من أي رابط ---------- */
+export function getYouTubeId(url) {
+  if (!url) return null;
+  // لو الرابط 11 حرف بس (ID مباشر)
+  if (url.length === 11) return url;
+  
+  // التعبير النمطي ده بيمسك كل أشكال روابط اليوتيوب (watch, youtu.be, embed, shorts, live)
+  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=|shorts\/|live\/)([^#\&\?]*).*/;
+  const match = url.match(regExp);
+  
+  return (match && match[2].length === 11) ? match[2] : null;
 }
