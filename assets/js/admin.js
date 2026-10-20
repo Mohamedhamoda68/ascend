@@ -1,10 +1,10 @@
 // ============================================
-// ASCEND · Admin Panel (Complete)
-// Students + Parents + Photo Questions
+// ASCEND · Admin Panel (Complete & Updated)
+// Students + Parents + Photo Questions + Chapters Content
 // Created by Mohamed Hamouda
 // ============================================
 import { supabase } from './supabase.js';
-import { $, $$, escapeHtml, toast } from './utils.js';
+import { $, $$, escapeHtml, toast, getYouTubeId } from './utils.js';
 
 /* ============================================
    AUTH GUARD
@@ -33,6 +33,7 @@ let parentsCache = [];
 let subjectsCache = [];
 let currentChapterSubject = null;
 let uploadedQuestionImageUrl = null;
+let uploadedChapterImageUrl = null;
 
 /* ============================================
    TABS
@@ -42,7 +43,7 @@ const TAB_TITLES = {
   students: 'الطلاب',
   parents: 'أولياء الأمور',
   subjects: 'المواد والمدرسين',
-  chapters: 'الفصول والدروس',
+  chapters: 'الفصول والأبواب',
   videos: 'الفيديوهات',
   library: 'المكتبة',
   quizzes: 'الاختبارات',
@@ -61,7 +62,6 @@ $$('.sidebar-link[data-tab]').forEach(tab => {
     document.getElementById(`panel-${target}`)?.classList.add('active');
     document.getElementById('pageTitle').textContent = TAB_TITLES[target] || '';
 
-    // قفل القائمة الجانبية على الموبايل
     const sidebarEl = document.getElementById('sidebar');
     sidebarEl?.classList.remove('open', 'active', 'show');
 
@@ -412,7 +412,7 @@ document.getElementById('saveTeacherBtn')?.addEventListener('click', async () =>
 });
 
 /* ============================================
-   CHAPTERS + LESSONS
+   CHAPTERS + LESSONS (UPDATED WITH CARDS & CONTENT)
    ============================================ */
 async function loadChaptersAdmin() {
   const picker = document.getElementById('chaptersSubjectPicker');
@@ -448,13 +448,13 @@ async function loadChaptersForSubject(subjectId) {
   const content = document.getElementById('chaptersContent');
   const list = document.getElementById('chaptersList');
   content.style.display = 'block';
-  document.getElementById('chaptersContentTitle').textContent = `فصول ${currentChapterSubject.name}`;
+  document.getElementById('chaptersContentTitle').textContent = `أبواب ${currentChapterSubject.name}`;
 
   list.innerHTML = '<div class="loading-inline">جاري التحميل…</div>';
 
   const { data, error } = await supabase
     .from('chapters')
-    .select('id, title, "order", lessons(id, title, "order")')
+    .select('id, title, "order", cover_image_url, teacher_id, teachers(name), lessons(id, title, "order")')
     .eq('subject_id', subjectId)
     .order('order');
 
@@ -464,12 +464,15 @@ async function loadChaptersForSubject(subjectId) {
   }
 
   if (data.length === 0) {
-    list.innerHTML = '<div class="empty-state">لا يوجد فصول في هذه المادة</div>';
+    list.innerHTML = '<div class="empty-state">لا يوجد أبواب في هذه المادة</div>';
     return;
   }
 
   list.innerHTML = data.map((ch, idx) => {
     const lessons = (ch.lessons || []).sort((a, b) => (a.order || 0) - (b.order || 0));
+    const hasImage = ch.cover_image_url ? '🖼️' : '🚫';
+    const teacherName = ch.teachers?.name ? escapeHtml(ch.teachers.name) : 'بدون مدرس';
+    
     return `
       <div class="stat-card" style="margin-bottom:12px">
         <div class="stat-card-head">
@@ -477,14 +480,23 @@ async function loadChaptersForSubject(subjectId) {
             <div style="width:32px;height:32px;border-radius:8px;background:rgba(124,92,255,0.15);border:1px solid rgba(124,92,255,0.3);display:grid;place-items:center;color:var(--accent-fg);font-weight:700">${idx + 1}</div>
             <div>
               <div style="font-size:14px;color:var(--fg);font-weight:600">${escapeHtml(ch.title)}</div>
-              <div class="cell-muted" style="font-size:12px">${lessons.length} درس</div>
+              <div class="cell-muted" style="font-size:12px">
+                ${lessons.length} درس · المدرس: ${teacherName} · صورة: ${hasImage}
+              </div>
             </div>
           </div>
           <div style="display:flex;gap:6px">
+            <button class="btn btn-ghost" style="padding:4px 8px; font-size:12px" onclick="openManageContent(${ch.id}, '${escapeHtml(ch.title)}')">
+              <svg viewBox="0 0 24 24" style="width:14px;height:14px"><path d="M4 4h6a2 2 0 012 2v14a2 2 0 00-2-2H4z"/><path d="M20 4h-6a2 2 0 00-2 2v14a2 2 0 012-2h6z"/></svg>
+              إدارة المحتوى
+            </button>
+            <button class="row-btn" onclick="openEditChapter(${ch.id})" title="تعديل بيانات الباب">
+              <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+            </button>
             <button class="row-btn" onclick="openAddLesson(${ch.id})" title="إضافة درس">
               <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
             </button>
-            <button class="row-btn danger" onclick="deleteChapter(${ch.id})" title="حذف الفصل">
+            <button class="row-btn danger" onclick="deleteChapter(${ch.id})" title="حذف الباب">
               <svg viewBox="0 0 24 24"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg>
             </button>
           </div>
@@ -523,7 +535,7 @@ document.getElementById('saveChapterBtn')?.addEventListener('click', async () =>
   err.classList.remove('show');
 
   if (!title || title.length < 2) {
-    err.textContent = 'اسم الفصل مطلوب';
+    err.textContent = 'اسم الباب مطلوب';
     err.classList.add('show');
     return;
   }
@@ -537,19 +549,202 @@ document.getElementById('saveChapterBtn')?.addEventListener('click', async () =>
 
   if (error) { err.textContent = error.message; err.classList.add('show'); return; }
 
-  toast('تم إضافة الفصل ✅', 'success');
+  toast('تم إضافة الباب ✅', 'success');
   closeModal('modalChapter');
   loadChaptersForSubject(subjectId);
 });
 
 window.deleteChapter = async (id) => {
-  if (!confirm('حذف هذا الفصل وكل دروسه؟')) return;
+  if (!confirm('حذف هذا الباب وكل محتوياته؟')) return;
   const { error } = await supabase.from('chapters').delete().eq('id', id);
   if (error) { toast('تعذّر الحذف', 'error'); return; }
   toast('تم الحذف', 'success');
   if (currentChapterSubject) loadChaptersForSubject(currentChapterSubject.id);
 };
 
+// ============================================
+// NEW: EDIT CHAPTER MODAL (Cover & Teacher)
+// ============================================
+window.openEditChapter = async (chapterId) => {
+  document.getElementById('editChapterId').value = chapterId;
+  document.getElementById('editChapterError').classList.remove('show');
+  document.getElementById('editChapterImagePreview').style.display = 'none';
+  document.getElementById('editChapterImage').value = '';
+  
+  // Fetch chapter data
+  const { data: chapter } = await supabase.from('chapters').select('*').eq('id', chapterId).single();
+  if (!chapter) return;
+
+  document.getElementById('editChapterTitle').value = chapter.title;
+  
+  // Load teachers for subject
+  const teacherSelect = document.getElementById('editChapterTeacher');
+  teacherSelect.innerHTML = '<option value="">— بدون مدرس —</option>';
+  
+  const { data: teachers } = await supabase.from('teachers').select('id, name').eq('subject_id', chapter.subject_id);
+  (teachers || []).forEach(t => {
+    const opt = document.createElement('option');
+    opt.value = t.id;
+    opt.textContent = t.name;
+    teacherSelect.appendChild(opt);
+  });
+  
+  if (chapter.teacher_id) teacherSelect.value = chapter.teacher_id;
+  
+  // Show current image if exists
+  if (chapter.cover_image_url) {
+    document.getElementById('editChapterImageImg').src = chapter.cover_image_url;
+    document.getElementById('editChapterImagePreview').style.display = 'block';
+    uploadedChapterImageUrl = chapter.cover_image_url;
+  } else {
+    uploadedChapterImageUrl = null;
+  }
+
+  document.getElementById('modalEditChapter').classList.add('open');
+};
+
+document.getElementById('editChapterImage')?.addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  if (file.size > 5 * 1024 * 1024) { toast('حجم الصورة كبير (5 MB max)', 'error'); return; }
+  
+  const btn = document.getElementById('saveEditChapterBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span><span>جارٍ رفع الصورة…</span>';
+
+  try {
+    const fileName = `cover-${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
+    const { error: uploadErr } = await supabase.storage.from('chapter-covers').upload(fileName, file);
+    if (uploadErr) throw uploadErr;
+    
+    const { data: urlData } = supabase.storage.from('chapter-covers').getPublicUrl(fileName);
+    uploadedChapterImageUrl = urlData.publicUrl;
+    
+    document.getElementById('editChapterImageImg').src = uploadedChapterImageUrl;
+    document.getElementById('editChapterImagePreview').style.display = 'block';
+    toast('تم رفع الصورة بنجاح ✅', 'success');
+  } catch (err) {
+    toast('تعذّر رفع الصورة: ' + err.message, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<span>حفظ التعديلات</span>';
+  }
+});
+
+document.getElementById('saveEditChapterBtn')?.addEventListener('click', async () => {
+  const id = document.getElementById('editChapterId').value;
+  const title = document.getElementById('editChapterTitle').value.trim();
+  const teacherId = document.getElementById('editChapterTeacher').value || null;
+  const err = document.getElementById('editChapterError');
+  
+  if (!title) { err.textContent = 'العنوان مطلوب'; err.classList.add('show'); return; }
+
+  const btn = document.getElementById('saveEditChapterBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span><span>جارٍ الحفظ…</span>';
+
+  const updateData = { 
+    title: title, 
+    teacher_id: teacherId ? parseInt(teacherId) : null 
+  };
+  if (uploadedChapterImageUrl) updateData.cover_image_url = uploadedChapterImageUrl;
+
+  const { error } = await supabase.from('chapters').update(updateData).eq('id', id);
+
+  btn.disabled = false;
+  btn.innerHTML = '<span>حفظ التعديلات</span>';
+
+  if (error) { err.textContent = error.message; err.classList.add('show'); return; }
+
+  toast('تم التعديل بنجاح ✅', 'success');
+  closeModal('modalEditChapter');
+  if (currentChapterSubject) loadChaptersForSubject(currentChapterSubject.id);
+});
+
+// ============================================
+// NEW: MANAGE CHAPTER CONTENT
+// ============================================
+window.openManageContent = async (chapterId, chapterTitle) => {
+  document.getElementById('contentChapterId').value = chapterId;
+  document.getElementById('contentTitle').value = '';
+  document.getElementById('contentVideoUrl').value = '';
+  document.getElementById('contentHomeworkUrl').value = '';
+  document.getElementById('contentPdfUrl').value = '';
+  document.getElementById('contentType').value = 'video';
+  
+  // Switch fields to default (video)
+  document.getElementById('contentFieldVideo').style.display = 'block';
+  document.getElementById('contentFieldQuiz').style.display = 'none';
+  document.getElementById('contentFieldHomework').style.display = 'none';
+  document.getElementById('contentFieldPdf').style.display = 'none';
+
+  // Load Quizzes for select
+  const quizSelect = document.getElementById('contentQuizId');
+  quizSelect.innerHTML = '<option value="">جاري التحميل...</option>';
+  const { data: quizzes } = await supabase.from('quizzes').select('id, title').order('created_at', { ascending: false });
+  if (quizzes && quizzes.length > 0) {
+    quizSelect.innerHTML = '<option value="">— اختر اختبار —</option>' + quizzes.map(q => `<option value="${q.id}">${escapeHtml(q.title)}</option>`).join('');
+  } else {
+    quizSelect.innerHTML = '<option value="">لا يوجد اختبارات (أضف من قسم الاختبارات)</option>';
+  }
+
+  document.getElementById('modalChapterContent').classList.add('open');
+};
+
+document.getElementById('contentType')?.addEventListener('change', (e) => {
+  const val = e.target.value;
+  document.getElementById('contentFieldVideo').style.display = val === 'video' ? 'block' : 'none';
+  document.getElementById('contentFieldQuiz').style.display = val === 'quiz' ? 'block' : 'none';
+  document.getElementById('contentFieldHomework').style.display = val === 'homework' ? 'block' : 'none';
+  document.getElementById('contentFieldPdf').style.display = val === 'pdf' ? 'block' : 'none';
+});
+
+document.getElementById('saveChapterContentBtn')?.addEventListener('click', async () => {
+  const chapterId = parseInt(document.getElementById('contentChapterId').value, 10);
+  const type = document.getElementById('contentType').value;
+  const title = document.getElementById('contentTitle').value.trim();
+  
+  if (!title) { toast('العنوان مطلوب', 'error'); return; }
+
+  const btn = document.getElementById('saveChapterContentBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span><span>جارٍ الحفظ…</span>';
+
+  let payload = {
+    chapter_id: chapterId,
+    type: type,
+    title: title,
+    order: 0 // ممكن نطوره بعدين
+  };
+
+  if (type === 'video') {
+    const url = document.getElementById('contentVideoUrl').value.trim();
+    if (!url) { toast('رابط الفيديو مطلوب', 'error'); btn.disabled=false; btn.innerHTML='<span>إضافة المحتوى</span>'; return; }
+    payload.video_url = url;
+  } else if (type === 'quiz') {
+    const qId = document.getElementById('contentQuizId').value;
+    if (!qId) { toast('اختر اختبار', 'error'); btn.disabled=false; btn.innerHTML='<span>إضافة المحتوى</span>'; return; }
+    payload.quiz_id = parseInt(qId);
+  } else if (type === 'homework') {
+    payload.homework_desc = document.getElementById('contentHomeworkUrl').value.trim();
+  } else if (type === 'pdf') {
+    payload.pdf_url = document.getElementById('contentPdfUrl').value.trim();
+  }
+
+  const { error } = await supabase.from('chapter_contents').insert(payload);
+
+  btn.disabled = false;
+  btn.innerHTML = '<span>إضافة المحتوى</span>';
+
+  if (error) { toast('خطأ: ' + error.message, 'error'); return; }
+
+  toast('تم إضافة المحتوى للباب بنجاح ✅', 'success');
+  closeModal('modalChapterContent');
+});
+
+/* ============================================
+   LESSONS (Inside Chapters)
+   ============================================ */
 window.openAddLesson = (chapterId) => {
   document.getElementById('lessonChapterId').value = chapterId;
   document.getElementById('lessonTitle').value = '';
@@ -592,7 +787,7 @@ window.deleteLesson = async (id) => {
 };
 
 /* ============================================
-   VIDEOS
+   VIDEOS (Old School Videos section)
    ============================================ */
 async function loadVideos() {
   const tbody = document.getElementById('videosBody');
@@ -1452,7 +1647,7 @@ $$('.modal-overlay').forEach(overlay => {
 });
 
 /* ============================================
-   LOGOUT + SIDEBAR TOGGLE (محسّن)
+   LOGOUT + SIDEBAR TOGGLE
    ============================================ */
 document.getElementById('logoutBtn')?.addEventListener('click', async () => {
   await supabase.auth.signOut();
@@ -1469,7 +1664,6 @@ menuBtn?.addEventListener('click', (e) => {
   sidebarEl?.classList.toggle('show');
 });
 
-// إغلاق عند الدوس خارج القائمة
 document.addEventListener('click', (e) => {
   const isOpen = sidebarEl?.classList.contains('open')
               || sidebarEl?.classList.contains('active')
@@ -1480,14 +1674,12 @@ document.addEventListener('click', (e) => {
   sidebarEl.classList.remove('open', 'active', 'show');
 });
 
-// إغلاق عند الدوس على أي رابط
 document.querySelectorAll('.sidebar-link').forEach(link => {
   link.addEventListener('click', () => {
     sidebarEl?.classList.remove('open', 'active', 'show');
   });
 });
 
-// إغلاق بزر ESC
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') {
     sidebarEl?.classList.remove('open', 'active', 'show');
