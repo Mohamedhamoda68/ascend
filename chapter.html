@@ -15,52 +15,49 @@
 <body>
 
 <div class="app">
-  <!-- السايدبار -->
-  <aside class="sidebar" id="sidebar">
-    <a href="/" class="sidebar-brand">
-      <span class="brand-mark"><svg viewBox="0 0 24 24"><path d="M7 17L17 7M17 7H9M17 7v8"/></svg></span>
-      ASCEND
-    </a>
-    <div class="sidebar-bottom">
-      <div class="user-card">
-        <div class="user-card-avatar" id="userAvatar">؟</div>
-        <div class="user-card-info"><div class="user-card-name" id="userName">…</div></div>
-      </div>
-    </div>
-  </aside>
-
-  <!-- المحتوى -->
+  <!-- المحتوى الرئيسي -->
   <div class="main">
-    <header class="topbar">
-      <div class="topbar-left">
-        <a href="javascript:history.back()" class="icon-btn"><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></a>
-        <div class="topbar-title" id="pageTitle">جاري التحميل...</div>
-      </div>
-    </header>
-
     <main class="content">
-      
-      <!-- بانر الغلاف -->
-      <div id="chapterCover" class="chapter-cover">
-        <div class="cover-overlay">
-          <h1 id="coverTitle">اسم الباب</h1>
-        </div>
+
+      <!-- 1. صورة الغلاف الكبيرة (زي الصورة الأولى) -->
+      <div class="cover-image-wrapper">
+        <div class="cover-bg" id="chapterCover"></div>
       </div>
 
-      <!-- مشغل الفيديو (مخفي في البداية) -->
-      <div id="videoSection" class="video-section" style="display: none;">
-        <div class="video-wrapper">
-          <div id="videoContainer"></div>
-        </div>
-      </div>
-
-      <!-- قائمة الدروس -->
+      <!-- 2. قسم الدروس (زي الصورة التانية) -->
       <div class="lessons-section">
-        <h3 class="section-title">الدروس والملفات</h3>
-        <div id="lessonsList" class="lessons-list">
-          <div class="loading-inline">جاري التحميل…</div>
+        <h2 class="section-title">الدروس</h2>
+        
+        <div class="lessons-list" id="lessonsList">
+          <!-- الكروت هتتولد هنا بالـ JS، بس ده شكلها -->
+          <div class="lesson-card">
+            <div class="lesson-header">
+              <div class="lesson-info">
+                <span class="lesson-title">الاسبوع الاول</span>
+                <span class="lesson-subtitle">مقدمه عن العناصر الانتقالية</span>
+              </div>
+              <div class="lesson-arrow">
+                <svg viewBox="0 0 24 24"><path d="M18 15l-6-6-6 6"/></svg>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
+
+      <!-- 3. الفوتر (زي الصورة الثالثة) -->
+      <footer class="site-footer">
+        <div class="footer-logo">
+          <svg viewBox="0 0 24 24"><path d="M7 17L17 7M17 7H9M17 7v8"/></svg>
+          ASCEND
+        </div>
+        <div class="footer-text">
+          جميع الحقوق محفوظة © 2024
+        </div>
+        <div class="footer-links">
+          <a href="#">الشروط والأحكام</a>
+          <a href="#">سياسة الخصوصية</a>
+        </div>
+      </footer>
 
     </main>
   </div>
@@ -68,4 +65,4 @@
 
 <script type="module" src="/assets/js/chapter.js"></script>
 </body>
-  </html>
+</html>
