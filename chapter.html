@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#FFFFFF">
+<meta name="color-scheme" content="light dark">
+<title>محتوى الباب — ASCEND</title>
+<link rel="icon" type="image/svg+xml" href="/assets/img/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="/assets/css/base.css">
+<link rel="stylesheet" href="/assets/css/components.css">
+<link rel="stylesheet" href="/assets/css/chapter.css">
+</head>
+<body>
+
+<div class="app">
+  <!-- ============ SIDEBAR ============ -->
+  <aside class="sidebar" id="sidebar">
+    <a href="/" class="sidebar-brand">
+      <span class="brand-mark"><svg viewBox="0 0 24 24"><path d="M7 17L17 7M17 7H9M17 7v8"/></svg></span>
+      ASCEND
+    </a>
+    <div class="sidebar-section">
+      <div class="sidebar-label">القائمة الرئيسية</div>
+      <nav class="sidebar-nav">
+        <a class="sidebar-link" href="/dashboard.html">
+          <svg viewBox="0 0 24 24"><path d="M3 12l9-9 9 9M5 10v10h14V10"/></svg> الرئيسية
+        </a>
+        <a class="sidebar-link active" href="/dashboard.html#subjects">
+          <svg viewBox="0 0 24 24"><path d="M4 4h6a2 2 0 012 2v14a2 2 0 00-2-2H4z"/><path d="M20 4h-6a2 2 0 00-2 2v14a2 2 0 012-2h6z"/></svg> المواد
+        </a>
+        <a class="sidebar-link" href="/library.html">
+          <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg> المكتبة
+        </a>
+      </nav>
+    </div>
+    <div class="sidebar-bottom">
+      <div class="user-card">
+        <div class="user-card-avatar" id="userAvatar">?</div>
+        <div class="user-card-info">
+          <div class="user-card-name" id="userName">جاري التحميل…</div>
+          <div class="user-card-role">طالب</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ============ MAIN ============ -->
+  <div class="main">
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="icon-btn menu-toggle" id="menuToggle"><svg viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
+        <a href="javascript:history.back()" class="icon-btn"><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></a>
+        <div class="topbar-title" id="chapterTitle">الباب</div>
+      </div>
+    </header>
+
+    <main class="content">
+      <nav class="breadcrumb">
+        <a href="/dashboard.html">لوحتي</a> <span class="breadcrumb-sep">/</span>
+        <a href="#" id="breadcrumbSubject">المادة</a> <span class="breadcrumb-sep">/</span>
+        <span id="breadcrumbChapter">الباب</span>
+      </nav>
+
+      <div id="chapterHeader"></div>
+
+      <div class="lessons-container" id="chapterContentList">
+        <div class="loading-inline">جاري تحميل محتوى الباب…</div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<script type="module" src="/assets/js/chapter.js"></script>
+<script type="module" src="/assets/js/theme.js"></script>
+</body>
+                                                                   </html>
