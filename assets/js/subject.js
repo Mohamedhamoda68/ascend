@@ -136,7 +136,8 @@ async function loadChapters(subjectId) {
   try {
     const { data, error } = await supabase
       .from('chapters')
-      .select('id, title, "order", lessons(id, title, "order")')
+      // التعديل هنا: ضفنا cover_image_url و teacher_id و teachers(name) عشان الكروت
+      .select('id, title, "order", cover_image_url, teacher_id, teachers(name), lessons(id, title, "order")')
       .eq('subject_id', subjectId)
       .order('order');
 
@@ -157,42 +158,32 @@ async function loadChapters(subjectId) {
     setText('#heroLessonsCount', totalLessons);
     setText('#chaptersCount', `${data.length} فصول · ${totalLessons} درس`);
 
-    container.innerHTML = data.map((ch, idx) => {
-      const lessons = (ch.lessons || []).sort((a, b) => (a.order || 0) - (b.order || 0));
-      const lessonsCount = lessons.length;
-
-      return `
-        <div class="chapter" data-chapter="${ch.id}">
-          <div class="chapter-head" onclick="toggleChapter(${ch.id})">
-            <div class="chapter-num">${idx + 1}</div>
-            <div class="chapter-body">
-              <div class="chapter-title">${escapeHtml(ch.title)}</div>
-              <div class="chapter-meta">${lessonsCount} ${lessonsCount === 1 ? 'درس' : 'دروس'}</div>
-            </div>
-            <div class="chapter-toggle"></div>
-          </div>
-          <div class="chapter-lessons">
-            ${lessonsCount === 0
-              ? '<div class="empty-state" style="padding:24px">لا يوجد دروس في هذا الفصل بعد</div>'
-              : lessons.map((l, i) => `
-                <a class="lesson-item" href="/lesson.html?id=${l.id}">
-                  <div class="lesson-icon">
-                    <svg viewBox="0 0 24 24"><path d="M15 10l-4-2v8l4-2"/><rect x="2" y="6" width="20" height="12" rx="2"/></svg>
-                  </div>
-                  <div class="lesson-body">
-                    <div class="lesson-title">${escapeHtml(l.title)}</div>
-                    <div class="lesson-meta">الدرس ${i + 1}</div>
-                  </div>
-                  <div class="lesson-arrow">
-                    <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
-                  </div>
-                </a>
-              `).join('')
-            }
-          </div>
-        </div>
-      `;
-    }).join('');
+    // التعديل هنا: عرض الفصول على شكل كروت فيها صور (زي الصور اللي بعتها)
+    container.innerHTML = `
+      <div class="chapters-grid">
+        ${data.map((ch, idx) => {
+          const lessonsCount = ch.lessons?.length || 0;
+          const teacherName = ch.teachers?.name ? `أ. ${ch.teachers.name}` : 'فريق ASCEND';
+          const img = ch.cover_image_url || 'https://via.placeholder.com/600x400/1E1E2E/FFFFFF?text=ASCEND';
+          
+          return `
+            <a href="/chapter.html?id=${ch.id}" class="chapter-card">
+              <div class="chapter-card-img" style="background-image: url('${escapeHtml(img)}')">
+                <div class="chapter-card-badge">${idx + 1}</div>
+              </div>
+              <div class="chapter-card-body">
+                <h3 class="chapter-card-title">${escapeHtml(ch.title)}</h3>
+                <div class="chapter-card-instructor">${escapeHtml(teacherName)}</div>
+                <div class="chapter-card-footer">
+                  <span>${lessonsCount} درس</span>
+                  <span class="chapter-card-btn">دخول الباب ←</span>
+                </div>
+              </div>
+            </a>
+          `;
+        }).join('')}
+      </div>
+    `;
 
   } catch (err) {
     console.error('[ASCEND] Load chapters failed:', err);
@@ -204,7 +195,7 @@ async function loadChapters(subjectId) {
   }
 }
 
-/* ---------- Toggle chapter ---------- */
+/* ---------- Toggle chapter (Kept for backward compatibility) ---------- */
 window.toggleChapter = (id) => {
   const chapter = document.querySelector(`[data-chapter="${id}"]`);
   if (!chapter) return;
